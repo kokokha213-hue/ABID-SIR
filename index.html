@@ -10,7 +10,7 @@
   <link rel="canonical" href="https://abidsir.gaming">
   <!-- Font & Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <!-- Firebase SDKs (compat for easy integration) -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
@@ -101,15 +101,6 @@
     .file-download-btn:hover { background: #0073b0; color: white; }
     .file-download-btn i { color: #00ccff; }
 
-    .admin-area { margin-top: 2rem; background: #0b111e; border-radius: 2rem; padding: 1.5rem 2rem; border: 1px solid #1f405b; }
-    .admin-toggle { display: flex; justify-content: space-between; align-items: center; }
-    .admin-toggle h4 { color: #9dc6ff; font-weight: 400; letter-spacing: 1px; }
-    .admin-toggle i { color: #0099ff; margin-right: 0.5rem; }
-    .admin-controls { display: flex; flex-wrap: wrap; gap: 1rem 2rem; margin-top: 1.5rem; align-items: center; border-top: 1px solid #1f3850; padding-top: 1.5rem; }
-    .admin-controls input, .admin-controls select { background: #030a14; border: 1px solid #1d4a6b; padding: 0.5rem 1.2rem; border-radius: 60px; color: white; }
-    .admin-controls .btn { background: #113755; border-color: #0066aa; border: none; padding: 0.5rem 1.5rem; border-radius: 60px; font-weight: 600; color: white; cursor: pointer; transition: 0.2s; }
-    .admin-controls .btn:hover { background: #1d5580; }
-
     .footer-note { margin-top: 2rem; text-align: center; font-size: 0.8rem; color: #43647a; border-top: 1px solid #162b3d; padding-top: 1.5rem; letter-spacing: 1px; }
 
     @media (max-width: 700px) {
@@ -117,7 +108,6 @@
       .hero-text h2 { font-size: 1.6rem; }
       .logo h1 { font-size: 1.8rem; }
       .stats-grid { border-radius: 30px; padding: 0.5rem 1rem; gap: 0.8rem; }
-      .admin-controls { flex-direction: column; align-items: stretch; }
       .password-box { padding: 2rem 1.5rem; }
     }
   </style>
@@ -175,26 +165,12 @@
   <div class="section-title"><h3><i class="fas fa-video" style="margin-right:10px;"></i> Gaming Videos</h3></div>
   <div class="video-grid" id="videoGrid"></div>
 
-  <!-- Admin Panel -->
-  <div class="admin-area">
-    <div class="admin-toggle"><h4><i class="fas fa-user-cog"></i> Admin Panel</h4></div>
-    <div class="admin-controls">
-      <input type="text" id="newPassInput" placeholder="New password" value="gaming2026">
-      <button class="btn" id="updatePassBtn"><i class="fas fa-key"></i> Update Password</button>
-      <input type="file" id="fileUpload" style="display:none;">
-      <button class="btn" id="uploadFileBtn"><i class="fas fa-upload"></i> Upload File</button>
-      <button class="btn" id="uploadVideoBtn"><i class="fas fa-video"></i> Add Video</button>
-      <input type="text" id="announceInput" placeholder="New announcement text" style="min-width:180px;">
-      <button class="btn" id="updateAnnounceBtn"><i class="fas fa-bullhorn"></i> Update</button>
-    </div>
-  </div>
-
   <div class="footer-note"><i class="fas fa-shield-alt"></i> ABID SIR · premium gaming · secure member access</div>
 </div>
 
 <script>
   // ============================================================
-  // YOUR FIREBASE CONFIG (EXACTLY AS PROVIDED)
+  // YOUR FIREBASE CONFIG
   // ============================================================
   const firebaseConfig = {
     apiKey: "AIzaSyALnJyYqSpgZeapdNUkAKkwImgijuG935g",
@@ -211,11 +187,10 @@
   const analytics = firebase.analytics();
   const db = firebase.database();
 
-  // ========== GLOBALS ==========
-  db.ref('password').once('value')
+  // ========== FIX: Password state ==========
+  let currentPassword = null;      // Start as null, will be set from Firebase
+  let passwordLoaded = false;      // Flag to track if password is loaded
   let isAuthorized = false;
-  let filesCache = [];
-  let videosCache = [];
 
   // ========== DOM REFS ==========
   const overlay = document.getElementById('passwordOverlay');
@@ -225,31 +200,48 @@
   const passError = document.getElementById('passError');
   const loaderContainer = document.getElementById('loaderContainer');
 
-  // ========== PASSWORD AUTH ==========
+  // ========== VERIFY FUNCTION (with checks) ==========
   function verifyPassword(entered) {
+    // FIX 3: Check if password is loaded from Firebase
+    if (!passwordLoaded) {
+      passError.textContent = "⏳ Loading key from server...";
+      return false;
+    }
+
     if (entered === currentPassword) {
       isAuthorized = true;
       overlay.classList.add('hidden');
       mainApp.style.display = 'block';
       passError.textContent = '';
       loadAllData();
-      // Log successful login
       analytics.logEvent('login', { method: 'password' });
       return true;
     } else {
-      passError.textContent = '❌ Incorrect Key, Please Try Again.';
+      passError.textContent = "❌ Incorrect Key, Please Try Again.";
       analytics.logEvent('login_failed', { reason: 'wrong_password' });
       return false;
     }
   }
 
+  // ========== LOGIN BUTTON ==========
   passBtn.addEventListener('click', function() {
     const entered = passInput.value.trim();
-    if (!entered) { passError.textContent = 'Please enter a key.'; return; }
-    // simulate 3-5 sec loading
+    if (!entered) {
+      passError.textContent = 'Please enter a key.';
+      return;
+    }
+
+    // FIX 2: Check if password is loaded
+    if (!passwordLoaded) {
+      passError.textContent = "⏳ System loading password...";
+      return;
+    }
+
+    // Start loading animation
     passBtn.disabled = true;
     loaderContainer.style.display = 'block';
     passError.textContent = '⏳ Verifying...';
+
     const delay = 3000 + Math.random() * 2000;
     setTimeout(() => {
       loaderContainer.style.display = 'none';
@@ -262,22 +254,39 @@
     }, delay);
   });
 
-  passInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') passBtn.click(); });
+  passInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') passBtn.click();
+  });
+
+  // ========== LOAD PASSWORD FROM FIREBASE FIRST ==========
+  // FIX 1: Load password before allowing login
+  db.ref('password').once('value').then(snap => {
+    if (snap.exists()) {
+      currentPassword = snap.val();
+    } else {
+      // If no password in Firebase, set a default
+      currentPassword = "gaming2026";
+      // Optionally save it to Firebase
+      db.ref('password').set("gaming2026");
+    }
+    passwordLoaded = true;
+    console.log('✅ Password loaded from Firebase:', currentPassword);
+  }).catch(err => {
+    console.error('❌ Error loading password:', err);
+    // Fallback: allow with default
+    currentPassword = "gaming2026";
+    passwordLoaded = true;
+  });
 
   // ========== LOAD DATA FROM FIREBASE ==========
   function loadAllData() {
-    // Password
-    db.ref('password').on('value', snap => {
-      if (snap.exists()) {
-        currentPassword = snap.val();
-      }
-    });
     // Announcement
     db.ref('announcement').on('value', snap => {
       const el = document.getElementById('announceText');
       if (snap.exists()) el.innerHTML = `<strong>📢</strong> ${snap.val()}`;
       else el.innerHTML = `<strong>📢</strong> No announcement yet.`;
     });
+
     // Files
     db.ref('files').on('value', snap => {
       const grid = document.getElementById('fileGrid');
@@ -285,9 +294,9 @@
       let count = 0;
       if (snap.exists()) {
         const data = snap.val();
-        filesCache = Object.entries(data).map(([key, val]) => ({ key, ...val }));
-        filesCache.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
-        filesCache.forEach(file => {
+        const files = Object.entries(data).map(([key, val]) => ({ key, ...val }));
+        files.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
+        files.forEach(file => {
           const card = document.createElement('div');
           card.className = 'file-card';
           const label = file.label || 'PREMIUM';
@@ -304,7 +313,8 @@
           count++;
         });
         document.getElementById('fileCount').textContent = count;
-        // attach download events
+
+        // Attach download events
         document.querySelectorAll('.file-download-btn').forEach(btn => {
           btn.addEventListener('click', function() {
             if (!isAuthorized) { alert('⛔ Access denied.'); return; }
@@ -312,7 +322,6 @@
             const ref = db.ref(`files/${key}/downloads`);
             ref.transaction(current => (current || 0) + 1);
             alert('⬇️ Download started!');
-            // update counter locally
             let counterSpan = document.getElementById('downloadCounter');
             let val = parseInt(counterSpan.textContent.replace(/,/g,'')) || 0;
             counterSpan.textContent = (val + 1).toLocaleString();
@@ -330,9 +339,9 @@
       grid.innerHTML = '';
       if (snap.exists()) {
         const data = snap.val();
-        videosCache = Object.entries(data).map(([key, val]) => ({ key, ...val }));
-        videosCache.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
-        videosCache.forEach(vid => {
+        const videos = Object.entries(data).map(([key, val]) => ({ key, ...val }));
+        videos.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
+        videos.forEach(vid => {
           const card = document.createElement('div');
           card.className = 'video-card';
           const isEmbed = vid.url && vid.url.includes('youtube.com/embed');
@@ -358,78 +367,15 @@
     });
   }
 
-  // ========== ADMIN ACTIONS ==========
-  // Update password
-  document.getElementById('updatePassBtn').addEventListener('click', function() {
-    const newPass = document.getElementById('newPassInput').value.trim();
-    if (newPass.length < 4) { alert('Password must be at least 4 chars.'); return; }
-    db.ref('password').set(newPass).then(() => {
-      currentPassword = newPass;
-      alert('✅ Password updated in Firebase!');
-      analytics.logEvent('password_updated');
-    }).catch(err => alert('❌ Firebase error: ' + err.message));
-  });
+  // ========== INIT: Show overlay with loading message ==========
+  passError.textContent = '⏳ Loading security key...';
+  passBtn.disabled = true;
 
-  // Upload file
-  document.getElementById('uploadFileBtn').addEventListener('click', function() {
-    document.getElementById('fileUpload').click();
-  });
-  document.getElementById('fileUpload').addEventListener('change', function(e) {
-    const file = this.files[0];
-    if (!file) return;
-    const title = prompt('File title:', file.name);
-    if (!title) return;
-    const label = prompt('Label (e.g. PREMIUM):', 'PREMIUM');
-    const version = prompt('Version:', 'v1');
-    const size = (file.size/1024/1024).toFixed(1) + ' MB';
-    const newFile = {
-      title, label: label || 'PREMIUM', version: version || 'v1',
-      size, downloads: 0, timestamp: Date.now(),
-      updated: new Date().toLocaleDateString()
-    };
-    const ref = db.ref('files').push();
-    ref.set(newFile).then(() => {
-      alert('✅ File uploaded to Firebase!');
-      let count = parseInt(document.getElementById('fileCount').textContent) || 0;
-      document.getElementById('fileCount').textContent = count + 1;
-      analytics.logEvent('file_uploaded', { file_name: title });
-    }).catch(err => alert('❌ Error: ' + err.message));
-    this.value = '';
-  });
-
-  // Upload video (embed URL)
-  document.getElementById('uploadVideoBtn').addEventListener('click', function() {
-    const title = prompt('Video title:');
-    if (!title) return;
-    const url = prompt('YouTube embed URL (or video link):', 'https://www.youtube.com/embed/dQw4w9WgXcQ');
-    if (!url) return;
-    const label = prompt('Label:', 'GAMING');
-    const newVideo = {
-      title, url, label: label || 'GAMING',
-      views: 0, date: new Date().toLocaleDateString(),
-      timestamp: Date.now()
-    };
-    db.ref('videos').push().set(newVideo).then(() => {
-      alert('✅ Video added!');
-      analytics.logEvent('video_added', { video_title: title });
-    }).catch(err => alert('❌ Error: ' + err.message));
-  });
-
-  // Update announcement
-  document.getElementById('updateAnnounceBtn').addEventListener('click', function() {
-    const text = document.getElementById('announceInput').value.trim();
-    if (!text) { alert('Please enter announcement text.'); return; }
-    db.ref('announcement').set(text).then(() => {
-      alert('✅ Announcement updated!');
-      document.getElementById('announceInput').value = '';
-      analytics.logEvent('announcement_updated');
-    }).catch(err => alert('❌ Error: ' + err.message));
-  });
-
-  // ========== INIT ==========
-  // Load password from firebase so overlay works
-  db.ref('password').once('value').then(snap => {
-    if (snap.exists()) currentPassword = snap.val();
+  // Once password is loaded, enable the button
+  db.ref('password').once('value').then(() => {
+    passError.textContent = '';
+    passBtn.disabled = false;
+    passInput.focus();
   });
 </script>
 </body>
