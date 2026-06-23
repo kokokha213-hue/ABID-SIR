@@ -11,7 +11,7 @@
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <style>
         * {
             margin: 0;
@@ -29,7 +29,6 @@
             padding: 1rem;
         }
 
-        /* ===== PASSWORD OVERLAY ===== */
         #passwordOverlay {
             position: fixed;
             inset: 0;
@@ -204,21 +203,14 @@
             background: linear-gradient(to right, transparent, #1f4a6b, transparent);
         }
 
-        .login-box .register-link {
-            color: #6a8fa8;
-            font-size: 0.85rem;
+        .login-box .admin-info {
+            color: #3a6a8a;
+            font-size: 0.7rem;
             margin-top: 1rem;
+            opacity: 0.6;
         }
-        .login-box .register-link a {
+        .login-box .admin-info i {
             color: #00ccff;
-            text-decoration: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .login-box .register-link a:hover {
-            color: #66ddff;
-            text-shadow: 0 0 20px #00ccff60;
         }
 
         .loader-ring {
@@ -237,7 +229,6 @@
             }
         }
 
-        /* ===== MAIN APP ===== */
         .glass-container {
             max-width: 1300px;
             width: 100%;
@@ -569,7 +560,6 @@
 </head>
 <body>
 
-    <!-- ===== LOGIN OVERLAY ===== -->
     <div id="passwordOverlay">
         <div class="login-box">
             <div class="icon"><i class="fas fa-crown"></i></div>
@@ -592,31 +582,14 @@
             <div class="success-msg" id="passSuccess"></div>
             <div class="info-msg" id="passInfo"></div>
 
-            <div class="divider">or</div>
+            <div class="divider">🔐 Secure Access</div>
 
-            <div class="register-link">
-                New member? <a id="registerToggle">Create Account</a>
-            </div>
-            <div id="registerSection" style="display:none; margin-top:1rem;">
-                <div class="input-group">
-                    <i class="fas fa-user"></i>
-                    <input type="text" id="regNameInput" placeholder="Full name">
-                </div>
-                <div class="input-group">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" id="regEmailInput" placeholder="Email address">
-                </div>
-                <div class="input-group">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="regPassInput" placeholder="Password (min 6 chars)">
-                </div>
-                <button class="btn" id="registerBtn" style="background:linear-gradient(145deg,#1a4a6a,#0066aa);"><i class="fas fa-user-plus"></i> Create Account</button>
-                <div class="error-msg" id="regError"></div>
+            <div class="admin-info">
+                <i class="fas fa-shield-alt"></i> Authorized members only · Contact admin for access
             </div>
         </div>
     </div>
 
-    <!-- ===== MAIN APP ===== -->
     <div class="glass-container" id="mainApp" style="display:none;">
         <div class="brand-bar">
             <div class="logo"><h1><i class="fas fa-crown"></i> ABID SIR</h1></div>
@@ -657,13 +630,12 @@
 
     <script>
         // ============================================================
-        // FIREBASE CONFIG
+        // FIREBASE CONFIG - FIRESTORE + AUTH
         // ============================================================
         const firebaseConfig = {
             apiKey: "AIzaSyALnJyYqSpgZeapdNUkAKkwImgijuG935g",
             authDomain: "abid-sir-6fa1d.firebaseapp.com",
             projectId: "abid-sir-6fa1d",
-            databaseURL: "https://abid-sir-6fa1d-default-rtdb.firebaseio.com",
             storageBucket: "abid-sir-6fa1d.firebasestorage.app",
             messagingSenderId: "870139030210",
             appId: "1:870139030210:web:5237413bfcf9ba0c59a95b"
@@ -671,7 +643,10 @@
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
-        const db = firebase.database();
+        const db = firebase.firestore();
+
+        // Enable offline persistence
+        db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
 
         // ========== DOM REFS ==========
         const overlay = document.getElementById('passwordOverlay');
@@ -686,21 +661,11 @@
         const userEmail = document.getElementById('userEmail');
         const logoutBtn = document.getElementById('logoutBtn');
 
-        // Register elements
-        const registerToggle = document.getElementById('registerToggle');
-        const registerSection = document.getElementById('registerSection');
-        const regNameInput = document.getElementById('regNameInput');
-        const regEmailInput = document.getElementById('regEmailInput');
-        const regPassInput = document.getElementById('regPassInput');
-        const registerBtn = document.getElementById('registerBtn');
-        const regError = document.getElementById('regError');
-
         let isAuthorized = false;
 
         // ========== CHECK AUTH STATE ==========
         auth.onAuthStateChanged((user) => {
             if (user) {
-                // User is signed in
                 isAuthorized = true;
                 overlay.classList.add('hidden');
                 mainApp.style.display = 'block';
@@ -710,7 +675,6 @@
                 loadAllData();
                 console.log('✅ User logged in:', user.email);
             } else {
-                // User is signed out
                 overlay.classList.remove('hidden');
                 mainApp.style.display = 'none';
                 isAuthorized = false;
@@ -734,11 +698,13 @@
             passSuccess.textContent = '⏳ Signing in...';
 
             auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
+                .then(() => {
                     loaderContainer.style.display = 'none';
                     loginBtn.disabled = false;
                     passSuccess.textContent = '✅ Login successful!';
                     passError.textContent = '';
+                    emailInput.value = '';
+                    passInput.value = '';
                     setTimeout(() => {
                         passSuccess.textContent = '';
                     }, 3000);
@@ -752,63 +718,12 @@
                 });
         });
 
-        // ========== REGISTER ==========
-        registerToggle.addEventListener('click', function() {
-            if (registerSection.style.display === 'none') {
-                registerSection.style.display = 'block';
-                registerToggle.textContent = 'Back to Login';
-            } else {
-                registerSection.style.display = 'none';
-                registerToggle.textContent = 'Create Account';
-                regError.textContent = '';
-            }
+        // ========== ENTER KEY SUPPORT ==========
+        passInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') loginBtn.click();
         });
-
-        registerBtn.addEventListener('click', function() {
-            const name = regNameInput.value.trim();
-            const email = regEmailInput.value.trim();
-            const password = regPassInput.value.trim();
-
-            if (!name || !email || !password) {
-                regError.textContent = 'Please fill all fields.';
-                return;
-            }
-            if (password.length < 6) {
-                regError.textContent = 'Password must be at least 6 characters.';
-                return;
-            }
-
-            registerBtn.disabled = true;
-            regError.textContent = '⏳ Creating account...';
-
-            auth.createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // Update profile with name
-                    return userCredential.user.updateProfile({
-                        displayName: name
-                    });
-                })
-                .then(() => {
-                    registerBtn.disabled = false;
-                    regError.textContent = '';
-                    regError.style.color = '#4ade80';
-                    regError.textContent = '✅ Account created! You are now logged in.';
-                    registerSection.style.display = 'none';
-                    registerToggle.textContent = 'Create Account';
-                    // Clear register fields
-                    regNameInput.value = '';
-                    regEmailInput.value = '';
-                    regPassInput.value = '';
-                    setTimeout(() => {
-                        regError.textContent = '';
-                    }, 3000);
-                })
-                .catch((error) => {
-                    registerBtn.disabled = false;
-                    regError.textContent = '❌ ' + error.message;
-                    regError.style.color = '#ff6b6b';
-                    console.error('Register error:', error);
-                });
+        emailInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') loginBtn.click();
         });
 
         // ========== LOGOUT ==========
@@ -820,41 +735,28 @@
             });
         });
 
-        // ========== ENTER KEY SUPPORT ==========
-        passInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') loginBtn.click();
-        });
-        emailInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') loginBtn.click();
-        });
-        regPassInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') registerBtn.click();
-        });
-
-        // ========== LOAD DATA ==========
+        // ========== LOAD DATA FROM FIRESTORE ==========
         function loadAllData() {
             // Announcement
-            db.ref('announcement').on('value', (snapshot) => {
+            db.collection('content').doc('announcement').onSnapshot((doc) => {
                 const el = document.getElementById('announceText');
-                if (snapshot.exists()) {
-                    el.innerHTML = `<strong>📢</strong> ${snapshot.val()}`;
+                if (doc.exists) {
+                    const data = doc.data();
+                    el.innerHTML = `<strong>📢</strong> ${data.text || data.value || 'Welcome!'}`;
                 } else {
                     el.innerHTML = '<strong>📢</strong> Welcome to ABID SIR!';
                 }
-            });
+            }, () => {});
 
             // Files
-            db.ref('files').on('value', (snapshot) => {
+            db.collection('files').orderBy('timestamp', 'desc').limit(20).onSnapshot((snapshot) => {
                 const grid = document.getElementById('fileGrid');
                 grid.innerHTML = '';
                 let count = 0;
 
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    const files = Object.entries(data).map(([key, val]) => ({ key, ...val }));
-                    files.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
-                    files.forEach(file => {
+                if (!snapshot.empty) {
+                    snapshot.forEach(doc => {
+                        const file = doc.data();
                         const card = document.createElement('div');
                         card.className = 'file-card';
                         const label = file.label || 'PREMIUM';
@@ -863,7 +765,7 @@
                             <div class="file-label"><i class="fas fa-tag"></i> ${label}</div>
                             <h4>${file.title || 'Untitled'}</h4>
                             <div class="file-meta"><span>${file.version || 'v1'}</span> <span>${file.size || '—'}</span></div>
-                            <div class="file-download-btn" data-key="${file.key}" data-link="${fileLink}">
+                            <div class="file-download-btn" data-id="${doc.id}" data-link="${fileLink}">
                                 <i class="fas fa-download"></i> ${file.downloads || 0}
                             </div>
                             <div style="font-size:0.6rem; color:#3d6e8a; margin-top:0.2rem;">⬆️ ${file.updated || 'new'}</div>
@@ -877,13 +779,17 @@
                         btn.addEventListener('click', function() {
                             if (!isAuthorized) { alert('⛔ Access denied.'); return; }
                             const link = this.dataset.link;
-                            const key = this.dataset.key;
+                            const id = this.dataset.id;
 
-                            if (key) {
-                                db.ref(`files/${key}/downloads`).transaction(current => (current || 0) + 1);
+                            if (id) {
+                                db.collection('files').doc(id).update({
+                                    downloads: firebase.firestore.FieldValue.increment(1)
+                                }).catch(() => {});
                             }
 
-                            db.ref('counters/downloads').transaction(current => (current || 0) + 1);
+                            db.collection('counters').doc('stats').update({
+                                downloads: firebase.firestore.FieldValue.increment(1)
+                            }).catch(() => {});
 
                             if (link && link !== '#') {
                                 window.open(link, '_blank');
@@ -895,19 +801,16 @@
                 } else {
                     document.getElementById('fileCount').textContent = '0';
                 }
-            });
+            }, () => {});
 
             // Videos
-            db.ref('videos').on('value', (snapshot) => {
+            db.collection('videos').orderBy('timestamp', 'desc').limit(20).onSnapshot((snapshot) => {
                 const grid = document.getElementById('videoGrid');
                 grid.innerHTML = '';
 
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    const videos = Object.entries(data).map(([key, val]) => ({ key, ...val }));
-                    videos.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
-                    videos.forEach(vid => {
+                if (!snapshot.empty) {
+                    snapshot.forEach(doc => {
+                        const vid = doc.data();
                         const card = document.createElement('div');
                         card.className = 'video-card';
                         const videoUrl = vid.videoLink || vid.link || vid.url || '';
@@ -923,25 +826,25 @@
                         grid.appendChild(card);
                     });
                 }
-            });
+            }, () => {});
 
             // Counters
-            db.ref('counters/visitors').transaction(current => (current || 0) + 1);
-            db.ref('counters/visitors').on('value', (snapshot) => {
-                if (snapshot.exists()) {
-                    document.getElementById('visitorCounter').textContent = snapshot.val().toLocaleString();
+            db.collection('counters').doc('stats').update({
+                visitors: firebase.firestore.FieldValue.increment(1)
+            }).catch(() => {});
+
+            db.collection('counters').doc('stats').onSnapshot((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    if (data.visitors) document.getElementById('visitorCounter').textContent = data.visitors.toLocaleString();
+                    if (data.downloads) document.getElementById('downloadCounter').textContent = data.downloads.toLocaleString();
                 }
-            });
-            db.ref('counters/downloads').on('value', (snapshot) => {
-                if (snapshot.exists()) {
-                    document.getElementById('downloadCounter').textContent = snapshot.val().toLocaleString();
-                }
-            });
+            }, () => {});
         }
 
-        console.log('🔥 ABID SIR - Email & Password Authentication');
-        console.log('📧 Use your Firebase Auth credentials to login');
-        console.log('🔐 All passwords managed by Firebase Authentication');
+        console.log('🔥 ABID SIR - FIRESTORE + AUTH (REAL WORKING)');
+        console.log('📧 Admin: Add users from Firebase Console → Authentication → Add User');
+        console.log('📁 Firestore collections: content, files, videos, counters');
     </script>
 </body>
 </html>
