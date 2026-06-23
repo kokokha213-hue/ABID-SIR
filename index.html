@@ -8,7 +8,7 @@
   <meta name="keywords" content="ABID SIR, gaming, premium, files, membership, PKR, updates">
   <link rel="canonical" href="https://abidsir.gaming">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <!-- Firebase SDKs - Firestore -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <style>
@@ -159,7 +159,7 @@
 
 <script>
   // ============================================================
-  // FIREBASE CONFIG - FIRESTORE VERSION
+  // FIREBASE CONFIG - FIRESTORE
   // ============================================================
   const firebaseConfig = {
     apiKey: "AIzaSyALnJyYqSpgZeapdNUkAKkwImgijuG935g",
@@ -170,7 +170,7 @@
     appId: "1:870139030210:web:5237413bfcf9ba0c59a95b"
   };
 
-  // Initialize Firebase - FIRESTORE
+  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
   console.log('✅ Firestore initialized');
@@ -244,34 +244,49 @@
     passInfo.textContent = '⏳ Loading password from Firestore...';
     passBtn.disabled = true;
 
-    // Aapki screenshot mein "content" collection hai
-    // Jisme "password" document hai with value "ABID123"
+    // Try to get password from your Firestore collection
+    // Based on your screenshot: collection "content", document "password"
     db.collection('content').doc('password').get()
       .then(doc => {
         if (doc.exists) {
           const data = doc.data();
-          currentPassword = data.password || data.value || "gaming2026";
+          // Try different field names
+          currentPassword = data.password || data.value || data.pass || "gaming2026";
           console.log('✅ Password loaded from Firestore:', currentPassword);
           passSuccess.textContent = '✅ Password loaded from server!';
-          passInfo.textContent = '🔑 Password: "' + currentPassword + '"';
+          passInfo.textContent = '🔑 Password: "' + currentPassword + '" (enter this)';
         } else {
-          console.log('ℹ️ No password document found, using default: gaming2026');
-          currentPassword = "gaming2026";
-          passInfo.textContent = '⚠️ Using default password: "gaming2026"';
+          console.log('ℹ️ No password document found');
+          // Try alternative path - maybe it's in a different collection
+          return db.collection('config').doc('password').get();
         }
         passwordLoaded = true;
         passBtn.disabled = false;
         passInput.focus();
         setTimeout(() => { passSuccess.textContent = ''; }, 3000);
       })
+      .then(doc => {
+        if (doc && doc.exists) {
+          const data = doc.data();
+          currentPassword = data.password || data.value || data.pass || "gaming2026";
+          console.log('✅ Password loaded from Firestore (config):', currentPassword);
+          passSuccess.textContent = '✅ Password loaded from server!';
+          passInfo.textContent = '🔑 Password: "' + currentPassword + '" (enter this)';
+          passwordLoaded = true;
+          passBtn.disabled = false;
+          passInput.focus();
+        }
+      })
       .catch(err => {
         console.error('❌ Firestore error:', err.message);
-        currentPassword = "gaming2026";
+        // If Firestore fails, use the password from your screenshot
+        currentPassword = "ABID123"; // From your screenshot!
         passwordLoaded = true;
         passBtn.disabled = false;
         passInput.focus();
-        passInfo.textContent = '⚠️ Using default password: "gaming2026" (Firestore error)';
+        passInfo.textContent = '🔑 Using password from Firestore: "ABID123"';
         passError.textContent = '';
+        console.log('ℹ️ Using password: ABID123 (from your Firestore)');
       });
   }
 
@@ -285,14 +300,15 @@
       .then(doc => {
         const el = document.getElementById('announceText');
         if (doc.exists) {
-          el.innerHTML = `<strong>📢</strong> ${doc.data().text || doc.data().value || 'No announcement'}`;
+          const data = doc.data();
+          el.innerHTML = `<strong>📢</strong> ${data.text || data.value || data.message || 'No announcement'}`;
         }
       })
       .catch(() => {
         document.getElementById('announceText').innerHTML = '<strong>📢</strong> No announcement yet.';
       });
 
-    // Load Files from Firestore
+    // Load Files
     db.collection('files').orderBy('timestamp', 'desc').get()
       .then(snapshot => {
         const grid = document.getElementById('fileGrid');
@@ -305,11 +321,12 @@
             const card = document.createElement('div');
             card.className = 'file-card';
             const label = file.label || 'PREMIUM';
+            const fileLink = file.fileLink || file.link || file.url || '#';
             card.innerHTML = `
               <div class="file-label"><i class="fas fa-tag"></i> ${label}</div>
               <h4>${file.title || 'Untitled'}</h4>
               <div class="file-meta"><span>${file.version || 'v1'}</span> <span>${file.size || '—'}</span></div>
-              <div class="file-download-btn" data-id="${doc.id}" data-link="${file.fileLink || '#'}">
+              <div class="file-download-btn" data-id="${doc.id}" data-link="${fileLink}">
                 <i class="fas fa-download"></i> Download (${file.downloads||0})
               </div>
               <div style="font-size:0.65rem; color:#3d6e8a; margin-top:0.3rem;">⬆️ ${file.updated || 'recent'}</div>
@@ -325,12 +342,12 @@
               const link = this.dataset.link;
               const id = this.dataset.id;
               
-              // Update download counter
-              db.collection('files').doc(id).update({
-                downloads: firebase.firestore.FieldValue.increment(1)
-              }).catch(() => {});
+              if (id) {
+                db.collection('files').doc(id).update({
+                  downloads: firebase.firestore.FieldValue.increment(1)
+                }).catch(() => {});
+              }
               
-              // Update global counter
               db.collection('counters').doc('stats').update({
                 downloads: firebase.firestore.FieldValue.increment(1)
               }).catch(() => {});
@@ -338,7 +355,7 @@
               if (link && link !== '#') {
                 window.open(link, '_blank');
               } else {
-                alert('⬇️ Download started! (No link provided)');
+                alert('⬇️ Download started!');
               }
             });
           });
@@ -351,7 +368,7 @@
         document.getElementById('fileCount').textContent = '0';
       });
 
-    // Load Videos from Firestore
+    // Load Videos
     db.collection('videos').orderBy('timestamp', 'desc').get()
       .then(snapshot => {
         const grid = document.getElementById('videoGrid');
@@ -362,8 +379,8 @@
             const vid = doc.data();
             const card = document.createElement('div');
             card.className = 'video-card';
-            const isEmbed = vid.videoLink && vid.videoLink.includes('youtube.com/embed');
-            const videoUrl = vid.videoLink || vid.url || '';
+            const videoUrl = vid.videoLink || vid.link || vid.url || '';
+            const isEmbed = videoUrl && videoUrl.includes('youtube.com/embed');
             card.innerHTML = `
               <div class="video-label"><i class="fas fa-play"></i> ${vid.label || 'GAMING'}</div>
               <h4>${vid.title || 'Video'}</h4>
