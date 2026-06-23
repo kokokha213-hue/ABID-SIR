@@ -14,11 +14,9 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
   <style>
-    /* ===== RESET & GLOBAL ===== */
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif; }
     body { background: #0b0d12; color: #e3e9f0; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 1rem; }
 
-    /* ===== PASSWORD OVERLAY ===== */
     #passwordOverlay {
       position: fixed; inset: 0; z-index: 9999;
       background: #080b12;
@@ -49,6 +47,7 @@
     .password-box .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     .password-box .error-msg { color: #ff6b6b; margin-top: 0.8rem; font-weight: 500; min-height: 1.8rem; }
     .password-box .success-msg { color: #4ade80; margin-top: 0.8rem; font-weight: 500; min-height: 1.8rem; }
+    .password-box .info-msg { color: #fbbf24; margin-top: 0.8rem; font-weight: 500; min-height: 1.8rem; }
     .loader-ring {
       display: inline-block; width: 40px; height: 40px; margin: 0.5rem auto;
       border: 4px solid #1a3850; border-top: 4px solid #00ccff; border-radius: 50%;
@@ -56,7 +55,6 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ===== MAIN APP ===== */
     .glass-container {
       max-width: 1300px; width: 100%;
       background: rgba(10, 14, 23, 0.85); backdrop-filter: blur(4px);
@@ -114,7 +112,6 @@
 </head>
 <body>
 
-<!-- ========== PASSWORD OVERLAY ========== -->
 <div id="passwordOverlay">
   <div class="password-box">
     <h2><i class="fas fa-lock"></i> ABID SIR</h2>
@@ -124,19 +121,16 @@
     <div id="loaderContainer" style="display:none;"><div class="loader-ring"></div></div>
     <div class="error-msg" id="passError"></div>
     <div class="success-msg" id="passSuccess"></div>
+    <div class="info-msg" id="passInfo"></div>
   </div>
 </div>
 
-<!-- ========== MAIN APP ========== -->
 <div class="glass-container" id="mainApp" style="display:none;">
-
-  <!-- Brand -->
   <div class="brand-bar">
     <div class="logo"><h1><i class="fas fa-crown"></i> ABID SIR</h1></div>
     <div class="membership-badge"><i class="fas fa-star"></i> 2000 PKR / month</div>
   </div>
 
-  <!-- Banner -->
   <div class="hero-banner">
     <div class="hero-text">
       <h2>🔥 <span>Premium</span> Gaming Vault</h2>
@@ -145,24 +139,20 @@
     <a href="#" class="cta-whatsapp"><i class="fab fa-whatsapp"></i> Contact</a>
   </div>
 
-  <!-- Stats -->
   <div class="stats-grid">
     <div class="stat-item"><i class="fas fa-download"></i> Downloads <span class="stat-number" id="downloadCounter">0</span></div>
     <div class="stat-item"><i class="fas fa-eye"></i> Visitors <span class="stat-number" id="visitorCounter">0</span></div>
     <div class="stat-item"><i class="fas fa-file-archive"></i> Files <span class="stat-number" id="fileCount">0</span></div>
   </div>
 
-  <!-- Announcement -->
   <div class="announce-box">
     <i class="fas fa-bullhorn"></i>
     <div class="announce-text" id="announceText"><strong>📢</strong> Loading announcements...</div>
   </div>
 
-  <!-- File Section -->
   <div class="section-title"><h3><i class="fas fa-folder-open" style="margin-right:10px;"></i> Game Files</h3></div>
   <div class="file-grid" id="fileGrid"></div>
 
-  <!-- Video Section -->
   <div class="section-title"><h3><i class="fas fa-video" style="margin-right:10px;"></i> Gaming Videos</h3></div>
   <div class="video-grid" id="videoGrid"></div>
 
@@ -171,35 +161,37 @@
 
 <script>
   // ============================================================
-  // FIREBASE CONFIG - URL TYPO FIXED (6fald → 6fa1d)
+  // FIREBASE CONFIG - CORRECTED URL
   // ============================================================
   const firebaseConfig = {
     apiKey: "AIzaSyALnJyYqSpgZeapdNUkAKkwImgijuG935g",
     authDomain: "abid-sir-6fa1d.firebaseapp.com",
     projectId: "abid-sir-6fa1d",
-    databaseURL: "https://abid-sir-6fa1d-default-rtdb.firebaseio.com",  // ✅ FIXED: 6fa1d (number 1, not letter L)
+    databaseURL: "https://abid-sir-6fa1d-default-rtdb.firebaseio.com",
     storageBucket: "abid-sir-6fa1d.firebasestorage.app",
     messagingSenderId: "870139030210",
     appId: "1:870139030210:web:5237413bfcf9ba0c59a95b"
   };
 
-  // Initialize Firebase with error handling
+  // Initialize Firebase
   let db;
+  let firebaseReady = false;
+  
   try {
     firebase.initializeApp(firebaseConfig);
     db = firebase.database();
-    console.log('✅ Firebase initialized successfully with URL:', firebaseConfig.databaseURL);
+    firebaseReady = true;
+    console.log('✅ Firebase initialized');
   } catch (e) {
     console.error('❌ Firebase init error:', e);
-    alert('Firebase initialization failed. Please check console for details.');
+    document.getElementById('passInfo').textContent = '⚠️ Using offline mode (Firebase unavailable)';
   }
 
   // ========== Password state ==========
   let currentPassword = "gaming2026";
   let passwordLoaded = false;
   let isAuthorized = false;
-  let retryCount = 0;
-  const MAX_RETRIES = 3;
+  let usingFallback = false;
 
   // ========== DOM REFS ==========
   const overlay = document.getElementById('passwordOverlay');
@@ -208,22 +200,18 @@
   const passBtn = document.getElementById('passBtn');
   const passError = document.getElementById('passError');
   const passSuccess = document.getElementById('passSuccess');
+  const passInfo = document.getElementById('passInfo');
   const loaderContainer = document.getElementById('loaderContainer');
 
   // ========== VERIFY FUNCTION ==========
   function verifyPassword(entered) {
-    if (!passwordLoaded) {
-      passError.textContent = "⏳ Loading key from server...";
-      return false;
-    }
-
     if (entered === currentPassword) {
       isAuthorized = true;
       overlay.classList.add('hidden');
       mainApp.style.display = 'block';
       passError.textContent = '';
       passSuccess.textContent = '';
-      loadAllData();
+      if (firebaseReady) loadAllData();
       return true;
     } else {
       passError.textContent = "❌ Incorrect Key, Please Try Again.";
@@ -240,17 +228,12 @@
       return;
     }
 
-    if (!passwordLoaded) {
-      passError.textContent = "⏳ System loading password...";
-      return;
-    }
-
     passBtn.disabled = true;
     loaderContainer.style.display = 'block';
     passError.textContent = '⏳ Verifying...';
     passSuccess.textContent = '';
 
-    const delay = 3000 + Math.random() * 2000;
+    const delay = 2000 + Math.random() * 1000;
     setTimeout(() => {
       loaderContainer.style.display = 'none';
       passBtn.disabled = false;
@@ -266,79 +249,57 @@
     if (e.key === 'Enter') passBtn.click();
   });
 
-  // ========== LOAD PASSWORD FROM FIREBASE WITH RETRY ==========
+  // ========== LOAD PASSWORD FROM FIREBASE ==========
   function loadPasswordFromFirebase() {
-    if (!db) {
-      passError.textContent = '❌ Firebase not initialized. Using default password.';
-      currentPassword = "gaming2026";
+    if (!firebaseReady) {
+      passInfo.textContent = '⚠️ Using offline mode (Firebase unavailable)';
       passwordLoaded = true;
+      currentPassword = "gaming2026";
       passBtn.disabled = false;
       passInput.focus();
       return;
     }
 
-    passError.textContent = '⏳ Connecting to Firebase...';
-    passSuccess.textContent = '';
+    passInfo.textContent = '⏳ Connecting to Firebase...';
     passBtn.disabled = true;
-
-    // Server slow timeout message
-    let timeoutId = setTimeout(() => {
-      if (!passwordLoaded) {
-        passError.textContent = "⚠️ Server slow, please wait...";
-      }
-    }, 5000);
 
     db.ref('password').once('value')
       .then(snap => {
-        clearTimeout(timeoutId);
         if (snap.exists()) {
           currentPassword = snap.val();
           console.log('✅ Password loaded from Firebase:', currentPassword);
           passSuccess.textContent = '✅ Connected to Firebase!';
         } else {
-          console.log('ℹ️ No password found in Firebase, creating default.');
+          console.log('ℹ️ No password in Firebase, using default.');
           currentPassword = "gaming2026";
-          return db.ref('password').set("gaming2026").then(() => {
-            passSuccess.textContent = '✅ Default password created!';
-          }).catch(err => {
-            console.warn('Could not save default password:', err);
-          });
+          // Try to save default
+          db.ref('password').set("gaming2026").catch(() => {});
         }
-      })
-      .then(() => {
         passwordLoaded = true;
-        passError.textContent = '';
+        passInfo.textContent = '';
         passBtn.disabled = false;
         passInput.focus();
-        setTimeout(() => {
-          passSuccess.textContent = '';
-        }, 3000);
+        setTimeout(() => { passSuccess.textContent = ''; }, 3000);
       })
       .catch(err => {
-        clearTimeout(timeoutId);
-        console.error('❌ Firebase error:', err);
-        
-        if (retryCount < MAX_RETRIES) {
-          retryCount++;
-          passError.textContent = `⚠️ Retry ${retryCount}/${MAX_RETRIES}...`;
-          setTimeout(loadPasswordFromFirebase, 2000);
-        } else {
-          currentPassword = "gaming2026";
-          passwordLoaded = true;
-          passError.textContent = '⚠️ Using default key (Firebase unavailable)';
-          passBtn.disabled = false;
-          passInput.focus();
-        }
+        console.warn('⚠️ Firebase permission error:', err.message);
+        // Use fallback password
+        currentPassword = "gaming2026";
+        passwordLoaded = true;
+        passBtn.disabled = false;
+        passInput.focus();
+        passInfo.textContent = '⚠️ Using local password (Firebase read denied)';
+        passError.textContent = '';
       });
   }
 
-  // Start loading password
+  // Start loading
   loadPasswordFromFirebase();
 
   // ========== LOAD DATA FROM FIREBASE ==========
   function loadAllData() {
-    if (!db) return;
-    
+    if (!firebaseReady) return;
+
     // Announcement
     db.ref('announcement').on('value', snap => {
       const el = document.getElementById('announceText');
@@ -363,7 +324,7 @@
             <div class="file-label"><i class="fas fa-tag"></i> ${label}</div>
             <h4>${file.title || 'Untitled'}</h4>
             <div class="file-meta"><span>${file.version || 'v1'}</span> <span>${file.size || '—'}</span></div>
-            <div class="file-download-btn" data-key="${file.key}" data-dl="${file.downloads||0}">
+            <div class="file-download-btn" data-key="${file.key}">
               <i class="fas fa-download"></i> Download (${file.downloads||0})
             </div>
             <div style="font-size:0.65rem; color:#3d6e8a; margin-top:0.3rem;">⬆️ ${file.updated || 'recent'}</div>
@@ -377,14 +338,12 @@
           btn.addEventListener('click', function() {
             if (!isAuthorized) { alert('⛔ Access denied.'); return; }
             const key = this.dataset.key;
-            if (!key) { alert('❌ File key missing.'); return; }
+            if (!key) return;
             
             const fileRef = db.ref(`files/${key}/downloads`);
             fileRef.transaction(current => (current || 0) + 1);
-            
             const counterRef = db.ref('counters/downloads');
             counterRef.transaction(current => (current || 0) + 1);
-            
             alert('⬇️ Download started!');
           });
         });
