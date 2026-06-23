@@ -10,9 +10,10 @@
   <link rel="canonical" href="https://abidsir.gaming">
   <!-- Font & Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <!-- Firebase SDKs -->
+  <!-- Firebase SDKs (compat for easy integration) -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
   <style>
     /* ===== RESET & GLOBAL ===== */
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif; }
@@ -192,7 +193,9 @@
 </div>
 
 <script>
-  // ========== FIREBASE CONFIG ==========
+  // ============================================================
+  // YOUR FIREBASE CONFIG (EXACTLY AS PROVIDED)
+  // ============================================================
   const firebaseConfig = {
     apiKey: "AIzaSyALnJyYqSpgZeapdNUkAKkwImgijuG935g",
     authDomain: "abid-sir-6fa1d.firebaseapp.com",
@@ -202,7 +205,10 @@
     appId: "1:870139030210:web:5237413bfcf9ba0c59a95b",
     measurementId: "G-B2WJW1REN1"
   };
+
+  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
+  const analytics = firebase.analytics();
   const db = firebase.database();
 
   // ========== GLOBALS ==========
@@ -227,9 +233,12 @@
       mainApp.style.display = 'block';
       passError.textContent = '';
       loadAllData();
+      // Log successful login
+      analytics.logEvent('login', { method: 'password' });
       return true;
     } else {
       passError.textContent = '❌ Incorrect Key, Please Try Again.';
+      analytics.logEvent('login_failed', { reason: 'wrong_password' });
       return false;
     }
   }
@@ -277,7 +286,6 @@
       if (snap.exists()) {
         const data = snap.val();
         filesCache = Object.entries(data).map(([key, val]) => ({ key, ...val }));
-        // sort by timestamp desc
         filesCache.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
         filesCache.forEach(file => {
           const card = document.createElement('div');
@@ -308,6 +316,7 @@
             let counterSpan = document.getElementById('downloadCounter');
             let val = parseInt(counterSpan.textContent.replace(/,/g,'')) || 0;
             counterSpan.textContent = (val + 1).toLocaleString();
+            analytics.logEvent('file_download', { file_key: key });
           });
         });
       } else {
@@ -357,6 +366,7 @@
     db.ref('password').set(newPass).then(() => {
       currentPassword = newPass;
       alert('✅ Password updated in Firebase!');
+      analytics.logEvent('password_updated');
     }).catch(err => alert('❌ Firebase error: ' + err.message));
   });
 
@@ -380,9 +390,9 @@
     const ref = db.ref('files').push();
     ref.set(newFile).then(() => {
       alert('✅ File uploaded to Firebase!');
-      // increment file count
       let count = parseInt(document.getElementById('fileCount').textContent) || 0;
       document.getElementById('fileCount').textContent = count + 1;
+      analytics.logEvent('file_uploaded', { file_name: title });
     }).catch(err => alert('❌ Error: ' + err.message));
     this.value = '';
   });
@@ -401,6 +411,7 @@
     };
     db.ref('videos').push().set(newVideo).then(() => {
       alert('✅ Video added!');
+      analytics.logEvent('video_added', { video_title: title });
     }).catch(err => alert('❌ Error: ' + err.message));
   });
 
@@ -411,13 +422,12 @@
     db.ref('announcement').set(text).then(() => {
       alert('✅ Announcement updated!');
       document.getElementById('announceInput').value = '';
+      analytics.logEvent('announcement_updated');
     }).catch(err => alert('❌ Error: ' + err.message));
   });
 
-  // ========== INIT: check if already authorized? (for demo, show overlay) ==========
-  // We always show overlay first. 
-  // But if password is already known from firebase, we still require entry.
-  // load password from firebase so overlay works.
+  // ========== INIT ==========
+  // Load password from firebase so overlay works
   db.ref('password').once('value').then(snap => {
     if (snap.exists()) currentPassword = snap.val();
   });
