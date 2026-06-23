@@ -13,7 +13,6 @@
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
   <style>
     /* ===== RESET & GLOBAL ===== */
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif; }
@@ -169,20 +168,22 @@
 </div>
 
 <script>
- // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyALnJyYqSpgZeapdNUkAKkwImgijuG935g",
-  authDomain: "abid-sir-6fa1d.firebaseapp.com",
-  projectId: "abid-sir-6fa1d",
-  storageBucket: "abid-sir-6fa1d.firebasestorage.app",
-  messagingSenderId: "870139030210",
-  appId: "1:870139030210:web:5237413bfcf9ba0c59a95b",
-  measurementId: "G-B2WJW1REN1"
-};
+  // ============================================================
+  // FIREBASE CONFIG WITH CORRECT databaseURL
+  // ============================================================
+  const firebaseConfig = {
+    apiKey: "AIzaSyALnJyYqSpgZeapdNUkAKkwImgijuG935g",
+    authDomain: "abid-sir-6fa1d.firebaseapp.com",
+    projectId: "abid-sir-6fa1d",
+    databaseURL: "https://abid-sir-6fa1d-default-rtdb.firebaseio.com",
+    storageBucket: "abid-sir-6fa1d.firebasestorage.app",
+    messagingSenderId: "870139030210",
+    appId: "1:870139030210:web:5237413bfcf9ba0c59a95b"
+    // ❌ ANALYTICS REMOVED - fixes loading issues
+  };
 
-  // Initialize Firebase
+  // Initialize Firebase (NO analytics)
   firebase.initializeApp(firebaseConfig);
-  const analytics = firebase.analytics();
   const db = firebase.database();
 
   // ========== Password state ==========
@@ -211,11 +212,9 @@ const firebaseConfig = {
       mainApp.style.display = 'block';
       passError.textContent = '';
       loadAllData();
-      analytics.logEvent('login', { method: 'password' });
       return true;
     } else {
       passError.textContent = "❌ Incorrect Key, Please Try Again.";
-      analytics.logEvent('login_failed', { reason: 'wrong_password' });
       return false;
     }
   }
@@ -254,9 +253,15 @@ const firebaseConfig = {
   });
 
   // ========== LOAD PASSWORD FROM FIREBASE ==========
-  // FIXED: Proper error handling and fallback
   passError.textContent = '⏳ Connecting to Firebase...';
   passBtn.disabled = true;
+
+  // FIX: Server slow timeout message
+  setTimeout(() => {
+    if (!passwordLoaded) {
+      passError.textContent = "⚠️ Server slow, please wait...";
+    }
+  }, 5000);
 
   db.ref('password').once('value')
     .then(snap => {
@@ -266,7 +271,6 @@ const firebaseConfig = {
       } else {
         console.log('ℹ️ No password found in Firebase, using default.');
         currentPassword = "gaming2026";
-        // Save default to Firebase for future
         db.ref('password').set("gaming2026").catch(err => {
           console.warn('Could not save default password:', err);
         });
@@ -278,7 +282,6 @@ const firebaseConfig = {
     })
     .catch(err => {
       console.error('❌ Firebase error loading password:', err);
-      // Fallback: allow with default password
       currentPassword = "gaming2026";
       passwordLoaded = true;
       passError.textContent = '⚠️ Using default key (Firebase error)';
@@ -322,17 +325,23 @@ const firebaseConfig = {
         });
         document.getElementById('fileCount').textContent = count;
 
+        // FIX: Download button with null key protection and single counter
         document.querySelectorAll('.file-download-btn').forEach(btn => {
           btn.addEventListener('click', function() {
             if (!isAuthorized) { alert('⛔ Access denied.'); return; }
             const key = this.dataset.key;
-            const ref = db.ref(`files/${key}/downloads`);
-            ref.transaction(current => (current || 0) + 1);
+            // FIX: Null key protection
+            if (!key) { alert('❌ File key missing.'); return; }
+            
+            // FIX: Only update Firebase counter (no local duplication)
+            const fileRef = db.ref(`files/${key}/downloads`);
+            fileRef.transaction(current => (current || 0) + 1);
+            
+            // Also update global download counter (only for display)
+            const counterRef = db.ref('counters/downloads');
+            counterRef.transaction(current => (current || 0) + 1);
+            
             alert('⬇️ Download started!');
-            let counterSpan = document.getElementById('downloadCounter');
-            let val = parseInt(counterSpan.textContent.replace(/,/g,'')) || 0;
-            counterSpan.textContent = (val + 1).toLocaleString();
-            analytics.logEvent('file_download', { file_key: key });
           });
         });
       } else {
@@ -364,7 +373,7 @@ const firebaseConfig = {
       }
     });
 
-    // Counters
+    // Counters (visitor & download) - SINGLE SOURCE OF TRUTH
     db.ref('counters/visitors').transaction(current => (current || 0) + 1);
     db.ref('counters/visitors').on('value', snap => {
       if (snap.exists()) document.getElementById('visitorCounter').textContent = snap.val().toLocaleString();
