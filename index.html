@@ -48,6 +48,7 @@
     .password-box .btn:hover { background: #0080cc; transform: scale(1.02); }
     .password-box .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     .password-box .error-msg { color: #ff6b6b; margin-top: 0.8rem; font-weight: 500; min-height: 1.8rem; }
+    .password-box .success-msg { color: #4ade80; margin-top: 0.8rem; font-weight: 500; min-height: 1.8rem; }
     .loader-ring {
       display: inline-block; width: 40px; height: 40px; margin: 0.5rem auto;
       border: 4px solid #1a3850; border-top: 4px solid #00ccff; border-radius: 50%;
@@ -122,6 +123,7 @@
     <button class="btn" id="passBtn"><i class="fas fa-key"></i> Unlock</button>
     <div id="loaderContainer" style="display:none;"><div class="loader-ring"></div></div>
     <div class="error-msg" id="passError"></div>
+    <div class="success-msg" id="passSuccess"></div>
   </div>
 </div>
 
@@ -169,20 +171,19 @@
 
 <script>
   // ============================================================
-  // FIREBASE CONFIG WITH CORRECT databaseURL
+  // FIREBASE CONFIG - FULLY FIXED WITH CORRECT URL
   // ============================================================
   const firebaseConfig = {
     apiKey: "AIzaSyALnJyYqSpgZeapdNUkAKkwImgijuG935g",
     authDomain: "abid-sir-6fa1d.firebaseapp.com",
     projectId: "abid-sir-6fa1d",
-    databaseURL: "https://abid-sir-6fa1d-default-rtdb.firebaseio.com",
+    databaseURL: "https://abid-sir-6fa1d-default-rtdb.firebaseio.com/", // ✅ FULLY FIXED
     storageBucket: "abid-sir-6fa1d.firebasestorage.app",
     messagingSenderId: "870139030210",
     appId: "1:870139030210:web:5237413bfcf9ba0c59a95b"
-    // ❌ ANALYTICS REMOVED - fixes loading issues
   };
 
-  // Initialize Firebase (NO analytics)
+  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
@@ -190,6 +191,8 @@
   let currentPassword = null;
   let passwordLoaded = false;
   let isAuthorized = false;
+  let retryCount = 0;
+  const MAX_RETRIES = 3;
 
   // ========== DOM REFS ==========
   const overlay = document.getElementById('passwordOverlay');
@@ -197,6 +200,7 @@
   const passInput = document.getElementById('passInput');
   const passBtn = document.getElementById('passBtn');
   const passError = document.getElementById('passError');
+  const passSuccess = document.getElementById('passSuccess');
   const loaderContainer = document.getElementById('loaderContainer');
 
   // ========== VERIFY FUNCTION ==========
@@ -211,10 +215,12 @@
       overlay.classList.add('hidden');
       mainApp.style.display = 'block';
       passError.textContent = '';
+      passSuccess.textContent = '';
       loadAllData();
       return true;
     } else {
       passError.textContent = "❌ Incorrect Key, Please Try Again.";
+      passSuccess.textContent = '';
       return false;
     }
   }
@@ -235,6 +241,7 @@
     passBtn.disabled = true;
     loaderContainer.style.display = 'block';
     passError.textContent = '⏳ Verifying...';
+    passSuccess.textContent = '';
 
     const delay = 3000 + Math.random() * 2000;
     setTimeout(() => {
@@ -252,42 +259,66 @@
     if (e.key === 'Enter') passBtn.click();
   });
 
-  // ========== LOAD PASSWORD FROM FIREBASE ==========
-  passError.textContent = '⏳ Connecting to Firebase...';
-  passBtn.disabled = true;
+  // ========== LOAD PASSWORD FROM FIREBASE WITH RETRY ==========
+  function loadPasswordFromFirebase() {
+    passError.textContent = '⏳ Connecting to Firebase...';
+    passSuccess.textContent = '';
+    passBtn.disabled = true;
 
-  // FIX: Server slow timeout message
-  setTimeout(() => {
-    if (!passwordLoaded) {
-      passError.textContent = "⚠️ Server slow, please wait...";
-    }
-  }, 5000);
-
-  db.ref('password').once('value')
-    .then(snap => {
-      if (snap.exists()) {
-        currentPassword = snap.val();
-        console.log('✅ Password loaded from Firebase:', currentPassword);
-      } else {
-        console.log('ℹ️ No password found in Firebase, using default.');
-        currentPassword = "gaming2026";
-        db.ref('password').set("gaming2026").catch(err => {
-          console.warn('Could not save default password:', err);
-        });
+    // Server slow timeout message
+    let timeoutId = setTimeout(() => {
+      if (!passwordLoaded) {
+        passError.textContent = "⚠️ Server slow, please wait...";
       }
-      passwordLoaded = true;
-      passError.textContent = '';
-      passBtn.disabled = false;
-      passInput.focus();
-    })
-    .catch(err => {
-      console.error('❌ Firebase error loading password:', err);
-      currentPassword = "gaming2026";
-      passwordLoaded = true;
-      passError.textContent = '⚠️ Using default key (Firebase error)';
-      passBtn.disabled = false;
-      passInput.focus();
-    });
+    }, 5000);
+
+    db.ref('password').once('value')
+      .then(snap => {
+        clearTimeout(timeoutId);
+        if (snap.exists()) {
+          currentPassword = snap.val();
+          console.log('✅ Password loaded from Firebase:', currentPassword);
+          passSuccess.textContent = '✅ Connected to Firebase!';
+        } else {
+          console.log('ℹ️ No password found in Firebase, creating default.');
+          currentPassword = "gaming2026";
+          // Save default to Firebase
+          return db.ref('password').set("gaming2026").then(() => {
+            passSuccess.textContent = '✅ Default password created!';
+          });
+        }
+      })
+      .then(() => {
+        passwordLoaded = true;
+        passError.textContent = '';
+        passBtn.disabled = false;
+        passInput.focus();
+        // Clear success message after 2 seconds
+        setTimeout(() => {
+          passSuccess.textContent = '';
+        }, 3000);
+      })
+      .catch(err => {
+        clearTimeout(timeoutId);
+        console.error('❌ Firebase error:', err);
+        
+        if (retryCount < MAX_RETRIES) {
+          retryCount++;
+          passError.textContent = `⚠️ Retry ${retryCount}/${MAX_RETRIES}...`;
+          setTimeout(loadPasswordFromFirebase, 2000);
+        } else {
+          // Fallback: allow with default password
+          currentPassword = "gaming2026";
+          passwordLoaded = true;
+          passError.textContent = '⚠️ Using default key (Firebase unavailable)';
+          passBtn.disabled = false;
+          passInput.focus();
+        }
+      });
+  }
+
+  // Start loading password
+  loadPasswordFromFirebase();
 
   // ========== LOAD DATA FROM FIREBASE ==========
   function loadAllData() {
@@ -325,19 +356,18 @@
         });
         document.getElementById('fileCount').textContent = count;
 
-        // FIX: Download button with null key protection and single counter
+        // Download button handler
         document.querySelectorAll('.file-download-btn').forEach(btn => {
           btn.addEventListener('click', function() {
             if (!isAuthorized) { alert('⛔ Access denied.'); return; }
             const key = this.dataset.key;
-            // FIX: Null key protection
             if (!key) { alert('❌ File key missing.'); return; }
             
-            // FIX: Only update Firebase counter (no local duplication)
+            // Update file download counter
             const fileRef = db.ref(`files/${key}/downloads`);
             fileRef.transaction(current => (current || 0) + 1);
             
-            // Also update global download counter (only for display)
+            // Update global download counter
             const counterRef = db.ref('counters/downloads');
             counterRef.transaction(current => (current || 0) + 1);
             
@@ -373,7 +403,7 @@
       }
     });
 
-    // Counters (visitor & download) - SINGLE SOURCE OF TRUTH
+    // Counters (visitor & download)
     db.ref('counters/visitors').transaction(current => (current || 0) + 1);
     db.ref('counters/visitors').on('value', snap => {
       if (snap.exists()) document.getElementById('visitorCounter').textContent = snap.val().toLocaleString();
