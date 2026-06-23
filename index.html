@@ -574,7 +574,7 @@
             border-color: #ff6b6b;
         }
 
-        /* Loading screen while checking auth state */
+        /* Loading screen */
         .auth-loading {
             position: fixed;
             inset: 0;
@@ -651,7 +651,7 @@
     <!-- ===== AUTH LOADING SCREEN ===== -->
     <div class="auth-loading" id="authLoading">
         <div class="loader-ring"></div>
-        <p>🔐 Verifying session...</p>
+        <p>🔐 Loading...</p>
     </div>
 
     <!-- ===== LOGIN OVERLAY ===== -->
@@ -772,7 +772,6 @@
         const eyeIcon = document.getElementById('eyeIcon');
 
         let isAuthorized = false;
-        let authChecked = false;
 
         // ========== LOAD SAVED EMAIL ==========
         const savedEmail = localStorage.getItem('savedEmail');
@@ -796,31 +795,31 @@
             }
         });
 
-        // ========== CHECK AUTH STATE (IMPROVED) ==========
+        // ========== CHECK AUTH STATE - NO AUTO-LOGIN ==========
+        // We only check if user is already logged in to show logout button
+        // But we ALWAYS show login screen first
         auth.onAuthStateChanged((user) => {
-            authChecked = true;
             authLoading.classList.add('hidden');
 
             if (user) {
-                // ✅ User already logged in - Auto login!
-                isAuthorized = true;
-                overlay.classList.add('hidden');
-                mainApp.style.display = 'block';
-                userEmail.textContent = user.email || 'User';
-                passError.textContent = '';
-                passSuccess.textContent = '✅ Welcome back, ' + (user.displayName || user.email) + '!';
-                loadAllData();
-                console.log('✅ Auto-login successful:', user.email);
-                setTimeout(() => {
-                    passSuccess.textContent = '';
-                }, 3000);
+                // User is logged in, but we still show login screen
+                // Only auto-login if user came from a page refresh
+                // For normal behavior, we show login screen always
+                console.log('👤 User is logged in:', user.email);
+                
+                // We don't auto-login - user must click login button
+                // But we pre-fill email if remembered
+                if (savedEmail) {
+                    emailInput.value = savedEmail;
+                }
             } else {
-                // ❌ User not logged in - Show login page
-                overlay.classList.remove('hidden');
-                mainApp.style.display = 'none';
-                isAuthorized = false;
                 console.log('👤 User not logged in');
             }
+            
+            // Always show login screen first
+            overlay.classList.remove('hidden');
+            mainApp.style.display = 'none';
+            isAuthorized = false;
         });
 
         // ========== LOGIN ==========
@@ -837,6 +836,7 @@
             loaderContainer.style.display = 'block';
             passError.textContent = '';
             passSuccess.textContent = '⏳ Signing in...';
+            passInfo.textContent = '';
 
             auth.signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
@@ -849,10 +849,22 @@
 
                     loaderContainer.style.display = 'none';
                     loginBtn.disabled = false;
+                    
+                    // Login successful - show main app
+                    isAuthorized = true;
+                    overlay.classList.add('hidden');
+                    mainApp.style.display = 'block';
+                    userEmail.textContent = userCredential.user.email || 'User';
                     passSuccess.textContent = '✅ Login successful!';
                     passError.textContent = '';
+                    passInfo.textContent = '';
+                    
+                    // Load data
+                    loadAllData();
+                    
                     emailInput.value = '';
                     passInput.value = '';
+                    
                     setTimeout(() => {
                         passSuccess.textContent = '';
                     }, 3000);
@@ -885,6 +897,10 @@
                     overlay.classList.remove('hidden');
                     mainApp.style.display = 'none';
                     isAuthorized = false;
+                    passSuccess.textContent = '';
+                    passError.textContent = '';
+                    passInfo.textContent = '';
+                    userEmail.textContent = 'User';
                 })
                 .catch((error) => {
                     console.error('Logout error:', error);
@@ -998,9 +1014,9 @@
             }, () => {});
         }
 
-        console.log('🔥 ABID SIR - AUTO-LOGIN ENABLED');
-        console.log('✅ Ek baar login karo, page reload ya browser close/open karne par bhi login rahega');
-        console.log('🚪 Logout karne par hi login page aayega');
+        console.log('🔥 ABID SIR - NO AUTO-LOGIN');
+        console.log('🔐 Har baar login karna parega');
+        console.log('🚪 Logout karne par login page aayega');
         console.log('📧 Admin: Add users from Firebase Console → Authentication → Add User');
     </script>
 </body>
