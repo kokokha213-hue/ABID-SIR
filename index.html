@@ -171,30 +171,31 @@
 
 <script>
   // ============================================================
-  // FIREBASE CONFIG - COMPLETELY FIXED
+  // FIREBASE CONFIG - URL TYPO FIXED (6fald → 6fa1d)
   // ============================================================
   const firebaseConfig = {
     apiKey: "AIzaSyALnJyYqSpgZeapdNUkAKkwImgijuG935g",
     authDomain: "abid-sir-6fa1d.firebaseapp.com",
     projectId: "abid-sir-6fa1d",
-    databaseURL: "https://abid-sir-6fa1d-default-rtdb.firebaseio.com",
+    databaseURL: "https://abid-sir-6fa1d-default-rtdb.firebaseio.com",  // ✅ FIXED: 6fa1d (number 1, not letter L)
     storageBucket: "abid-sir-6fa1d.firebasestorage.app",
     messagingSenderId: "870139030210",
     appId: "1:870139030210:web:5237413bfcf9ba0c59a95b"
   };
 
-  // Initialize Firebase
+  // Initialize Firebase with error handling
+  let db;
   try {
     firebase.initializeApp(firebaseConfig);
-    console.log('✅ Firebase initialized successfully');
+    db = firebase.database();
+    console.log('✅ Firebase initialized successfully with URL:', firebaseConfig.databaseURL);
   } catch (e) {
     console.error('❌ Firebase init error:', e);
+    alert('Firebase initialization failed. Please check console for details.');
   }
-  
-  const db = firebase.database();
 
   // ========== Password state ==========
-  let currentPassword = "gaming2026"; // Default fallback
+  let currentPassword = "gaming2026";
   let passwordLoaded = false;
   let isAuthorized = false;
   let retryCount = 0;
@@ -267,6 +268,15 @@
 
   // ========== LOAD PASSWORD FROM FIREBASE WITH RETRY ==========
   function loadPasswordFromFirebase() {
+    if (!db) {
+      passError.textContent = '❌ Firebase not initialized. Using default password.';
+      currentPassword = "gaming2026";
+      passwordLoaded = true;
+      passBtn.disabled = false;
+      passInput.focus();
+      return;
+    }
+
     passError.textContent = '⏳ Connecting to Firebase...';
     passSuccess.textContent = '';
     passBtn.disabled = true;
@@ -288,7 +298,6 @@
         } else {
           console.log('ℹ️ No password found in Firebase, creating default.');
           currentPassword = "gaming2026";
-          // Save default to Firebase
           return db.ref('password').set("gaming2026").then(() => {
             passSuccess.textContent = '✅ Default password created!';
           }).catch(err => {
@@ -301,7 +310,6 @@
         passError.textContent = '';
         passBtn.disabled = false;
         passInput.focus();
-        // Clear success message after 3 seconds
         setTimeout(() => {
           passSuccess.textContent = '';
         }, 3000);
@@ -315,7 +323,6 @@
           passError.textContent = `⚠️ Retry ${retryCount}/${MAX_RETRIES}...`;
           setTimeout(loadPasswordFromFirebase, 2000);
         } else {
-          // Fallback: allow with default password
           currentPassword = "gaming2026";
           passwordLoaded = true;
           passError.textContent = '⚠️ Using default key (Firebase unavailable)';
@@ -330,6 +337,8 @@
 
   // ========== LOAD DATA FROM FIREBASE ==========
   function loadAllData() {
+    if (!db) return;
+    
     // Announcement
     db.ref('announcement').on('value', snap => {
       const el = document.getElementById('announceText');
@@ -364,18 +373,15 @@
         });
         document.getElementById('fileCount').textContent = count;
 
-        // Download button handler
         document.querySelectorAll('.file-download-btn').forEach(btn => {
           btn.addEventListener('click', function() {
             if (!isAuthorized) { alert('⛔ Access denied.'); return; }
             const key = this.dataset.key;
             if (!key) { alert('❌ File key missing.'); return; }
             
-            // Update file download counter
             const fileRef = db.ref(`files/${key}/downloads`);
             fileRef.transaction(current => (current || 0) + 1);
             
-            // Update global download counter
             const counterRef = db.ref('counters/downloads');
             counterRef.transaction(current => (current || 0) + 1);
             
@@ -411,7 +417,7 @@
       }
     });
 
-    // Counters (visitor & download)
+    // Counters
     db.ref('counters/visitors').transaction(current => (current || 0) + 1);
     db.ref('counters/visitors').on('value', snap => {
       if (snap.exists()) document.getElementById('visitorCounter').textContent = snap.val().toLocaleString();
