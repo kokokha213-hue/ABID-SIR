@@ -4,15 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
   <title>ABID SIR · Premium Gaming</title>
-  <!-- SEO Meta -->
   <meta name="description" content="ABID SIR – premium gaming hub. Exclusive files, monthly membership 2000 PKR, secure access, gaming updates.">
   <meta name="keywords" content="ABID SIR, gaming, premium, files, membership, PKR, updates">
   <link rel="canonical" href="https://abidsir.gaming">
-  <!-- Font & Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <!-- Firebase SDKs -->
+  <!-- Firebase SDKs - Firestore -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif; }
     body { background: #0b0d12; color: #e3e9f0; min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 1rem; }
@@ -161,37 +159,26 @@
 
 <script>
   // ============================================================
-  // FIREBASE CONFIG - CORRECTED URL
+  // FIREBASE CONFIG - FIRESTORE VERSION
   // ============================================================
   const firebaseConfig = {
     apiKey: "AIzaSyALnJyYqSpgZeapdNUkAKkwImgijuG935g",
     authDomain: "abid-sir-6fa1d.firebaseapp.com",
     projectId: "abid-sir-6fa1d",
-    databaseURL: "https://abid-sir-6fa1d-default-rtdb.firebaseio.com",
     storageBucket: "abid-sir-6fa1d.firebasestorage.app",
     messagingSenderId: "870139030210",
     appId: "1:870139030210:web:5237413bfcf9ba0c59a95b"
   };
 
-  // Initialize Firebase
-  let db;
-  let firebaseReady = false;
-  
-  try {
-    firebase.initializeApp(firebaseConfig);
-    db = firebase.database();
-    firebaseReady = true;
-    console.log('✅ Firebase initialized');
-  } catch (e) {
-    console.error('❌ Firebase init error:', e);
-    document.getElementById('passInfo').textContent = '⚠️ Using offline mode (Firebase unavailable)';
-  }
+  // Initialize Firebase - FIRESTORE
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  console.log('✅ Firestore initialized');
 
   // ========== Password state ==========
   let currentPassword = "gaming2026";
   let passwordLoaded = false;
   let isAuthorized = false;
-  let usingFallback = false;
 
   // ========== DOM REFS ==========
   const overlay = document.getElementById('passwordOverlay');
@@ -205,13 +192,16 @@
 
   // ========== VERIFY FUNCTION ==========
   function verifyPassword(entered) {
+    console.log('🔑 Entered:', entered);
+    console.log('🔑 Current password:', currentPassword);
+    
     if (entered === currentPassword) {
       isAuthorized = true;
       overlay.classList.add('hidden');
       mainApp.style.display = 'block';
       passError.textContent = '';
-      passSuccess.textContent = '';
-      if (firebaseReady) loadAllData();
+      passSuccess.textContent = '✅ Access Granted!';
+      loadAllData();
       return true;
     } else {
       passError.textContent = "❌ Incorrect Key, Please Try Again.";
@@ -249,141 +239,162 @@
     if (e.key === 'Enter') passBtn.click();
   });
 
-  // ========== LOAD PASSWORD FROM FIREBASE ==========
-  function loadPasswordFromFirebase() {
-    if (!firebaseReady) {
-      passInfo.textContent = '⚠️ Using offline mode (Firebase unavailable)';
-      passwordLoaded = true;
-      currentPassword = "gaming2026";
-      passBtn.disabled = false;
-      passInput.focus();
-      return;
-    }
-
-    passInfo.textContent = '⏳ Connecting to Firebase...';
+  // ========== LOAD PASSWORD FROM FIRESTORE ==========
+  function loadPasswordFromFirestore() {
+    passInfo.textContent = '⏳ Loading password from Firestore...';
     passBtn.disabled = true;
 
-    db.ref('password').once('value')
-      .then(snap => {
-        if (snap.exists()) {
-          currentPassword = snap.val();
-          console.log('✅ Password loaded from Firebase:', currentPassword);
-          passSuccess.textContent = '✅ Connected to Firebase!';
+    // Aapki screenshot mein "content" collection hai
+    // Jisme "password" document hai with value "ABID123"
+    db.collection('content').doc('password').get()
+      .then(doc => {
+        if (doc.exists) {
+          const data = doc.data();
+          currentPassword = data.password || data.value || "gaming2026";
+          console.log('✅ Password loaded from Firestore:', currentPassword);
+          passSuccess.textContent = '✅ Password loaded from server!';
+          passInfo.textContent = '🔑 Password: "' + currentPassword + '"';
         } else {
-          console.log('ℹ️ No password in Firebase, using default.');
+          console.log('ℹ️ No password document found, using default: gaming2026');
           currentPassword = "gaming2026";
-          // Try to save default
-          db.ref('password').set("gaming2026").catch(() => {});
+          passInfo.textContent = '⚠️ Using default password: "gaming2026"';
         }
         passwordLoaded = true;
-        passInfo.textContent = '';
         passBtn.disabled = false;
         passInput.focus();
         setTimeout(() => { passSuccess.textContent = ''; }, 3000);
       })
       .catch(err => {
-        console.warn('⚠️ Firebase permission error:', err.message);
-        // Use fallback password
+        console.error('❌ Firestore error:', err.message);
         currentPassword = "gaming2026";
         passwordLoaded = true;
         passBtn.disabled = false;
         passInput.focus();
-        passInfo.textContent = '⚠️ Using local password (Firebase read denied)';
+        passInfo.textContent = '⚠️ Using default password: "gaming2026" (Firestore error)';
         passError.textContent = '';
       });
   }
 
   // Start loading
-  loadPasswordFromFirebase();
+  loadPasswordFromFirestore();
 
-  // ========== LOAD DATA FROM FIREBASE ==========
+  // ========== LOAD DATA FROM FIRESTORE ==========
   function loadAllData() {
-    if (!firebaseReady) return;
+    // Load Announcement
+    db.collection('content').doc('announcement').get()
+      .then(doc => {
+        const el = document.getElementById('announceText');
+        if (doc.exists) {
+          el.innerHTML = `<strong>📢</strong> ${doc.data().text || doc.data().value || 'No announcement'}`;
+        }
+      })
+      .catch(() => {
+        document.getElementById('announceText').innerHTML = '<strong>📢</strong> No announcement yet.';
+      });
 
-    // Announcement
-    db.ref('announcement').on('value', snap => {
-      const el = document.getElementById('announceText');
-      if (snap.exists()) el.innerHTML = `<strong>📢</strong> ${snap.val()}`;
-      else el.innerHTML = `<strong>📢</strong> No announcement yet.`;
-    });
-
-    // Files
-    db.ref('files').on('value', snap => {
-      const grid = document.getElementById('fileGrid');
-      grid.innerHTML = '';
-      let count = 0;
-      if (snap.exists()) {
-        const data = snap.val();
-        const files = Object.entries(data).map(([key, val]) => ({ key, ...val }));
-        files.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
-        files.forEach(file => {
-          const card = document.createElement('div');
-          card.className = 'file-card';
-          const label = file.label || 'PREMIUM';
-          card.innerHTML = `
-            <div class="file-label"><i class="fas fa-tag"></i> ${label}</div>
-            <h4>${file.title || 'Untitled'}</h4>
-            <div class="file-meta"><span>${file.version || 'v1'}</span> <span>${file.size || '—'}</span></div>
-            <div class="file-download-btn" data-key="${file.key}">
-              <i class="fas fa-download"></i> Download (${file.downloads||0})
-            </div>
-            <div style="font-size:0.65rem; color:#3d6e8a; margin-top:0.3rem;">⬆️ ${file.updated || 'recent'}</div>
-          `;
-          grid.appendChild(card);
-          count++;
-        });
-        document.getElementById('fileCount').textContent = count;
-
-        document.querySelectorAll('.file-download-btn').forEach(btn => {
-          btn.addEventListener('click', function() {
-            if (!isAuthorized) { alert('⛔ Access denied.'); return; }
-            const key = this.dataset.key;
-            if (!key) return;
-            
-            const fileRef = db.ref(`files/${key}/downloads`);
-            fileRef.transaction(current => (current || 0) + 1);
-            const counterRef = db.ref('counters/downloads');
-            counterRef.transaction(current => (current || 0) + 1);
-            alert('⬇️ Download started!');
+    // Load Files from Firestore
+    db.collection('files').orderBy('timestamp', 'desc').get()
+      .then(snapshot => {
+        const grid = document.getElementById('fileGrid');
+        grid.innerHTML = '';
+        let count = 0;
+        
+        if (!snapshot.empty) {
+          snapshot.forEach(doc => {
+            const file = doc.data();
+            const card = document.createElement('div');
+            card.className = 'file-card';
+            const label = file.label || 'PREMIUM';
+            card.innerHTML = `
+              <div class="file-label"><i class="fas fa-tag"></i> ${label}</div>
+              <h4>${file.title || 'Untitled'}</h4>
+              <div class="file-meta"><span>${file.version || 'v1'}</span> <span>${file.size || '—'}</span></div>
+              <div class="file-download-btn" data-id="${doc.id}" data-link="${file.fileLink || '#'}">
+                <i class="fas fa-download"></i> Download (${file.downloads||0})
+              </div>
+              <div style="font-size:0.65rem; color:#3d6e8a; margin-top:0.3rem;">⬆️ ${file.updated || 'recent'}</div>
+            `;
+            grid.appendChild(card);
+            count++;
           });
-        });
-      } else {
+          document.getElementById('fileCount').textContent = count;
+
+          document.querySelectorAll('.file-download-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+              if (!isAuthorized) { alert('⛔ Access denied.'); return; }
+              const link = this.dataset.link;
+              const id = this.dataset.id;
+              
+              // Update download counter
+              db.collection('files').doc(id).update({
+                downloads: firebase.firestore.FieldValue.increment(1)
+              }).catch(() => {});
+              
+              // Update global counter
+              db.collection('counters').doc('stats').update({
+                downloads: firebase.firestore.FieldValue.increment(1)
+              }).catch(() => {});
+              
+              if (link && link !== '#') {
+                window.open(link, '_blank');
+              } else {
+                alert('⬇️ Download started! (No link provided)');
+              }
+            });
+          });
+        } else {
+          document.getElementById('fileCount').textContent = '0';
+        }
+      })
+      .catch(err => {
+        console.error('Error loading files:', err);
         document.getElementById('fileCount').textContent = '0';
-      }
-    });
+      });
 
-    // Videos
-    db.ref('videos').on('value', snap => {
-      const grid = document.getElementById('videoGrid');
-      grid.innerHTML = '';
-      if (snap.exists()) {
-        const data = snap.val();
-        const videos = Object.entries(data).map(([key, val]) => ({ key, ...val }));
-        videos.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
-        videos.forEach(vid => {
-          const card = document.createElement('div');
-          card.className = 'video-card';
-          const isEmbed = vid.url && vid.url.includes('youtube.com/embed');
-          card.innerHTML = `
-            <div class="video-label"><i class="fas fa-play"></i> ${vid.label || 'GAMING'}</div>
-            <h4>${vid.title || 'Video'}</h4>
-            ${isEmbed ? `<div style="aspect-ratio:16/9; background:#000; border-radius:1rem; margin:0.5rem 0;"><iframe src="${vid.url}" style="width:100%;height:100%;border:none;border-radius:1rem;" allowfullscreen></iframe></div>` 
-                      : `<div style="aspect-ratio:16/9; background:#0a1a2a; border-radius:1rem; margin:0.5rem 0; display:flex; align-items:center; justify-content:center; color:#3d7a9a;"><i class="fas fa-film" style="font-size:2rem;"></i></div>`}
-            <div class="video-meta"><span>${vid.views || 0} views</span> <span>${vid.date || 'new'}</span></div>
-          `;
-          grid.appendChild(card);
-        });
-      }
-    });
+    // Load Videos from Firestore
+    db.collection('videos').orderBy('timestamp', 'desc').get()
+      .then(snapshot => {
+        const grid = document.getElementById('videoGrid');
+        grid.innerHTML = '';
+        
+        if (!snapshot.empty) {
+          snapshot.forEach(doc => {
+            const vid = doc.data();
+            const card = document.createElement('div');
+            card.className = 'video-card';
+            const isEmbed = vid.videoLink && vid.videoLink.includes('youtube.com/embed');
+            const videoUrl = vid.videoLink || vid.url || '';
+            card.innerHTML = `
+              <div class="video-label"><i class="fas fa-play"></i> ${vid.label || 'GAMING'}</div>
+              <h4>${vid.title || 'Video'}</h4>
+              ${isEmbed ? `<div style="aspect-ratio:16/9; background:#000; border-radius:1rem; margin:0.5rem 0;"><iframe src="${videoUrl}" style="width:100%;height:100%;border:none;border-radius:1rem;" allowfullscreen></iframe></div>` 
+                        : videoUrl ? `<div style="aspect-ratio:16/9; background:#0a1a2a; border-radius:1rem; margin:0.5rem 0; display:flex; align-items:center; justify-content:center; color:#3d7a9a;"><a href="${videoUrl}" target="_blank" style="color:#00ccff;text-decoration:none;"><i class="fas fa-play-circle" style="font-size:3rem;"></i><br>Watch Video</a></div>`
+                        : `<div style="aspect-ratio:16/9; background:#0a1a2a; border-radius:1rem; margin:0.5rem 0; display:flex; align-items:center; justify-content:center; color:#3d7a9a;"><i class="fas fa-film" style="font-size:2rem;"></i></div>`}
+              <div class="video-meta"><span>${vid.views || 0} views</span> <span>${vid.date || 'new'}</span></div>
+            `;
+            grid.appendChild(card);
+          });
+        }
+      })
+      .catch(err => {
+        console.error('Error loading videos:', err);
+      });
 
-    // Counters
-    db.ref('counters/visitors').transaction(current => (current || 0) + 1);
-    db.ref('counters/visitors').on('value', snap => {
-      if (snap.exists()) document.getElementById('visitorCounter').textContent = snap.val().toLocaleString();
-    });
-    db.ref('counters/downloads').on('value', snap => {
-      if (snap.exists()) document.getElementById('downloadCounter').textContent = snap.val().toLocaleString();
-    });
+    // Load Counters
+    db.collection('counters').doc('stats').get()
+      .then(doc => {
+        if (doc.exists) {
+          const data = doc.data();
+          if (data.visitors) document.getElementById('visitorCounter').textContent = data.visitors.toLocaleString();
+          if (data.downloads) document.getElementById('downloadCounter').textContent = data.downloads.toLocaleString();
+        }
+      })
+      .catch(() => {});
+
+    // Update visitor counter
+    db.collection('counters').doc('stats').update({
+      visitors: firebase.firestore.FieldValue.increment(1)
+    }).catch(() => {});
   }
 </script>
 </body>
