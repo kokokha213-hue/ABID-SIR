@@ -170,12 +170,13 @@
 
 <script>
   // ============================================================
-  // YOUR FIREBASE CONFIG
+  // FIREBASE CONFIG WITH CORRECT databaseURL (FIXED)
   // ============================================================
   const firebaseConfig = {
     apiKey: "AIzaSyALnJyYqSpgZeapdNUkAKkwImgijuG935g",
     authDomain: "abid-sir-6fa1d.firebaseapp.com",
     projectId: "abid-sir-6fa1d",
+    databaseURL: "https://abid-sir-6fa1d-default-rtdb.firebaseio.com",  // ✅ FIXED: Added databaseURL
     storageBucket: "abid-sir-6fa1d.firebasestorage.app",
     messagingSenderId: "870139030210",
     appId: "1:870139030210:web:5237413bfcf9ba0c59a95b",
@@ -187,9 +188,9 @@
   const analytics = firebase.analytics();
   const db = firebase.database();
 
-  // ========== FIX: Password state ==========
-  let currentPassword = null;      // Start as null, will be set from Firebase
-  let passwordLoaded = false;      // Flag to track if password is loaded
+  // ========== Password state ==========
+  let currentPassword = null;
+  let passwordLoaded = false;
   let isAuthorized = false;
 
   // ========== DOM REFS ==========
@@ -200,9 +201,8 @@
   const passError = document.getElementById('passError');
   const loaderContainer = document.getElementById('loaderContainer');
 
-  // ========== VERIFY FUNCTION (with checks) ==========
+  // ========== VERIFY FUNCTION ==========
   function verifyPassword(entered) {
-    // FIX 3: Check if password is loaded from Firebase
     if (!passwordLoaded) {
       passError.textContent = "⏳ Loading key from server...";
       return false;
@@ -231,13 +231,11 @@
       return;
     }
 
-    // FIX 2: Check if password is loaded
     if (!passwordLoaded) {
       passError.textContent = "⏳ System loading password...";
       return;
     }
 
-    // Start loading animation
     passBtn.disabled = true;
     loaderContainer.style.display = 'block';
     passError.textContent = '⏳ Verifying...';
@@ -258,25 +256,38 @@
     if (e.key === 'Enter') passBtn.click();
   });
 
-  // ========== LOAD PASSWORD FROM FIREBASE FIRST ==========
-  // FIX 1: Load password before allowing login
-  db.ref('password').once('value').then(snap => {
-    if (snap.exists()) {
-      currentPassword = snap.val();
-    } else {
-      // If no password in Firebase, set a default
+  // ========== LOAD PASSWORD FROM FIREBASE ==========
+  // FIXED: Proper error handling and fallback
+  passError.textContent = '⏳ Connecting to Firebase...';
+  passBtn.disabled = true;
+
+  db.ref('password').once('value')
+    .then(snap => {
+      if (snap.exists()) {
+        currentPassword = snap.val();
+        console.log('✅ Password loaded from Firebase:', currentPassword);
+      } else {
+        console.log('ℹ️ No password found in Firebase, using default.');
+        currentPassword = "gaming2026";
+        // Save default to Firebase for future
+        db.ref('password').set("gaming2026").catch(err => {
+          console.warn('Could not save default password:', err);
+        });
+      }
+      passwordLoaded = true;
+      passError.textContent = '';
+      passBtn.disabled = false;
+      passInput.focus();
+    })
+    .catch(err => {
+      console.error('❌ Firebase error loading password:', err);
+      // Fallback: allow with default password
       currentPassword = "gaming2026";
-      // Optionally save it to Firebase
-      db.ref('password').set("gaming2026");
-    }
-    passwordLoaded = true;
-    console.log('✅ Password loaded from Firebase:', currentPassword);
-  }).catch(err => {
-    console.error('❌ Error loading password:', err);
-    // Fallback: allow with default
-    currentPassword = "gaming2026";
-    passwordLoaded = true;
-  });
+      passwordLoaded = true;
+      passError.textContent = '⚠️ Using default key (Firebase error)';
+      passBtn.disabled = false;
+      passInput.focus();
+    });
 
   // ========== LOAD DATA FROM FIREBASE ==========
   function loadAllData() {
@@ -314,7 +325,6 @@
         });
         document.getElementById('fileCount').textContent = count;
 
-        // Attach download events
         document.querySelectorAll('.file-download-btn').forEach(btn => {
           btn.addEventListener('click', function() {
             if (!isAuthorized) { alert('⛔ Access denied.'); return; }
@@ -357,7 +367,7 @@
       }
     });
 
-    // Counters (visitor & download)
+    // Counters
     db.ref('counters/visitors').transaction(current => (current || 0) + 1);
     db.ref('counters/visitors').on('value', snap => {
       if (snap.exists()) document.getElementById('visitorCounter').textContent = snap.val().toLocaleString();
@@ -366,17 +376,6 @@
       if (snap.exists()) document.getElementById('downloadCounter').textContent = snap.val().toLocaleString();
     });
   }
-
-  // ========== INIT: Show overlay with loading message ==========
-  passError.textContent = '⏳ Loading security key...';
-  passBtn.disabled = true;
-
-  // Once password is loaded, enable the button
-  db.ref('password').once('value').then(() => {
-    passError.textContent = '';
-    passBtn.disabled = false;
-    passInput.focus();
-  });
 </script>
 </body>
 </html>
