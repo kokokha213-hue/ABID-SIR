@@ -171,24 +171,30 @@
 
 <script>
   // ============================================================
-  // FIREBASE CONFIG - FULLY FIXED WITH CORRECT URL
+  // FIREBASE CONFIG - COMPLETELY FIXED
   // ============================================================
   const firebaseConfig = {
     apiKey: "AIzaSyALnJyYqSpgZeapdNUkAKkwImgijuG935g",
     authDomain: "abid-sir-6fa1d.firebaseapp.com",
     projectId: "abid-sir-6fa1d",
-    databaseURL: "https://abid-sir-6fa1d-default-rtdb.firebaseio.com/", // ✅ FULLY FIXED
+    databaseURL: "https://abid-sir-6fa1d-default-rtdb.firebaseio.com",
     storageBucket: "abid-sir-6fa1d.firebasestorage.app",
     messagingSenderId: "870139030210",
     appId: "1:870139030210:web:5237413bfcf9ba0c59a95b"
   };
 
   // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
+  try {
+    firebase.initializeApp(firebaseConfig);
+    console.log('✅ Firebase initialized successfully');
+  } catch (e) {
+    console.error('❌ Firebase init error:', e);
+  }
+  
   const db = firebase.database();
 
   // ========== Password state ==========
-  let currentPassword = null;
+  let currentPassword = "gaming2026"; // Default fallback
   let passwordLoaded = false;
   let isAuthorized = false;
   let retryCount = 0;
@@ -285,6 +291,8 @@
           // Save default to Firebase
           return db.ref('password').set("gaming2026").then(() => {
             passSuccess.textContent = '✅ Default password created!';
+          }).catch(err => {
+            console.warn('Could not save default password:', err);
           });
         }
       })
@@ -293,7 +301,7 @@
         passError.textContent = '';
         passBtn.disabled = false;
         passInput.focus();
-        // Clear success message after 2 seconds
+        // Clear success message after 3 seconds
         setTimeout(() => {
           passSuccess.textContent = '';
         }, 3000);
