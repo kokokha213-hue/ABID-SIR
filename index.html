@@ -15,10 +15,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <style>
-        /* ============================================================
-           PREMIUM GAMING THEME
-           ============================================================ */
-        
         * {
             margin: 0;
             padding: 0;
@@ -34,7 +30,6 @@
             position: relative;
         }
 
-        /* ===== ANIMATED BACKGROUND PARTICLES ===== */
         #particles-canvas {
             position: fixed;
             top: 0;
@@ -45,7 +40,6 @@
             pointer-events: none;
         }
 
-        /* ===== FLOATING NEON ORBS ===== */
         .neon-orb {
             position: fixed;
             border-radius: 50%;
@@ -87,7 +81,6 @@
             75% { transform: translate(15px, 15px) scale(1.05); opacity: 0.6; }
         }
 
-        /* ===== SCROLLBAR ===== */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0a0c12; }
         ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #00ccff, #0066aa); border-radius: 10px; }
@@ -126,7 +119,6 @@
             width: 100%;
             position: relative;
             overflow: hidden;
-            animation: fadeInUp 0.8s ease;
         }
         .login-box::before {
             content: '';
@@ -166,7 +158,6 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             letter-spacing: 3px;
-            text-shadow: 0 0 30px rgba(0, 180, 255, 0.3);
         }
         .login-box .subtitle {
             color: #6a8fa8;
@@ -288,39 +279,6 @@
             min-height: 1.5rem;
             font-size: 0.9rem;
         }
-        .login-box .info-msg {
-            color: #fbbf24;
-            margin-top: 0.6rem;
-            font-weight: 500;
-            min-height: 1.5rem;
-            font-size: 0.85rem;
-        }
-
-        .login-box .divider {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin: 1.5rem 0;
-            color: #2a4a6a;
-            font-size: 0.8rem;
-        }
-        .login-box .divider::before,
-        .login-box .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(to right, transparent, #1f4a6b, transparent);
-        }
-
-        .login-box .admin-info {
-            color: #3a6a8a;
-            font-size: 0.7rem;
-            margin-top: 1rem;
-            opacity: 0.7;
-        }
-        .login-box .admin-info i {
-            color: #00ccff;
-        }
 
         .loader-ring {
             display: inline-block;
@@ -334,227 +292,6 @@
         }
         @keyframes spin {
             to { transform: rotate(360deg); }
-        }
-
-        /* ============================================================
-           WELCOME ANIMATION OVERLAY
-           ============================================================ */
-        #welcomeOverlay {
-            position: fixed;
-            inset: 0;
-            z-index: 10001;
-            background: rgba(8, 11, 18, 0.97);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-        #welcomeOverlay.active {
-            display: flex;
-            animation: welcomeFadeIn 0.8s ease;
-        }
-        #welcomeOverlay.fade-out {
-            animation: welcomeFadeOut 0.8s ease forwards;
-        }
-
-        @keyframes welcomeFadeIn {
-            from { opacity: 0; transform: scale(1.1); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        @keyframes welcomeFadeOut {
-            from { opacity: 1; transform: scale(1); }
-            to { opacity: 0; transform: scale(1.1); }
-        }
-
-        #welcomeOverlay .bg-glow {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(120px);
-            pointer-events: none;
-            animation: welcomeGlowPulse 4s ease-in-out infinite;
-        }
-        #welcomeOverlay .bg-glow:nth-child(1) {
-            width: 600px;
-            height: 600px;
-            background: rgba(0, 150, 255, 0.15);
-            top: -200px;
-            right: -200px;
-        }
-        #welcomeOverlay .bg-glow:nth-child(2) {
-            width: 500px;
-            height: 500px;
-            background: rgba(120, 0, 255, 0.1);
-            bottom: -200px;
-            left: -200px;
-            animation-delay: 2s;
-        }
-        #welcomeOverlay .bg-glow:nth-child(3) {
-            width: 400px;
-            height: 400px;
-            background: rgba(0, 255, 200, 0.08);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            animation-delay: 4s;
-        }
-
-        @keyframes welcomeGlowPulse {
-            0%, 100% { opacity: 0.5; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.1); }
-        }
-
-        #welcomeParticles {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .energy-wave {
-            position: absolute;
-            width: 200%;
-            height: 200%;
-            top: -50%;
-            left: -50%;
-            background: radial-gradient(ellipse at center, rgba(0, 200, 255, 0.03) 0%, transparent 70%);
-            animation: energyWave 6s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 1;
-        }
-        @keyframes energyWave {
-            0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.3; }
-            50% { transform: rotate(180deg) scale(1.2); opacity: 0.8; }
-        }
-
-        .light-streak {
-            position: absolute;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(0, 200, 255, 0.2), transparent);
-            pointer-events: none;
-            z-index: 1;
-            animation: lightStreak 8s linear infinite;
-        }
-        .light-streak:nth-child(1) { top: 20%; animation-delay: 0s; }
-        .light-streak:nth-child(2) { top: 40%; animation-delay: 2s; }
-        .light-streak:nth-child(3) { top: 60%; animation-delay: 4s; }
-        .light-streak:nth-child(4) { top: 80%; animation-delay: 6s; }
-
-        @keyframes lightStreak {
-            0% { transform: translateX(-100%) scaleX(0.5); opacity: 0; }
-            50% { opacity: 1; }
-            100% { transform: translateX(100%) scaleX(0.5); opacity: 0; }
-        }
-
-        .welcome-text {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            animation: welcomeTextZoom 1.5s ease-out;
-        }
-        @keyframes welcomeTextZoom {
-            0% { transform: scale(0.3); opacity: 0; filter: blur(20px); }
-            50% { transform: scale(1.1); opacity: 1; filter: blur(0); }
-            70% { transform: scale(0.95); }
-            100% { transform: scale(1); opacity: 1; filter: blur(0); }
-        }
-
-        .welcome-text .main-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(2.5rem, 8vw, 5.5rem);
-            font-weight: 900;
-            background: linear-gradient(135deg, #00ccff, #7b2ffc, #00ccff);
-            background-size: 300% 300%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientShift 3s ease-in-out infinite;
-            text-shadow: 0 0 60px rgba(0, 200, 255, 0.3), 0 0 120px rgba(123, 47, 252, 0.2);
-            letter-spacing: 4px;
-            line-height: 1.2;
-        }
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        .welcome-text .sub-title {
-            font-family: 'Exo 2', sans-serif;
-            font-size: clamp(0.8rem, 2vw, 1.2rem);
-            color: rgba(255, 255, 255, 0.5);
-            letter-spacing: 8px;
-            text-transform: uppercase;
-            margin-top: 0.5rem;
-            animation: subTitlePulse 2s ease-in-out infinite;
-        }
-        @keyframes subTitlePulse {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
-
-        .welcome-text .glow-ring {
-            display: inline-block;
-            margin-top: 1rem;
-            padding: 0.3rem 2rem;
-            border: 1px solid rgba(0, 200, 255, 0.2);
-            border-radius: 60px;
-            background: rgba(0, 200, 255, 0.05);
-            font-size: clamp(0.6rem, 1.2vw, 0.8rem);
-            color: rgba(0, 200, 255, 0.6);
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            animation: ringPulse 2s ease-in-out infinite;
-        }
-        @keyframes ringPulse {
-            0%, 100% { border-color: rgba(0, 200, 255, 0.2); box-shadow: 0 0 20px rgba(0, 200, 255, 0.05); }
-            50% { border-color: rgba(0, 200, 255, 0.5); box-shadow: 0 0 40px rgba(0, 200, 255, 0.1); }
-        }
-
-        .progress-container {
-            position: relative;
-            z-index: 2;
-            width: min(400px, 80%);
-            margin-top: 3rem;
-        }
-        .progress-bar-bg {
-            width: 100%;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            overflow: hidden;
-            position: relative;
-        }
-        .progress-bar-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #00ccff, #7b2ffc, #00ccff);
-            background-size: 200% 100%;
-            border-radius: 10px;
-            animation: progressGradient 1.5s ease-in-out infinite;
-            transition: width 0.3s ease;
-        }
-        @keyframes progressGradient {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-        .progress-text {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(1rem, 2vw, 1.4rem);
-            color: rgba(255, 255, 255, 0.6);
-            text-align: center;
-            margin-top: 0.8rem;
-            letter-spacing: 2px;
-            font-weight: 300;
-        }
-        .progress-text span {
-            color: #00ccff;
-            font-weight: 700;
         }
 
         /* ===== MAIN APP ===== */
@@ -571,7 +308,6 @@
             border: 1px solid rgba(0, 180, 255, 0.1);
             position: relative;
             z-index: 1;
-            animation: fadeInUp 0.8s ease;
         }
 
         @keyframes fadeInUp {
@@ -579,7 +315,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ===== BRAND BAR ===== */
         .brand-bar {
             display: flex;
             flex-wrap: wrap;
@@ -588,7 +323,6 @@
             padding-bottom: 1rem;
             margin-bottom: 1.5rem;
             border-bottom: 1px solid rgba(0, 200, 255, 0.08);
-            animation: fadeInUp 0.6s ease 0.2s both;
         }
         .logo h1 {
             font-family: 'Orbitron', sans-serif;
@@ -602,7 +336,6 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            text-shadow: 0 0 30px rgba(0, 180, 255, 0.2);
         }
         .logo i {
             font-size: 2rem;
@@ -624,16 +357,12 @@
             font-weight: 600;
             font-size: 0.8rem;
             border: 1px solid rgba(0, 163, 255, 0.3);
-            box-shadow: 0 0 20px rgba(0, 59, 107, 0.2);
             color: #b3e4ff;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            backdrop-filter: blur(5px);
         }
-        .membership-badge i {
-            color: #ffd966;
-        }
+        .membership-badge i { color: #ffd966; }
         .user-badge {
             background: rgba(15, 26, 43, 0.8);
             padding: 0.4rem 1.2rem;
@@ -644,11 +373,8 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            backdrop-filter: blur(5px);
         }
-        .user-badge i {
-            color: #4ade80;
-        }
+        .user-badge i { color: #4ade80; }
         .logout-btn {
             background: rgba(255, 107, 107, 0.1);
             border: 1px solid rgba(255, 107, 107, 0.2);
@@ -667,21 +393,18 @@
             transform: scale(1.05);
         }
 
-        /* ===== HERO BANNER ===== */
         .hero-banner {
             background: radial-gradient(circle at 20% 30%, rgba(11, 42, 63, 0.6), rgba(3, 8, 15, 0.8));
             border-radius: 2rem;
             padding: 2rem 2.5rem;
             margin-bottom: 2rem;
             border: 1px solid rgba(0, 95, 138, 0.3);
-            box-shadow: 0 0 40px rgba(0, 140, 255, 0.05), inset 0 0 60px rgba(0, 100, 200, 0.03);
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
             position: relative;
             overflow: hidden;
-            animation: fadeInUp 0.8s ease 0.3s both;
         }
         .hero-banner::after {
             content: "⚡";
@@ -700,10 +423,7 @@
             font-weight: 700;
             color: #ddf0ff;
         }
-        .hero-text h2 span {
-            color: #00dcff;
-            text-shadow: 0 0 40px rgba(0, 220, 255, 0.3);
-        }
+        .hero-text h2 span { color: #00dcff; text-shadow: 0 0 40px rgba(0, 220, 255, 0.3); }
         .hero-text p {
             color: #9fbad0;
             font-size: 1rem;
@@ -724,30 +444,24 @@
             transition: all 0.3s;
             text-decoration: none;
             font-size: 1rem;
-            box-shadow: 0 0 30px rgba(31, 139, 77, 0.1);
-            backdrop-filter: blur(5px);
         }
         .cta-whatsapp:hover {
             background: #25d366;
             color: #0b0d12;
             transform: scale(1.05);
             box-shadow: 0 0 50px rgba(37, 211, 102, 0.3);
-            border-color: #25d366;
         }
 
-        /* ===== STATS GRID ===== */
         .stats-grid {
             display: flex;
             flex-wrap: wrap;
             gap: 1rem 2.5rem;
             margin-bottom: 2rem;
             background: rgba(11, 17, 30, 0.5);
-            backdrop-filter: blur(5px);
             padding: 0.7rem 2rem;
             border-radius: 60px;
             border: 1px solid rgba(27, 51, 73, 0.3);
             justify-content: center;
-            animation: fadeInUp 0.8s ease 0.4s both;
         }
         .stat-item {
             display: flex;
@@ -757,16 +471,8 @@
             color: #b8d0e5;
             transition: all 0.3s;
         }
-        .stat-item:hover {
-            transform: scale(1.05);
-            color: #ddf4ff;
-        }
-        .stat-item i {
-            color: #00c3ff;
-            width: 1.6rem;
-            font-size: 1.2rem;
-            filter: drop-shadow(0 0 10px rgba(0, 195, 255, 0.2));
-        }
+        .stat-item:hover { transform: scale(1.05); color: #ddf4ff; }
+        .stat-item i { color: #00c3ff; width: 1.6rem; font-size: 1.2rem; }
         .stat-number {
             font-weight: 700;
             color: #ddf4ff;
@@ -777,12 +483,8 @@
             font-family: 'Orbitron', sans-serif;
         }
 
-        /* ============================================================
-           LIVE ANNOUNCEMENT TICKER - UPGRADED
-           ============================================================ */
         .announcement-ticker {
             background: rgba(13, 28, 43, 0.8);
-            backdrop-filter: blur(5px);
             border-left: 4px solid #00b7ff;
             padding: 0.7rem 1.5rem;
             border-radius: 60px;
@@ -791,19 +493,6 @@
             align-items: center;
             gap: 1rem;
             overflow: hidden;
-            box-shadow: 0 0 30px rgba(0, 56, 101, 0.15);
-            animation: fadeInUp 0.8s ease 0.5s both;
-            position: relative;
-        }
-        .announcement-ticker::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, rgba(0, 200, 255, 0.03), transparent, rgba(0, 200, 255, 0.03));
-            pointer-events: none;
         }
         .announcement-ticker .live-badge {
             background: #ff0040;
@@ -816,24 +505,13 @@
             text-transform: uppercase;
             animation: pulseLive 1.5s ease-in-out infinite;
             flex-shrink: 0;
-            z-index: 1;
         }
         @keyframes pulseLive {
             0%, 100% { opacity: 1; box-shadow: 0 0 20px rgba(255, 0, 64, 0.3); }
             50% { opacity: 0.6; box-shadow: 0 0 40px rgba(255, 0, 64, 0.6); }
         }
-        .announcement-ticker .ticker-icon {
-            color: #00e0ff;
-            font-size: 1.2rem;
-            flex-shrink: 0;
-            z-index: 1;
-        }
-        .announcement-ticker .ticker-wrapper {
-            flex: 1;
-            overflow: hidden;
-            position: relative;
-            z-index: 1;
-        }
+        .announcement-ticker .ticker-icon { color: #00e0ff; font-size: 1.2rem; flex-shrink: 0; }
+        .announcement-ticker .ticker-wrapper { flex: 1; overflow: hidden; position: relative; }
         .announcement-ticker .ticker-content {
             display: flex;
             white-space: nowrap;
@@ -846,67 +524,17 @@
             font-size: 0.95rem;
             flex-shrink: 0;
         }
-        .announcement-ticker .ticker-content span strong {
-            color: #ffd966;
-        }
+        .announcement-ticker .ticker-content span strong { color: #ffd966; }
         @keyframes tickerScroll {
             0% { transform: translateX(100%); }
             100% { transform: translateX(-100%); }
         }
 
-        /* ============================================================
-           FEATURED VIDEO SECTION
-           ============================================================ */
-        .featured-video {
-            background: rgba(13, 28, 43, 0.6);
-            backdrop-filter: blur(5px);
-            border-radius: 2rem;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            border: 1px solid rgba(0, 166, 255, 0.15);
-            box-shadow: 0 0 40px rgba(0, 100, 200, 0.05);
-            animation: fadeInUp 0.8s ease 0.4s both;
-        }
-        .featured-video .featured-label {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.7rem;
-            color: #00ccff;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            margin-bottom: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-        }
-        .featured-video .featured-label i {
-            color: #ffd966;
-        }
-        .featured-video .video-wrapper {
-            position: relative;
-            width: 100%;
-            padding-bottom: 56.25%;
-            background: #000;
-            border-radius: 1.5rem;
-            overflow: hidden;
-            border: 1px solid rgba(0, 200, 255, 0.1);
-        }
-        .featured-video .video-wrapper iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-            border-radius: 1.5rem;
-        }
-
-        /* ===== SECTION TITLES ===== */
         .section-title {
             display: flex;
             justify-content: space-between;
             align-items: baseline;
             margin: 1.5rem 0 1rem 0;
-            animation: fadeInUp 0.6s ease both;
         }
         .section-title h3 {
             font-family: 'Orbitron', sans-serif;
@@ -917,24 +545,10 @@
             padding-bottom: 0.3rem;
             font-size: 1.1rem;
         }
-        .section-title h3 i {
-            color: #00ccff;
-            margin-right: 8px;
-        }
-        .section-title .view-all {
-            color: #6a8fa8;
-            font-size: 0.7rem;
-            text-decoration: none;
-            letter-spacing: 1px;
-            transition: 0.3s;
-        }
-        .section-title .view-all:hover {
-            color: #00ccff;
-        }
+        .section-title h3 i { color: #00ccff; margin-right: 8px; }
+        .section-title .view-all { color: #6a8fa8; font-size: 0.7rem; text-decoration: none; letter-spacing: 1px; transition: 0.3s; }
+        .section-title .view-all:hover { color: #00ccff; }
 
-        /* ============================================================
-           VIDEO GRID - UPGRADED
-           ============================================================ */
         .video-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -951,8 +565,6 @@
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
             position: relative;
-            animation: fadeInUp 0.6s ease both;
-            overflow: hidden;
         }
         .video-card:hover {
             transform: translateY(-8px) scale(1.02);
@@ -1000,38 +612,6 @@
             color: #00ccff;
             filter: drop-shadow(0 0 50px rgba(0, 200, 255, 0.5));
         }
-        .video-card .video-thumbnail .duration {
-            position: absolute;
-            bottom: 0.5rem;
-            right: 0.5rem;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 0.2rem 0.6rem;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            color: white;
-            font-weight: 600;
-        }
-        .video-card .video-thumbnail .loading-spinner {
-            position: absolute;
-            inset: 0;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0, 0, 0, 0.6);
-            border-radius: 1rem;
-            z-index: 2;
-        }
-        .video-card .video-thumbnail .loading-spinner.active {
-            display: flex;
-        }
-        .video-card .video-thumbnail .loading-spinner .loader-ring-small {
-            width: 30px;
-            height: 30px;
-            border: 3px solid rgba(26, 56, 80, 0.3);
-            border-top: 3px solid #00ccff;
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-        }
 
         .video-card .video-label {
             background: rgba(0, 42, 68, 0.7);
@@ -1045,7 +625,6 @@
             color: #8bcbff;
             border: 1px solid rgba(0, 119, 190, 0.3);
             margin-bottom: 0.4rem;
-            backdrop-filter: blur(5px);
         }
         .video-card h4 {
             font-size: 1rem;
@@ -1087,7 +666,6 @@
             display: inline-flex;
             align-items: center;
             gap: 0.4rem;
-            backdrop-filter: blur(5px);
             font-family: 'Exo 2', sans-serif;
         }
         .video-card .video-actions .btn-sm:hover {
@@ -1096,14 +674,8 @@
             box-shadow: 0 0 30px rgba(0, 115, 176, 0.2);
             transform: scale(1.05);
         }
-        .video-card .video-actions .btn-sm i {
-            color: #00ccff;
-        }
-        .video-card .video-actions .btn-sm.fullscreen-btn i {
-            color: #4ade80;
-        }
+        .video-card .video-actions .btn-sm i { color: #00ccff; }
 
-        /* ===== FILES GRID ===== */
         .file-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -1120,7 +692,6 @@
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
             position: relative;
-            animation: fadeInUp 0.6s ease both;
         }
         .file-card:hover {
             transform: translateY(-8px) scale(1.02);
@@ -1139,7 +710,6 @@
             color: #8bcbff;
             border: 1px solid rgba(0, 119, 190, 0.3);
             margin-bottom: 0.5rem;
-            backdrop-filter: blur(5px);
         }
         .file-card h4 {
             font-size: 1rem;
@@ -1167,7 +737,6 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            backdrop-filter: blur(5px);
         }
         .file-download-btn:hover {
             background: rgba(0, 115, 176, 0.5);
@@ -1175,11 +744,8 @@
             box-shadow: 0 0 30px rgba(0, 115, 176, 0.2);
             transform: scale(1.05);
         }
-        .file-download-btn i {
-            color: #00ccff;
-        }
+        .file-download-btn i { color: #00ccff; }
 
-        /* ===== FOOTER ===== */
         .footer-note {
             margin-top: 2rem;
             text-align: center;
@@ -1190,7 +756,6 @@
             letter-spacing: 2px;
         }
 
-        /* ===== AUTH LOADING ===== */
         .auth-loading {
             position: fixed;
             inset: 0;
@@ -1203,14 +768,8 @@
             align-items: center;
             gap: 1.5rem;
         }
-        .auth-loading.hidden {
-            display: none;
-        }
-        .auth-loading .loader-ring {
-            width: 50px;
-            height: 50px;
-            border-width: 4px;
-        }
+        .auth-loading.hidden { display: none; }
+        .auth-loading .loader-ring { width: 50px; height: 50px; border-width: 4px; }
         .auth-loading p {
             color: #6a8fa8;
             font-size: 0.9rem;
@@ -1222,9 +781,6 @@
             50% { opacity: 0.3; }
         }
 
-        /* ============================================================
-           RESPONSIVE
-           ============================================================ */
         @media (max-width: 700px) {
             .glass-container { padding: 0.8rem; }
             .hero-text h2 { font-size: 1.4rem; }
@@ -1239,58 +795,26 @@
             .brand-bar { flex-direction: column; gap: 0.8rem; align-items: stretch; }
             .user-controls { justify-content: center; }
             .section-title { flex-direction: column; gap: 0.3rem; }
-            .welcome-text .main-title { font-size: clamp(1.8rem, 10vw, 3rem); }
-            .progress-container { width: 90%; }
-            .featured-video { padding: 1rem; }
         }
         @media (max-width: 480px) {
             .file-grid { grid-template-columns: 1fr; }
             .video-grid { grid-template-columns: 1fr; }
             .hero-text h2 { font-size: 1.2rem; }
-            .welcome-text .main-title { font-size: clamp(1.4rem, 8vw, 2.2rem); }
-            .welcome-text .sub-title { font-size: 0.6rem; letter-spacing: 4px; }
             .video-card .video-thumbnail .play-overlay i { font-size: 2.5rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ===== FLOATING NEON ORBS ===== -->
     <div class="neon-orb"></div>
     <div class="neon-orb"></div>
     <div class="neon-orb"></div>
 
-    <!-- ===== PARTICLES CANVAS ===== -->
     <canvas id="particles-canvas"></canvas>
 
-    <!-- ===== AUTH LOADING ===== -->
     <div class="auth-loading" id="authLoading">
         <div class="loader-ring"></div>
         <p>🔐 LOADING SECURE VAULT...</p>
-    </div>
-
-    <!-- ===== WELCOME ANIMATION OVERLAY ===== -->
-    <div id="welcomeOverlay">
-        <div class="bg-glow"></div>
-        <div class="bg-glow"></div>
-        <div class="bg-glow"></div>
-        <div class="energy-wave"></div>
-        <div class="light-streak"></div>
-        <div class="light-streak"></div>
-        <div class="light-streak"></div>
-        <div class="light-streak"></div>
-        <canvas id="welcomeParticles"></canvas>
-        <div class="welcome-text">
-            <div class="main-title">⚡ WELCOME TO ABID SIR WEB ⚡</div>
-            <div class="sub-title">Premium Gaming Vault</div>
-            <div class="glow-ring">✦ Elite Access ✦</div>
-        </div>
-        <div class="progress-container">
-            <div class="progress-bar-bg">
-                <div class="progress-bar-fill" id="welcomeProgress"></div>
-            </div>
-            <div class="progress-text">LOADING <span id="progressPercent">0</span>%</div>
-        </div>
     </div>
 
     <!-- ===== LOGIN OVERLAY ===== -->
@@ -1318,11 +842,14 @@
             <div id="loaderContainer" style="display:none;"><div class="loader-ring"></div></div>
             <div class="error-msg" id="passError"></div>
             <div class="success-msg" id="passSuccess"></div>
-            <div class="info-msg" id="passInfo"></div>
 
-            <div class="divider">⚡ SECURE ACCESS ⚡</div>
+            <div class="divider" style="display:flex;align-items:center;gap:1rem;margin:1.5rem 0;color:#2a4a6a;font-size:0.8rem;">
+                <span style="flex:1;height:1px;background:linear-gradient(to right, transparent, #1f4a6b, transparent);"></span>
+                ⚡ SECURE ACCESS ⚡
+                <span style="flex:1;height:1px;background:linear-gradient(to right, transparent, #1f4a6b, transparent);"></span>
+            </div>
 
-            <div class="admin-info">
+            <div style="color:#3a6a8a;font-size:0.7rem;margin-top:1rem;opacity:0.7;">
                 <i class="fas fa-shield-alt"></i> Authorized members only
             </div>
         </div>
@@ -1330,7 +857,6 @@
 
     <!-- ===== MAIN APP ===== -->
     <div class="glass-container" id="mainApp" style="display:none;">
-        <!-- Brand Bar -->
         <div class="brand-bar">
             <div class="logo"><h1><i class="fas fa-crown"></i> ABID SIR</h1></div>
             <div class="user-controls">
@@ -1340,7 +866,6 @@
             </div>
         </div>
 
-        <!-- Hero Banner -->
         <div class="hero-banner">
             <div class="hero-text">
                 <h2>🔥 <span>Premium</span> Gaming Vault</h2>
@@ -1349,14 +874,12 @@
             <a href="#" class="cta-whatsapp"><i class="fab fa-whatsapp"></i> Contact</a>
         </div>
 
-        <!-- Stats -->
         <div class="stats-grid">
             <div class="stat-item"><i class="fas fa-download"></i> Downloads <span class="stat-number" id="downloadCounter">0</span></div>
             <div class="stat-item"><i class="fas fa-eye"></i> Visitors <span class="stat-number" id="visitorCounter">0</span></div>
             <div class="stat-item"><i class="fas fa-file-archive"></i> Files <span class="stat-number" id="fileCount">0</span></div>
         </div>
 
-        <!-- Live Announcement Ticker -->
         <div class="announcement-ticker">
             <span class="live-badge">● LIVE</span>
             <i class="fas fa-bullhorn ticker-icon"></i>
@@ -1364,16 +887,6 @@
                 <div class="ticker-content" id="announceTicker">
                     <span><strong>📢</strong> Loading announcements...</span>
                 </div>
-            </div>
-        </div>
-
-        <!-- ===== FEATURED VIDEO ===== -->
-        <div class="featured-video" id="featuredVideo" style="display:none;">
-            <div class="featured-label">
-                <i class="fas fa-star"></i> Featured Video
-            </div>
-            <div class="video-wrapper">
-                <iframe id="featuredVideoIframe" src="" allowfullscreen loading="lazy"></iframe>
             </div>
         </div>
 
@@ -1459,69 +972,7 @@
         })();
 
         // ============================================================
-        // WELCOME PARTICLES
-        // ============================================================
-        (function initWelcomeParticles() {
-            const canvas = document.getElementById('welcomeParticles');
-            const ctx = canvas.getContext('2d');
-            let particles = [];
-            let w, h;
-
-            function resize() {
-                w = canvas.width = window.innerWidth;
-                h = canvas.height = window.innerHeight;
-            }
-            window.addEventListener('resize', resize);
-            resize();
-
-            class WelcomeParticle {
-                constructor() {
-                    this.x = Math.random() * w;
-                    this.y = Math.random() * h;
-                    this.size = Math.random() * 3 + 1;
-                    this.speedX = (Math.random() - 0.5) * 2;
-                    this.speedY = (Math.random() - 0.5) * 2;
-                    this.opacity = Math.random() * 0.6 + 0.2;
-                    this.color = `hsl(${Math.random() * 60 + 180}, 100%, 60%)`;
-                    this.life = 1;
-                }
-                update() {
-                    this.x += this.speedX;
-                    this.y += this.speedY;
-                    this.life -= 0.001;
-                    if (this.x < 0 || this.x > w) this.speedX *= -1;
-                    if (this.y < 0 || this.y > h) this.speedY *= -1;
-                    if (this.life < 0.1) {
-                        this.life = 1;
-                        this.x = Math.random() * w;
-                        this.y = Math.random() * h;
-                        this.size = Math.random() * 3 + 1;
-                    }
-                }
-                draw() {
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fillStyle = this.color;
-                    ctx.globalAlpha = this.opacity * this.life;
-                    ctx.fill();
-                    ctx.globalAlpha = 1;
-                }
-            }
-
-            for (let i = 0; i < 60; i++) {
-                particles.push(new WelcomeParticle());
-            }
-
-            function animate() {
-                ctx.clearRect(0, 0, w, h);
-                particles.forEach(p => { p.update(); p.draw(); });
-                requestAnimationFrame(animate);
-            }
-            animate();
-        })();
-
-        // ============================================================
-        // FIREBASE CONFIG (UNCHANGED)
+        // FIREBASE CONFIG
         // ============================================================
         const firebaseConfig = {
             apiKey: "AIzaSyALnJyYqSpgZeapdNUkAKkwImgijuG935g",
@@ -1537,30 +988,73 @@
         const db = firebase.firestore();
         db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
 
-        // ========== DOM REFS ==========
+        // ============================================================
+        // UNIVERSAL VIDEO LINK CONVERTER - ANY LINK WORKS!
+        // ============================================================
+        function convertToEmbedUrl(url) {
+            if (!url) return url;
+            
+            // If already embed URL - keep as is
+            if (url.includes('youtube.com/embed')) {
+                return url;
+            }
+            
+            // Extract video ID from youtube.com/watch?v=xxxxx
+            if (url.includes('watch?v=')) {
+                const videoId = url.split('v=')[1]?.split('&')[0];
+                if (videoId) {
+                    return `https://www.youtube.com/embed/${videoId}`;
+                }
+            }
+            
+            // Extract video ID from youtu.be/xxxxx
+            if (url.includes('youtu.be/')) {
+                const videoId = url.split('youtu.be/')[1]?.split('?')[0];
+                if (videoId) {
+                    return `https://www.youtube.com/embed/${videoId}`;
+                }
+            }
+            
+            // Extract video ID from youtube.com/shorts/xxxxx
+            if (url.includes('youtube.com/shorts/')) {
+                const videoId = url.split('shorts/')[1]?.split('?')[0];
+                if (videoId) {
+                    return `https://www.youtube.com/embed/${videoId}`;
+                }
+            }
+            
+            // If it's a direct video URL (mp4, etc.) - keep as is
+            if (url.includes('.mp4') || url.includes('.webm') || url.includes('.m3u8')) {
+                return url;
+            }
+            
+            // If it's a streaming URL (m3u8, etc.)
+            if (url.includes('m3u8') || url.includes('stream')) {
+                return url;
+            }
+            
+            // Return original if no match
+            return url;
+        }
+
+        // ============================================================
+        // DOM REFS
+        // ============================================================
         const overlay = document.getElementById('passwordOverlay');
         const mainApp = document.getElementById('mainApp');
         const authLoading = document.getElementById('authLoading');
-        const welcomeOverlay = document.getElementById('welcomeOverlay');
-        const welcomeProgress = document.getElementById('welcomeProgress');
-        const progressPercent = document.getElementById('progressPercent');
         const emailInput = document.getElementById('emailInput');
         const passInput = document.getElementById('passInput');
         const loginBtn = document.getElementById('loginBtn');
         const passError = document.getElementById('passError');
         const passSuccess = document.getElementById('passSuccess');
-        const passInfo = document.getElementById('passInfo');
         const loaderContainer = document.getElementById('loaderContainer');
         const userEmail = document.getElementById('userEmail');
         const logoutBtn = document.getElementById('logoutBtn');
         const togglePass = document.getElementById('togglePass');
         const eyeIcon = document.getElementById('eyeIcon');
-        const featuredVideo = document.getElementById('featuredVideo');
-        const featuredVideoIframe = document.getElementById('featuredVideoIframe');
 
         let isAuthorized = false;
-        let welcomeStarted = false;
-        let videosCache = [];
 
         // ========== LOAD SAVED EMAIL ==========
         const savedEmail = localStorage.getItem('savedEmail');
@@ -1601,40 +1095,6 @@
             isAuthorized = false;
         });
 
-        // ========== WELCOME ANIMATION ==========
-        function showWelcomeAnimation() {
-            return new Promise((resolve) => {
-                welcomeOverlay.classList.add('active');
-                welcomeStarted = true;
-                
-                let progress = 0;
-                const duration = 4000 + Math.random() * 1000;
-                const interval = 30;
-                const step = 100 / (duration / interval);
-                
-                const timer = setInterval(() => {
-                    progress += step;
-                    if (progress >= 100) {
-                        progress = 100;
-                        clearInterval(timer);
-                        welcomeProgress.style.width = '100%';
-                        progressPercent.textContent = '100';
-                        
-                        setTimeout(() => {
-                            welcomeOverlay.classList.add('fade-out');
-                            setTimeout(() => {
-                                welcomeOverlay.classList.remove('active');
-                                welcomeOverlay.classList.remove('fade-out');
-                                resolve();
-                            }, 800);
-                        }, 500);
-                    }
-                    welcomeProgress.style.width = progress + '%';
-                    progressPercent.textContent = Math.floor(progress);
-                }, interval);
-            });
-        }
-
         // ========== LOGIN ==========
         loginBtn.addEventListener('click', function() {
             const email = emailInput.value.trim();
@@ -1649,25 +1109,21 @@
             loaderContainer.style.display = 'block';
             passError.textContent = '';
             passSuccess.textContent = '⏳ Signing in...';
-            passInfo.textContent = '';
 
             auth.signInWithEmailAndPassword(email, password)
-                .then(async (userCredential) => {
+                .then((userCredential) => {
                     localStorage.setItem('savedEmail', email);
 
                     loaderContainer.style.display = 'none';
                     loginBtn.disabled = false;
-                    passSuccess.textContent = '✅ Login successful!';
-                    passError.textContent = '';
-                    passInfo.textContent = '';
-
-                    overlay.classList.add('hidden');
-
-                    await showWelcomeAnimation();
 
                     isAuthorized = true;
+                    overlay.classList.add('hidden');
                     mainApp.style.display = 'block';
                     userEmail.textContent = userCredential.user.email || 'User';
+                    passSuccess.textContent = '✅ Login successful!';
+                    passError.textContent = '';
+
                     loadAllData();
 
                     emailInput.value = '';
@@ -1705,7 +1161,6 @@
                     isAuthorized = false;
                     passSuccess.textContent = '';
                     passError.textContent = '';
-                    passInfo.textContent = '';
                     userEmail.textContent = 'User';
                 })
                 .catch((error) => {
@@ -1714,7 +1169,7 @@
         });
 
         // ============================================================
-        // LOAD DATA FROM FIRESTORE (UNCHANGED + VIDEO UPGRADE)
+        // LOAD DATA WITH UNIVERSAL VIDEO LINK SUPPORT
         // ============================================================
         function loadAllData() {
             // Announcement
@@ -1733,35 +1188,31 @@
                 }
             }, () => {});
 
-            // Videos - UPGRADED
+            // Videos - UNIVERSAL LINK SUPPORT
             db.collection('videos').orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
                 const grid = document.getElementById('videoGrid');
                 grid.innerHTML = '';
-                videosCache = [];
 
                 if (!snapshot.empty) {
-                    let firstVideo = null;
-                    let count = 0;
-                    
                     snapshot.forEach(doc => {
                         const vid = doc.data();
                         const id = doc.id;
-                        const videoUrl = vid.videoLink || vid.link || vid.url || '';
-                        const isEmbed = videoUrl && (videoUrl.includes('youtube.com/embed') || videoUrl.includes('youtu.be'));
                         
-                        // Store first video for featured
-                        if (count === 0) {
-                            firstVideo = { id, ...vid };
-                        }
-                        count++;
-                        videosCache.push({ id, ...vid });
+                        // Get video URL and convert
+                        let videoUrl = vid.videoLink || vid.link || vid.url || '';
+                        const embedUrl = convertToEmbedUrl(videoUrl);
+                        
+                        // Check if it's a YouTube embed
+                        const isYouTube = embedUrl && embedUrl.includes('youtube.com/embed');
+                        const isDirectVideo = embedUrl && (embedUrl.includes('.mp4') || embedUrl.includes('.webm') || embedUrl.includes('.m3u8') || embedUrl.includes('stream'));
+                        const isEmbed = isYouTube || isDirectVideo;
 
                         const card = document.createElement('div');
                         card.className = 'video-card';
                         const delay = Math.random() * 0.3;
                         card.style.animationDelay = delay + 's';
-                        
-                        // Generate thumbnail URL
+
+                        // Generate thumbnail URL for YouTube
                         let thumbUrl = '';
                         if (videoUrl) {
                             if (videoUrl.includes('youtube.com/embed')) {
@@ -1776,21 +1227,19 @@
                             }
                         }
 
-                        const isEmbedFinal = videoUrl && (videoUrl.includes('youtube.com/embed') || videoUrl.includes('youtu.be') || videoUrl.includes('watch?v='));
-                        let embedUrl = videoUrl;
-                        if (videoUrl && videoUrl.includes('watch?v=')) {
-                            const videoId = videoUrl.split('v=')[1]?.split('&')[0] || '';
-                            if (videoId) embedUrl = `https://www.youtube.com/embed/${videoId}`;
-                        }
+                        // Final embed URL for iframe
+                        const finalEmbedUrl = isEmbed ? embedUrl : '';
 
                         card.innerHTML = `
                             <div class="video-label"><i class="fas fa-play"></i> ${vid.label || 'GAMING'}</div>
-                            <div class="video-thumbnail" data-url="${embedUrl || videoUrl}" data-embed="${isEmbedFinal}">
-                                ${isEmbedFinal ? `<iframe src="${embedUrl || videoUrl}" allowfullscreen loading="lazy"></iframe>` : 
+                            <div class="video-thumbnail" data-url="${finalEmbedUrl}" data-embed="${isEmbed}">
+                                ${isYouTube ? `<iframe src="${finalEmbedUrl}" allowfullscreen loading="lazy"></iframe>` : 
+                                    isDirectVideo ? `<video style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;border-radius:1rem;" controls>
+                                        <source src="${finalEmbedUrl}" type="video/mp4">
+                                    </video>` :
                                     thumbUrl ? `<img src="${thumbUrl}" style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;border-radius:1rem;" loading="lazy">` : 
                                     `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#0a1a2a;border-radius:1rem;font-size:2rem;color:#3d7a9a;"><i class="fas fa-film"></i></div>`}
                                 <div class="play-overlay"><i class="fas fa-play-circle"></i></div>
-                                <div class="loading-spinner"><div class="loader-ring-small"></div></div>
                             </div>
                             <h4>${vid.title || 'Video'}</h4>
                             ${vid.description ? `<div class="video-desc">${vid.description}</div>` : ''}
@@ -1799,50 +1248,61 @@
                                 <span><i class="fas fa-calendar-alt"></i> ${vid.date || 'new'}</span>
                             </div>
                             <div class="video-actions">
-                                <button class="btn-sm watch-btn" data-url="${embedUrl || videoUrl}" data-embed="${isEmbedFinal}">
+                                <button class="btn-sm watch-btn" data-url="${finalEmbedUrl}" data-embed="${isEmbed}" data-isvideo="${isDirectVideo}">
                                     <i class="fas fa-play"></i> Watch
                                 </button>
-                                ${videoUrl ? `<button class="btn-sm fullscreen-btn" data-url="${videoUrl}" onclick="window.open('${videoUrl}', '_blank')">
-                                    <i class="fas fa-expand"></i> Fullscreen
+                                ${videoUrl ? `<button class="btn-sm" onclick="window.open('${videoUrl}', '_blank')">
+                                    <i class="fas fa-external-link-alt"></i> Open
                                 </button>` : ''}
                             </div>
                         `;
                         grid.appendChild(card);
                     });
 
-                    // Set featured video
-                    if (firstVideo) {
-                        let firstUrl = firstVideo.videoLink || firstVideo.link || firstVideo.url || '';
-                        if (firstUrl && firstUrl.includes('watch?v=')) {
-                            const videoId = firstUrl.split('v=')[1]?.split('&')[0] || '';
-                            if (videoId) firstUrl = `https://www.youtube.com/embed/${videoId}`;
-                        }
-                        if (firstUrl && (firstUrl.includes('youtube.com/embed') || firstUrl.includes('youtu.be'))) {
-                            featuredVideo.style.display = 'block';
-                            featuredVideoIframe.src = firstUrl;
-                        } else {
-                            featuredVideo.style.display = 'none';
-                        }
-                    }
-
-                    // Add event listeners for video cards
+                    // Add event listeners for Watch buttons
                     document.querySelectorAll('.video-card .watch-btn').forEach(btn => {
                         btn.addEventListener('click', function(e) {
                             e.stopPropagation();
                             const url = this.dataset.url;
                             const embed = this.dataset.embed === 'true';
-                            if (url) {
-                                if (embed) {
-                                    const wrapper = this.closest('.video-card').querySelector('.video-thumbnail');
+                            const isVideo = this.dataset.isvideo === 'true';
+                            
+                            if (url && (embed || isVideo)) {
+                                const wrapper = this.closest('.video-card').querySelector('.video-thumbnail');
+                                
+                                // Check if it's a direct video
+                                if (isVideo) {
+                                    // Create video element
+                                    const video = document.createElement('video');
+                                    video.style.cssText = 'width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;border-radius:1rem;';
+                                    video.controls = true;
+                                    video.autoplay = true;
+                                    const source = document.createElement('source');
+                                    source.src = url;
+                                    source.type = 'video/mp4';
+                                    video.appendChild(source);
+                                    
+                                    // Clear and add video
+                                    const overlayEl = wrapper.querySelector('.play-overlay');
+                                    const iframe = wrapper.querySelector('iframe');
+                                    if (iframe) iframe.style.display = 'none';
+                                    if (overlayEl) overlayEl.style.display = 'none';
+                                    
+                                    // Remove any existing video
+                                    const existingVideo = wrapper.querySelector('video');
+                                    if (existingVideo) existingVideo.remove();
+                                    
+                                    wrapper.appendChild(video);
+                                } else if (embed) {
                                     const iframe = wrapper.querySelector('iframe');
                                     if (iframe) {
                                         iframe.src = url;
                                         wrapper.querySelector('.play-overlay').style.display = 'none';
                                         iframe.style.display = 'block';
                                     }
-                                } else {
-                                    window.open(url, '_blank');
                                 }
+                            } else if (url) {
+                                window.open(url, '_blank');
                             }
                         });
                     });
@@ -1870,7 +1330,6 @@
                         <i class="fas fa-video" style="font-size:2rem;display:block;margin-bottom:0.5rem;color:#3a6a8a;"></i>
                         No videos uploaded yet
                     </div>`;
-                    featuredVideo.style.display = 'none';
                 }
             }, () => {});
 
@@ -1945,10 +1404,9 @@
             }, () => {});
         }
 
-        console.log('🔥 ABID SIR - VIDEO + ANNOUNCEMENT UPGRADED');
-        console.log('🎬 Videos auto-play with fullscreen support');
-        console.log('📢 Live announcement ticker with scrolling');
-        console.log('✨ All Firebase functionality UNCHANGED');
+        console.log('🔥 ABID SIR - UNIVERSAL VIDEO LINK SUPPORT');
+        console.log('✅ ANY link works: YouTube, Direct Video, Embed, etc.');
+        console.log('📌 Supported: watch?v=, youtu.be/, shorts/, .mp4, .webm, .m3u8');
     </script>
 </body>
 </html>
