@@ -140,7 +140,6 @@
             color: #3a5a7a;
         }
 
-        /* Password toggle button */
         .login-box .input-group .toggle-pass {
             position: absolute;
             right: 1.2rem;
@@ -575,6 +574,41 @@
             border-color: #ff6b6b;
         }
 
+        /* Loading screen while checking auth state */
+        .auth-loading {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: #080b12;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        .auth-loading.hidden {
+            display: none;
+        }
+        .auth-loading .loader-ring {
+            width: 50px;
+            height: 50px;
+        }
+        .auth-loading p {
+            color: #6a8fa8;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+
         @media (max-width: 700px) {
             .glass-container {
                 padding: 0.8rem;
@@ -614,6 +648,13 @@
 </head>
 <body>
 
+    <!-- ===== AUTH LOADING SCREEN ===== -->
+    <div class="auth-loading" id="authLoading">
+        <div class="loader-ring"></div>
+        <p>🔐 Verifying session...</p>
+    </div>
+
+    <!-- ===== LOGIN OVERLAY ===== -->
     <div id="passwordOverlay">
         <div class="login-box">
             <div class="icon"><i class="fas fa-crown"></i></div>
@@ -656,6 +697,7 @@
         </div>
     </div>
 
+    <!-- ===== MAIN APP ===== -->
     <div class="glass-container" id="mainApp" style="display:none;">
         <div class="brand-bar">
             <div class="logo"><h1><i class="fas fa-crown"></i> ABID SIR</h1></div>
@@ -715,6 +757,7 @@
         // ========== DOM REFS ==========
         const overlay = document.getElementById('passwordOverlay');
         const mainApp = document.getElementById('mainApp');
+        const authLoading = document.getElementById('authLoading');
         const emailInput = document.getElementById('emailInput');
         const passInput = document.getElementById('passInput');
         const loginBtn = document.getElementById('loginBtn');
@@ -729,6 +772,7 @@
         const eyeIcon = document.getElementById('eyeIcon');
 
         let isAuthorized = false;
+        let authChecked = false;
 
         // ========== LOAD SAVED EMAIL ==========
         const savedEmail = localStorage.getItem('savedEmail');
@@ -752,22 +796,30 @@
             }
         });
 
-        // ========== CHECK AUTH STATE ==========
+        // ========== CHECK AUTH STATE (IMPROVED) ==========
         auth.onAuthStateChanged((user) => {
+            authChecked = true;
+            authLoading.classList.add('hidden');
+
             if (user) {
+                // ✅ User already logged in - Auto login!
                 isAuthorized = true;
                 overlay.classList.add('hidden');
                 mainApp.style.display = 'block';
                 userEmail.textContent = user.email || 'User';
                 passError.textContent = '';
-                passSuccess.textContent = '✅ Welcome, ' + (user.displayName || user.email) + '!';
+                passSuccess.textContent = '✅ Welcome back, ' + (user.displayName || user.email) + '!';
                 loadAllData();
-                console.log('✅ User logged in:', user.email);
+                console.log('✅ Auto-login successful:', user.email);
+                setTimeout(() => {
+                    passSuccess.textContent = '';
+                }, 3000);
             } else {
+                // ❌ User not logged in - Show login page
                 overlay.classList.remove('hidden');
                 mainApp.style.display = 'none';
                 isAuthorized = false;
-                console.log('👤 User signed out');
+                console.log('👤 User not logged in');
             }
         });
 
@@ -787,7 +839,7 @@
             passSuccess.textContent = '⏳ Signing in...';
 
             auth.signInWithEmailAndPassword(email, password)
-                .then(() => {
+                .then((userCredential) => {
                     // Save email if "Remember me" is checked
                     if (rememberMe.checked) {
                         localStorage.setItem('savedEmail', email);
@@ -799,9 +851,12 @@
                     loginBtn.disabled = false;
                     passSuccess.textContent = '✅ Login successful!';
                     passError.textContent = '';
+                    emailInput.value = '';
+                    passInput.value = '';
                     setTimeout(() => {
                         passSuccess.textContent = '';
                     }, 3000);
+                    console.log('✅ Login successful:', email);
                 })
                 .catch((error) => {
                     loaderContainer.style.display = 'none';
@@ -822,11 +877,18 @@
 
         // ========== LOGOUT ==========
         logoutBtn.addEventListener('click', function() {
-            auth.signOut().then(() => {
-                console.log('✅ User signed out');
-            }).catch((error) => {
-                console.error('Logout error:', error);
-            });
+            auth.signOut()
+                .then(() => {
+                    console.log('✅ User signed out');
+                    localStorage.removeItem('savedEmail');
+                    // Show login page
+                    overlay.classList.remove('hidden');
+                    mainApp.style.display = 'none';
+                    isAuthorized = false;
+                })
+                .catch((error) => {
+                    console.error('Logout error:', error);
+                });
         });
 
         // ========== LOAD DATA FROM FIRESTORE ==========
@@ -936,10 +998,10 @@
             }, () => {});
         }
 
-        console.log('🔥 ABID SIR - FIRESTORE + AUTH (REAL WORKING)');
+        console.log('🔥 ABID SIR - AUTO-LOGIN ENABLED');
+        console.log('✅ Ek baar login karo, page reload ya browser close/open karne par bhi login rahega');
+        console.log('🚪 Logout karne par hi login page aayega');
         console.log('📧 Admin: Add users from Firebase Console → Authentication → Add User');
-        console.log('💾 Email auto-saved in LocalStorage');
-        console.log('👁️ Password toggle button added');
     </script>
 </body>
 </html>
