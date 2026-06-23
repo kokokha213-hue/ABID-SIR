@@ -8,7 +8,7 @@
   <meta name="keywords" content="ABID SIR, gaming, premium, files, membership, PKR, updates">
   <link rel="canonical" href="https://abidsir.gaming">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <!-- Firebase SDKs -->
+  <!-- Firebase SDKs - Lightweight -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <style>
@@ -20,91 +20,94 @@
       background: #080b12;
       display: flex; flex-direction: column; justify-content: center; align-items: center;
       backdrop-filter: blur(6px);
-      transition: opacity 0.6s ease, visibility 0.6s;
+      transition: opacity 0.3s ease, visibility 0.3s;
     }
     #passwordOverlay.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
     .password-box {
-      background: #0f1a2b; padding: 2.8rem 2.5rem; border-radius: 3rem;
-      border: 1px solid #0066aa; box-shadow: 0 0 60px #002b55;
-      text-align: center; max-width: 420px; width: 100%;
+      background: #0f1a2b; padding: 2.5rem 2rem; border-radius: 2.5rem;
+      border: 1px solid #0066aa; box-shadow: 0 0 40px #002b55;
+      text-align: center; max-width: 400px; width: 100%;
     }
-    .password-box h2 { color: #b0daff; font-weight: 400; letter-spacing: 2px; }
+    .password-box h2 { color: #b0daff; font-weight: 400; letter-spacing: 2px; font-size: 1.8rem; }
     .password-box h2 i { color: #00ccff; margin-right: 10px; }
     .password-box input {
-      width: 100%; padding: 0.9rem 1.5rem; margin: 1.5rem 0 1rem;
+      width: 100%; padding: 0.8rem 1.2rem; margin: 1.2rem 0 0.8rem;
       background: #010a14; border: 1px solid #1f4a6b; border-radius: 60px;
       color: white; font-size: 1.1rem; outline: none; transition: 0.2s;
     }
     .password-box input:focus { border-color: #00a6ff; box-shadow: 0 0 20px #0077ff60; }
     .password-box .btn {
-      background: #005f9e; border: none; padding: 0.7rem 2.5rem; border-radius: 60px;
+      background: #005f9e; border: none; padding: 0.6rem 2rem; border-radius: 60px;
       font-weight: 700; color: white; cursor: pointer; font-size: 1rem;
       border: 1px solid #0088d0; box-shadow: 0 0 20px #004c80; transition: 0.2s;
     }
     .password-box .btn:hover { background: #0080cc; transform: scale(1.02); }
     .password-box .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-    .password-box .error-msg { color: #ff6b6b; margin-top: 0.8rem; font-weight: 500; min-height: 1.8rem; }
-    .password-box .success-msg { color: #4ade80; margin-top: 0.8rem; font-weight: 500; min-height: 1.8rem; }
-    .password-box .info-msg { color: #fbbf24; margin-top: 0.8rem; font-weight: 500; min-height: 1.8rem; }
+    .password-box .error-msg { color: #ff6b6b; margin-top: 0.6rem; font-weight: 500; min-height: 1.5rem; }
+    .password-box .success-msg { color: #4ade80; margin-top: 0.6rem; font-weight: 500; min-height: 1.5rem; }
+    .password-box .info-msg { color: #fbbf24; margin-top: 0.6rem; font-weight: 500; min-height: 1.5rem; font-size: 0.9rem; }
     .loader-ring {
-      display: inline-block; width: 40px; height: 40px; margin: 0.5rem auto;
-      border: 4px solid #1a3850; border-top: 4px solid #00ccff; border-radius: 50%;
-      animation: spin 0.9s linear infinite;
+      display: inline-block; width: 30px; height: 30px; margin: 0.3rem auto;
+      border: 3px solid #1a3850; border-top: 3px solid #00ccff; border-radius: 50%;
+      animation: spin 0.7s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     .glass-container {
       max-width: 1300px; width: 100%;
       background: rgba(10, 14, 23, 0.85); backdrop-filter: blur(4px);
-      border-radius: 3rem 3rem 2rem 2rem; padding: 1.8rem 2rem;
+      border-radius: 2.5rem 2.5rem 2rem 2rem; padding: 1.5rem 1.8rem;
       box-shadow: 0 20px 40px rgba(0,0,0,0.8), 0 0 0 1px rgba(0,180,255,0.15);
       border: 1px solid rgba(0,180,255,0.2);
     }
-    .brand-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(0,200,255,0.15); padding-bottom: 1rem; }
-    .logo h1 { font-size: 2.5rem; font-weight: 700; background: linear-gradient(145deg,#a0f0ff,#00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 1px; display: flex; align-items: center; gap: 0.6rem; }
-    .logo i { font-size: 2.2rem; color: #00ccff; -webkit-text-fill-color: #00ccff; filter: drop-shadow(0 0 8px #00a6ff); }
-    .membership-badge { background: #0f1a2b; padding: 0.5rem 1.4rem; border-radius: 40px; font-weight: 600; font-size: 0.9rem; border: 1px solid #00a3ff; box-shadow: 0 0 12px #003b6b; color: #b3e4ff; display: flex; align-items: center; gap: 0.6rem; }
-    .membership-badge i { color: #ffd966; }
+    .brand-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; margin-bottom: 1rem; border-bottom: 1px solid rgba(0,200,255,0.15); padding-bottom: 0.8rem; }
+    .logo h1 { font-size: 2.2rem; font-weight: 700; background: linear-gradient(145deg,#a0f0ff,#00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 1px; display: flex; align-items: center; gap: 0.5rem; }
+    .logo i { font-size: 2rem; color: #00ccff; -webkit-text-fill-color: #00ccff; filter: drop-shadow(0 0 8px #00a6ff); }
+    .membership-badge { background: #0f1a2b; padding: 0.4rem 1.2rem; border-radius: 40px; font-weight: 600; font-size: 0.8rem; border: 1px solid #00a3ff; box-shadow: 0 0 12px #003b6b; color: #b3e4ff; display: flex; align-items: center; gap: 0.5rem; }
 
-    .hero-banner { background: radial-gradient(circle at 20% 30%, #0b2a3f, #03080f); border-radius: 2.5rem; padding: 2rem 2.5rem; margin-bottom: 2.2rem; border: 1px solid #005f8a; box-shadow: 0 0 30px rgba(0,140,255,0.2); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; position: relative; overflow: hidden; }
-    .hero-banner::after { content: "⚡"; font-size: 11rem; opacity: 0.04; position: absolute; right: -1rem; bottom: -2rem; transform: rotate(15deg); color: #00c8ff; pointer-events: none; }
-    .hero-text h2 { font-size: 2.2rem; font-weight: 600; color: #ddf0ff; }
+    .hero-banner { background: radial-gradient(circle at 20% 30%, #0b2a3f, #03080f); border-radius: 2rem; padding: 1.5rem 2rem; margin-bottom: 1.5rem; border: 1px solid #005f8a; box-shadow: 0 0 30px rgba(0,140,255,0.2); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; position: relative; overflow: hidden; }
+    .hero-banner::after { content: "⚡"; font-size: 8rem; opacity: 0.04; position: absolute; right: -1rem; bottom: -2rem; transform: rotate(15deg); color: #00c8ff; pointer-events: none; }
+    .hero-text h2 { font-size: 1.8rem; font-weight: 600; color: #ddf0ff; }
     .hero-text h2 span { color: #00dcff; text-shadow: 0 0 20px #0088ff; }
-    .hero-text p { color: #9fbad0; font-size: 1.1rem; margin-top: 0.5rem; }
-    .cta-whatsapp { background: #1d2b3a; padding: 0.6rem 1.8rem; border-radius: 60px; border: 1px solid #25d366; color: #25d366; font-weight: 600; display: inline-flex; align-items: center; gap: 0.8rem; transition: 0.2s; text-decoration: none; font-size: 1.1rem; box-shadow: 0 0 15px #1f8b4d40; }
+    .hero-text p { color: #9fbad0; font-size: 1rem; margin-top: 0.3rem; }
+    .cta-whatsapp { background: #1d2b3a; padding: 0.5rem 1.5rem; border-radius: 60px; border: 1px solid #25d366; color: #25d366; font-weight: 600; display: inline-flex; align-items: center; gap: 0.6rem; transition: 0.2s; text-decoration: none; font-size: 1rem; box-shadow: 0 0 15px #1f8b4d40; }
     .cta-whatsapp:hover { background: #25d366; color: #0b0d12; transform: scale(1.02); border-color: #9effb2; }
 
-    .stats-grid { display: flex; flex-wrap: wrap; gap: 1.5rem 2.5rem; margin-bottom: 2rem; background: #0b111e80; padding: 0.8rem 1.8rem; border-radius: 60px; border: 1px solid #1b3349; justify-content: center; }
-    .stat-item { display: flex; align-items: center; gap: 0.8rem; font-size: 1rem; color: #b8d0e5; }
-    .stat-item i { color: #00c3ff; width: 1.6rem; font-size: 1.3rem; }
-    .stat-number { font-weight: 700; color: #ddf4ff; background: #142433; padding: 0 0.7rem; border-radius: 30px; font-size: 1.2rem; }
+    .stats-grid { display: flex; flex-wrap: wrap; gap: 1rem 2rem; margin-bottom: 1.5rem; background: #0b111e80; padding: 0.5rem 1.5rem; border-radius: 60px; border: 1px solid #1b3349; justify-content: center; }
+    .stat-item { display: flex; align-items: center; gap: 0.6rem; font-size: 0.9rem; color: #b8d0e5; }
+    .stat-item i { color: #00c3ff; width: 1.4rem; font-size: 1.1rem; }
+    .stat-number { font-weight: 700; color: #ddf4ff; background: #142433; padding: 0 0.6rem; border-radius: 30px; font-size: 1rem; }
 
-    .announce-box { background: #0d1c2b; border-left: 5px solid #00b7ff; padding: 0.8rem 1.8rem; border-radius: 60px; margin-bottom: 2rem; display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; box-shadow: 0 0 15px #00386560; }
-    .announce-box i { color: #00e0ff; font-size: 1.4rem; }
-    .announce-text { color: #c2defa; font-weight: 500; }
+    .announce-box { background: #0d1c2b; border-left: 5px solid #00b7ff; padding: 0.6rem 1.5rem; border-radius: 60px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; box-shadow: 0 0 15px #00386560; }
+    .announce-box i { color: #00e0ff; font-size: 1.2rem; }
+    .announce-text { color: #c2defa; font-weight: 500; font-size: 0.95rem; }
     .announce-text strong { color: #ffd966; }
 
-    .section-title { display: flex; justify-content: space-between; align-items: baseline; margin: 1.2rem 0 0.8rem 0; }
-    .section-title h3 { font-weight: 500; letter-spacing: 2px; color: #b0d5ff; border-bottom: 2px solid #006b9e; padding-bottom: 0.3rem; }
+    .section-title { display: flex; justify-content: space-between; align-items: baseline; margin: 1rem 0 0.6rem 0; }
+    .section-title h3 { font-weight: 500; letter-spacing: 2px; color: #b0d5ff; border-bottom: 2px solid #006b9e; padding-bottom: 0.2rem; font-size: 1.1rem; }
 
-    .file-grid, .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1.8rem; margin-bottom: 2rem; }
-    .file-card, .video-card { background: #0f1a26; border-radius: 1.8rem; padding: 1.2rem 1rem; border: 1px solid #1c3f59; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.6); }
-    .file-card:hover, .video-card:hover { transform: translateY(-6px); border-color: #00a6ff; box-shadow: 0 0 30px #004c7a70; }
-    .file-label, .video-label { background: #002a44; padding: 0.2rem 1rem; border-radius: 40px; display: inline-block; font-size: 0.7rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #8bcbff; border: 1px solid #0077be; margin-bottom: 0.8rem; }
-    .file-card h4, .video-card h4 { font-size: 1.1rem; color: #d8edff; margin-bottom: 0.5rem; }
-    .file-meta, .video-meta { display: flex; justify-content: space-between; font-size: 0.75rem; color: #7797b0; margin: 0.5rem 0 0.8rem 0; }
-    .file-download-btn { background: #003759; border: 1px solid #0080c0; padding: 0.4rem 1rem; border-radius: 60px; font-size: 0.8rem; font-weight: 600; color: #b0e0ff; transition: 0.2s; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; }
+    .file-grid, .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.2rem; margin-bottom: 1.5rem; }
+    .file-card, .video-card { background: #0f1a26; border-radius: 1.5rem; padding: 1rem; border: 1px solid #1c3f59; transition: all 0.2s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.6); }
+    .file-card:hover, .video-card:hover { transform: translateY(-4px); border-color: #00a6ff; box-shadow: 0 0 30px #004c7a70; }
+    .file-label, .video-label { background: #002a44; padding: 0.1rem 0.8rem; border-radius: 40px; display: inline-block; font-size: 0.6rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: #8bcbff; border: 1px solid #0077be; margin-bottom: 0.5rem; }
+    .file-card h4, .video-card h4 { font-size: 1rem; color: #d8edff; margin-bottom: 0.3rem; }
+    .file-meta, .video-meta { display: flex; justify-content: space-between; font-size: 0.7rem; color: #7797b0; margin: 0.3rem 0 0.5rem 0; }
+    .file-download-btn { background: #003759; border: 1px solid #0080c0; padding: 0.3rem 0.8rem; border-radius: 60px; font-size: 0.75rem; font-weight: 600; color: #b0e0ff; transition: 0.2s; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; }
     .file-download-btn:hover { background: #0073b0; color: white; }
     .file-download-btn i { color: #00ccff; }
 
-    .footer-note { margin-top: 2rem; text-align: center; font-size: 0.8rem; color: #43647a; border-top: 1px solid #162b3d; padding-top: 1.5rem; letter-spacing: 1px; }
+    .footer-note { margin-top: 1.5rem; text-align: center; font-size: 0.75rem; color: #43647a; border-top: 1px solid #162b3d; padding-top: 1rem; letter-spacing: 1px; }
 
     @media (max-width: 700px) {
-      .glass-container { padding: 1rem; }
-      .hero-text h2 { font-size: 1.6rem; }
-      .logo h1 { font-size: 1.8rem; }
-      .stats-grid { border-radius: 30px; padding: 0.5rem 1rem; gap: 0.8rem; }
-      .password-box { padding: 2rem 1.5rem; }
+      .glass-container { padding: 0.8rem; }
+      .hero-text h2 { font-size: 1.4rem; }
+      .logo h1 { font-size: 1.6rem; }
+      .stats-grid { border-radius: 30px; padding: 0.4rem 0.8rem; gap: 0.5rem; }
+      .password-box { padding: 1.5rem 1rem; }
+      .file-grid, .video-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    }
+    @media (max-width: 480px) {
+      .file-grid, .video-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -113,7 +116,7 @@
 <div id="passwordOverlay">
   <div class="password-box">
     <h2><i class="fas fa-lock"></i> ABID SIR</h2>
-    <p style="color:#8ab4d6; margin-bottom:0.2rem;">Enter access key</p>
+    <p style="color:#8ab4d6; font-size:0.85rem;">Enter access key</p>
     <input type="password" id="passInput" placeholder="••••••••" autofocus>
     <button class="btn" id="passBtn"><i class="fas fa-key"></i> Unlock</button>
     <div id="loaderContainer" style="display:none;"><div class="loader-ring"></div></div>
@@ -145,13 +148,13 @@
 
   <div class="announce-box">
     <i class="fas fa-bullhorn"></i>
-    <div class="announce-text" id="announceText"><strong>📢</strong> Loading announcements...</div>
+    <div class="announce-text" id="announceText"><strong>📢</strong> Loading...</div>
   </div>
 
-  <div class="section-title"><h3><i class="fas fa-folder-open" style="margin-right:10px;"></i> Game Files</h3></div>
+  <div class="section-title"><h3><i class="fas fa-folder-open" style="margin-right:8px;"></i> Game Files</h3></div>
   <div class="file-grid" id="fileGrid"></div>
 
-  <div class="section-title"><h3><i class="fas fa-video" style="margin-right:10px;"></i> Gaming Videos</h3></div>
+  <div class="section-title"><h3><i class="fas fa-video" style="margin-right:8px;"></i> Gaming Videos</h3></div>
   <div class="video-grid" id="videoGrid"></div>
 
   <div class="footer-note"><i class="fas fa-shield-alt"></i> ABID SIR · premium gaming · secure member access</div>
@@ -159,7 +162,7 @@
 
 <script>
   // ============================================================
-  // FIREBASE CONFIG - FIRESTORE
+  // FIREBASE CONFIG - FAST FIRESTORE
   // ============================================================
   const firebaseConfig = {
     apiKey: "AIzaSyALnJyYqSpgZeapdNUkAKkwImgijuG935g",
@@ -173,11 +176,13 @@
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
-  console.log('✅ Firestore initialized');
+  
+  // Enable offline persistence for speed
+  db.enablePersistence().catch(() => {});
 
-  // ========== Password state ==========
-  let currentPassword = "gaming2026";
-  let passwordLoaded = false;
+  // ========== FAST PASSWORD LOAD ==========
+  let currentPassword = "ABID123"; // Direct from your Firestore screenshot
+  let passwordLoaded = true; // Immediately ready
   let isAuthorized = false;
 
   // ========== DOM REFS ==========
@@ -190,126 +195,66 @@
   const passInfo = document.getElementById('passInfo');
   const loaderContainer = document.getElementById('loaderContainer');
 
-  // ========== VERIFY FUNCTION ==========
+  // Show password hint
+  passInfo.textContent = '🔑 Password: ABID123';
+
+  // ========== VERIFY ==========
   function verifyPassword(entered) {
-    console.log('🔑 Entered:', entered);
-    console.log('🔑 Current password:', currentPassword);
-    
     if (entered === currentPassword) {
       isAuthorized = true;
       overlay.classList.add('hidden');
       mainApp.style.display = 'block';
       passError.textContent = '';
-      passSuccess.textContent = '✅ Access Granted!';
+      passSuccess.textContent = '✅ Welcome!';
       loadAllData();
       return true;
     } else {
-      passError.textContent = "❌ Incorrect Key, Please Try Again.";
+      passError.textContent = "❌ Incorrect Key, Try Again.";
       passSuccess.textContent = '';
       return false;
     }
   }
 
-  // ========== LOGIN BUTTON ==========
+  // ========== LOGIN ==========
   passBtn.addEventListener('click', function() {
     const entered = passInput.value.trim();
-    if (!entered) {
-      passError.textContent = 'Please enter a key.';
-      return;
-    }
+    if (!entered) { passError.textContent = 'Please enter a key.'; return; }
 
     passBtn.disabled = true;
     loaderContainer.style.display = 'block';
     passError.textContent = '⏳ Verifying...';
-    passSuccess.textContent = '';
 
-    const delay = 2000 + Math.random() * 1000;
     setTimeout(() => {
       loaderContainer.style.display = 'none';
       passBtn.disabled = false;
       const ok = verifyPassword(entered);
-      if (!ok) {
-        passInput.value = '';
-        passInput.focus();
-      }
-    }, delay);
+      if (!ok) { passInput.value = ''; passInput.focus(); }
+    }, 800); // Super fast 800ms
   });
 
   passInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') passBtn.click();
   });
 
-  // ========== LOAD PASSWORD FROM FIRESTORE ==========
-  function loadPasswordFromFirestore() {
-    passInfo.textContent = '⏳ Loading password from Firestore...';
-    passBtn.disabled = true;
-
-    // Try to get password from your Firestore collection
-    // Based on your screenshot: collection "content", document "password"
-    db.collection('content').doc('password').get()
-      .then(doc => {
-        if (doc.exists) {
-          const data = doc.data();
-          // Try different field names
-          currentPassword = data.password || data.value || data.pass || "gaming2026";
-          console.log('✅ Password loaded from Firestore:', currentPassword);
-          passSuccess.textContent = '✅ Password loaded from server!';
-          passInfo.textContent = '🔑 Password: "' + currentPassword + '" (enter this)';
-        } else {
-          console.log('ℹ️ No password document found');
-          // Try alternative path - maybe it's in a different collection
-          return db.collection('config').doc('password').get();
-        }
-        passwordLoaded = true;
-        passBtn.disabled = false;
-        passInput.focus();
-        setTimeout(() => { passSuccess.textContent = ''; }, 3000);
-      })
-      .then(doc => {
-        if (doc && doc.exists) {
-          const data = doc.data();
-          currentPassword = data.password || data.value || data.pass || "gaming2026";
-          console.log('✅ Password loaded from Firestore (config):', currentPassword);
-          passSuccess.textContent = '✅ Password loaded from server!';
-          passInfo.textContent = '🔑 Password: "' + currentPassword + '" (enter this)';
-          passwordLoaded = true;
-          passBtn.disabled = false;
-          passInput.focus();
-        }
-      })
-      .catch(err => {
-        console.error('❌ Firestore error:', err.message);
-        // If Firestore fails, use the password from your screenshot
-        currentPassword = "ABID123"; // From your screenshot!
-        passwordLoaded = true;
-        passBtn.disabled = false;
-        passInput.focus();
-        passInfo.textContent = '🔑 Using password from Firestore: "ABID123"';
-        passError.textContent = '';
-        console.log('ℹ️ Using password: ABID123 (from your Firestore)');
-      });
-  }
-
-  // Start loading
-  loadPasswordFromFirestore();
-
-  // ========== LOAD DATA FROM FIRESTORE ==========
+  // ========== LOAD DATA FAST ==========
   function loadAllData() {
-    // Load Announcement
+    // Load Announcement - Fast
     db.collection('content').doc('announcement').get()
       .then(doc => {
         const el = document.getElementById('announceText');
         if (doc.exists) {
           const data = doc.data();
-          el.innerHTML = `<strong>📢</strong> ${data.text || data.value || data.message || 'No announcement'}`;
+          el.innerHTML = `<strong>📢</strong> ${data.text || data.value || 'Welcome!'}`;
+        } else {
+          el.innerHTML = '<strong>📢</strong> Welcome to ABID SIR!';
         }
       })
       .catch(() => {
-        document.getElementById('announceText').innerHTML = '<strong>📢</strong> No announcement yet.';
+        document.getElementById('announceText').innerHTML = '<strong>📢</strong> Welcome to ABID SIR!';
       });
 
-    // Load Files
-    db.collection('files').orderBy('timestamp', 'desc').get()
+    // Load Files - Fast
+    db.collection('files').orderBy('timestamp', 'desc').limit(20).get()
       .then(snapshot => {
         const grid = document.getElementById('fileGrid');
         grid.innerHTML = '';
@@ -327,9 +272,9 @@
               <h4>${file.title || 'Untitled'}</h4>
               <div class="file-meta"><span>${file.version || 'v1'}</span> <span>${file.size || '—'}</span></div>
               <div class="file-download-btn" data-id="${doc.id}" data-link="${fileLink}">
-                <i class="fas fa-download"></i> Download (${file.downloads||0})
+                <i class="fas fa-download"></i> ${file.downloads||0}
               </div>
-              <div style="font-size:0.65rem; color:#3d6e8a; margin-top:0.3rem;">⬆️ ${file.updated || 'recent'}</div>
+              <div style="font-size:0.6rem; color:#3d6e8a; margin-top:0.2rem;">⬆️ ${file.updated || 'new'}</div>
             `;
             grid.appendChild(card);
             count++;
@@ -363,13 +308,12 @@
           document.getElementById('fileCount').textContent = '0';
         }
       })
-      .catch(err => {
-        console.error('Error loading files:', err);
+      .catch(() => {
         document.getElementById('fileCount').textContent = '0';
       });
 
-    // Load Videos
-    db.collection('videos').orderBy('timestamp', 'desc').get()
+    // Load Videos - Fast
+    db.collection('videos').orderBy('timestamp', 'desc').limit(20).get()
       .then(snapshot => {
         const grid = document.getElementById('videoGrid');
         grid.innerHTML = '';
@@ -384,20 +328,18 @@
             card.innerHTML = `
               <div class="video-label"><i class="fas fa-play"></i> ${vid.label || 'GAMING'}</div>
               <h4>${vid.title || 'Video'}</h4>
-              ${isEmbed ? `<div style="aspect-ratio:16/9; background:#000; border-radius:1rem; margin:0.5rem 0;"><iframe src="${videoUrl}" style="width:100%;height:100%;border:none;border-radius:1rem;" allowfullscreen></iframe></div>` 
-                        : videoUrl ? `<div style="aspect-ratio:16/9; background:#0a1a2a; border-radius:1rem; margin:0.5rem 0; display:flex; align-items:center; justify-content:center; color:#3d7a9a;"><a href="${videoUrl}" target="_blank" style="color:#00ccff;text-decoration:none;"><i class="fas fa-play-circle" style="font-size:3rem;"></i><br>Watch Video</a></div>`
-                        : `<div style="aspect-ratio:16/9; background:#0a1a2a; border-radius:1rem; margin:0.5rem 0; display:flex; align-items:center; justify-content:center; color:#3d7a9a;"><i class="fas fa-film" style="font-size:2rem;"></i></div>`}
+              ${isEmbed ? `<div style="aspect-ratio:16/9; background:#000; border-radius:0.8rem; margin:0.3rem 0;"><iframe src="${videoUrl}" style="width:100%;height:100%;border:none;border-radius:0.8rem;" allowfullscreen loading="lazy"></iframe></div>` 
+                        : videoUrl ? `<div style="aspect-ratio:16/9; background:#0a1a2a; border-radius:0.8rem; margin:0.3rem 0; display:flex; align-items:center; justify-content:center; color:#3d7a9a;"><a href="${videoUrl}" target="_blank" style="color:#00ccff;text-decoration:none;font-size:0.8rem;"><i class="fas fa-play-circle" style="font-size:2rem;display:block;"></i>Watch</a></div>`
+                        : `<div style="aspect-ratio:16/9; background:#0a1a2a; border-radius:0.8rem; margin:0.3rem 0; display:flex; align-items:center; justify-content:center; color:#3d7a9a;"><i class="fas fa-film" style="font-size:1.5rem;"></i></div>`}
               <div class="video-meta"><span>${vid.views || 0} views</span> <span>${vid.date || 'new'}</span></div>
             `;
             grid.appendChild(card);
           });
         }
       })
-      .catch(err => {
-        console.error('Error loading videos:', err);
-      });
+      .catch(() => {});
 
-    // Load Counters
+    // Load Counters - Fast
     db.collection('counters').doc('stats').get()
       .then(doc => {
         if (doc.exists) {
@@ -408,11 +350,29 @@
       })
       .catch(() => {});
 
-    // Update visitor counter
+    // Update visitor counter - Async, doesn't block
     db.collection('counters').doc('stats').update({
       visitors: firebase.firestore.FieldValue.increment(1)
     }).catch(() => {});
   }
+
+  // ========== AUTO-LOAD PASSWORD FROM FIRESTORE (background) ==========
+  // This runs in background and updates password if changed
+  db.collection('content').doc('password').get()
+    .then(doc => {
+      if (doc.exists) {
+        const data = doc.data();
+        const newPass = data.password || data.value || data.pass;
+        if (newPass && newPass !== currentPassword) {
+          currentPassword = newPass;
+          passInfo.textContent = '🔑 Password: "' + currentPassword + '"';
+          console.log('✅ Password updated from Firestore:', currentPassword);
+        }
+      }
+    })
+    .catch(() => {
+      // Silent fail - already have default password
+    });
 </script>
 </body>
 </html>
