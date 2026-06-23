@@ -8,7 +8,7 @@
   <meta name="keywords" content="ABID SIR, gaming, premium, files, membership, PKR, updates">
   <link rel="canonical" href="https://abidsir.gaming">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <!-- Firebase SDKs - Lightweight -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <style>
@@ -46,6 +46,7 @@
     .password-box .error-msg { color: #ff6b6b; margin-top: 0.6rem; font-weight: 500; min-height: 1.5rem; }
     .password-box .success-msg { color: #4ade80; margin-top: 0.6rem; font-weight: 500; min-height: 1.5rem; }
     .password-box .info-msg { color: #fbbf24; margin-top: 0.6rem; font-weight: 500; min-height: 1.5rem; font-size: 0.9rem; }
+    .password-box .live-msg { color: #00ccff; margin-top: 0.3rem; font-size: 0.75rem; opacity: 0.7; }
     .loader-ring {
       display: inline-block; width: 30px; height: 30px; margin: 0.3rem auto;
       border: 3px solid #1a3850; border-top: 3px solid #00ccff; border-radius: 50%;
@@ -98,6 +99,22 @@
 
     .footer-note { margin-top: 1.5rem; text-align: center; font-size: 0.75rem; color: #43647a; border-top: 1px solid #162b3d; padding-top: 1rem; letter-spacing: 1px; }
 
+    .live-badge {
+      display: inline-block;
+      background: #00ccff22;
+      color: #00ccff;
+      font-size: 0.6rem;
+      padding: 0.1rem 0.6rem;
+      border-radius: 40px;
+      border: 1px solid #00ccff44;
+      margin-left: 0.5rem;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
     @media (max-width: 700px) {
       .glass-container { padding: 0.8rem; }
       .hero-text h2 { font-size: 1.4rem; }
@@ -123,12 +140,13 @@
     <div class="error-msg" id="passError"></div>
     <div class="success-msg" id="passSuccess"></div>
     <div class="info-msg" id="passInfo"></div>
+    <div class="live-msg" id="liveStatus"><i class="fas fa-circle" style="color:#00ccff;font-size:0.5rem;"></i> Live sync enabled</div>
   </div>
 </div>
 
 <div class="glass-container" id="mainApp" style="display:none;">
   <div class="brand-bar">
-    <div class="logo"><h1><i class="fas fa-crown"></i> ABID SIR</h1></div>
+    <div class="logo"><h1><i class="fas fa-crown"></i> ABID SIR <span class="live-badge"><i class="fas fa-sync-alt"></i> LIVE</span></h1></div>
     <div class="membership-badge"><i class="fas fa-star"></i> 2000 PKR / month</div>
   </div>
 
@@ -162,7 +180,7 @@
 
 <script>
   // ============================================================
-  // FIREBASE CONFIG - FAST FIRESTORE
+  // FIREBASE CONFIG
   // ============================================================
   const firebaseConfig = {
     apiKey: "AIzaSyALnJyYqSpgZeapdNUkAKkwImgijuG935g",
@@ -173,16 +191,12 @@
     appId: "1:870139030210:web:5237413bfcf9ba0c59a95b"
   };
 
-  // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
-  
-  // Enable offline persistence for speed
   db.enablePersistence().catch(() => {});
 
-  // ========== FAST PASSWORD LOAD ==========
-  let currentPassword = "ABID123"; // Direct from your Firestore screenshot
-  let passwordLoaded = true; // Immediately ready
+  // ========== PASSWORD STATE ==========
+  let currentPassword = "ABID123";
   let isAuthorized = false;
 
   // ========== DOM REFS ==========
@@ -193,10 +207,45 @@
   const passError = document.getElementById('passError');
   const passSuccess = document.getElementById('passSuccess');
   const passInfo = document.getElementById('passInfo');
+  const liveStatus = document.getElementById('liveStatus');
   const loaderContainer = document.getElementById('loaderContainer');
 
-  // Show password hint
-  passInfo.textContent = '🔑 Password: ABID123';
+  // ========== REAL-TIME PASSWORD LISTENER ==========
+  // This listens for changes in Firestore and updates password instantly!
+  db.collection('content').doc('password').onSnapshot(
+    (doc) => {
+      if (doc.exists) {
+        const data = doc.data();
+        const newPass = data.password || data.value || data.pass;
+        if (newPass) {
+          const oldPass = currentPassword;
+          currentPassword = newPass;
+          
+          // Show the updated password on screen
+          passInfo.textContent = '🔑 Current password: "' + currentPassword + '"';
+          passInfo.style.color = '#4ade80';
+          
+          console.log('✅ Password updated from Firestore:', currentPassword);
+          
+          // Visual notification that password changed
+          if (oldPass !== currentPassword) {
+            passInfo.textContent = '🔄 Password updated! New key: "' + currentPassword + '"';
+            setTimeout(() => {
+              passInfo.textContent = '🔑 Current password: "' + currentPassword + '"';
+            }, 3000);
+          }
+        }
+      }
+    },
+    (error) => {
+      console.log('⚠️ Password listener error:', error);
+      liveStatus.textContent = '⚠️ Offline mode';
+      liveStatus.style.color = '#fbbf24';
+    }
+  );
+
+  // Show current password on load
+  passInfo.textContent = '🔑 Current password: "' + currentPassword + '"';
 
   // ========== VERIFY ==========
   function verifyPassword(entered) {
@@ -229,31 +278,29 @@
       passBtn.disabled = false;
       const ok = verifyPassword(entered);
       if (!ok) { passInput.value = ''; passInput.focus(); }
-    }, 800); // Super fast 800ms
+    }, 800);
   });
 
   passInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') passBtn.click();
   });
 
-  // ========== LOAD DATA FAST ==========
+  // ========== LOAD DATA ==========
   function loadAllData() {
-    // Load Announcement - Fast
+    // Announcement
     db.collection('content').doc('announcement').get()
       .then(doc => {
         const el = document.getElementById('announceText');
         if (doc.exists) {
           const data = doc.data();
           el.innerHTML = `<strong>📢</strong> ${data.text || data.value || 'Welcome!'}`;
-        } else {
-          el.innerHTML = '<strong>📢</strong> Welcome to ABID SIR!';
         }
       })
       .catch(() => {
         document.getElementById('announceText').innerHTML = '<strong>📢</strong> Welcome to ABID SIR!';
       });
 
-    // Load Files - Fast
+    // Files
     db.collection('files').orderBy('timestamp', 'desc').limit(20).get()
       .then(snapshot => {
         const grid = document.getElementById('fileGrid');
@@ -312,7 +359,7 @@
         document.getElementById('fileCount').textContent = '0';
       });
 
-    // Load Videos - Fast
+    // Videos
     db.collection('videos').orderBy('timestamp', 'desc').limit(20).get()
       .then(snapshot => {
         const grid = document.getElementById('videoGrid');
@@ -339,7 +386,7 @@
       })
       .catch(() => {});
 
-    // Load Counters - Fast
+    // Counters
     db.collection('counters').doc('stats').get()
       .then(doc => {
         if (doc.exists) {
@@ -350,29 +397,23 @@
       })
       .catch(() => {});
 
-    // Update visitor counter - Async, doesn't block
+    // Visitor counter
     db.collection('counters').doc('stats').update({
       visitors: firebase.firestore.FieldValue.increment(1)
     }).catch(() => {});
   }
 
-  // ========== AUTO-LOAD PASSWORD FROM FIRESTORE (background) ==========
-  // This runs in background and updates password if changed
-  db.collection('content').doc('password').get()
-    .then(doc => {
+  // ========== REAL-TIME ANNOUNCEMENT LISTENER ==========
+  db.collection('content').doc('announcement').onSnapshot(
+    (doc) => {
+      const el = document.getElementById('announceText');
       if (doc.exists) {
         const data = doc.data();
-        const newPass = data.password || data.value || data.pass;
-        if (newPass && newPass !== currentPassword) {
-          currentPassword = newPass;
-          passInfo.textContent = '🔑 Password: "' + currentPassword + '"';
-          console.log('✅ Password updated from Firestore:', currentPassword);
-        }
+        el.innerHTML = `<strong>📢</strong> ${data.text || data.value || 'Welcome!'}`;
       }
-    })
-    .catch(() => {
-      // Silent fail - already have default password
-    });
+    },
+    () => {}
+  );
 </script>
 </body>
 </html>
