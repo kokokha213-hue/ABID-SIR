@@ -116,6 +116,7 @@
             color: #3a6a8a;
             font-size: 1rem;
             transition: 0.3s;
+            z-index: 2;
         }
         .login-box .input-group input {
             width: 100%;
@@ -137,6 +138,54 @@
         }
         .login-box .input-group input::placeholder {
             color: #3a5a7a;
+        }
+
+        /* Password toggle button */
+        .login-box .input-group .toggle-pass {
+            position: absolute;
+            right: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #3a6a8a;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+            z-index: 2;
+            background: transparent;
+            border: none;
+            padding: 0.3rem;
+        }
+        .login-box .input-group .toggle-pass:hover {
+            color: #00ccff;
+        }
+
+        .login-box .remember-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 0.5rem 0 1.2rem 0;
+            font-size: 0.85rem;
+            color: #6a8fa8;
+        }
+        .login-box .remember-group label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+        .login-box .remember-group input[type="checkbox"] {
+            accent-color: #00ccff;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        .login-box .remember-group a {
+            color: #00ccff;
+            text-decoration: none;
+            font-size: 0.8rem;
+        }
+        .login-box .remember-group a:hover {
+            text-decoration: underline;
         }
 
         .login-box .btn {
@@ -549,6 +598,11 @@
                 grid-template-columns: 1fr 1fr;
                 gap: 0.8rem;
             }
+            .remember-group {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: flex-start !important;
+            }
         }
         @media (max-width: 480px) {
             .file-grid,
@@ -570,9 +624,21 @@
                 <i class="fas fa-envelope"></i>
                 <input type="email" id="emailInput" placeholder="Email address" autocomplete="email">
             </div>
+
             <div class="input-group">
                 <i class="fas fa-lock"></i>
                 <input type="password" id="passInput" placeholder="Password" autocomplete="current-password">
+                <button class="toggle-pass" id="togglePass" type="button">
+                    <i class="fas fa-eye" id="eyeIcon"></i>
+                </button>
+            </div>
+
+            <div class="remember-group">
+                <label>
+                    <input type="checkbox" id="rememberMe" checked>
+                    <i class="fas fa-check-circle" style="color:#00ccff;"></i> Remember me
+                </label>
+                <a href="#" onclick="alert('Contact admin to reset password.')">Forgot password?</a>
             </div>
 
             <button class="btn" id="loginBtn"><i class="fas fa-sign-in-alt"></i> Sign In</button>
@@ -630,7 +696,7 @@
 
     <script>
         // ============================================================
-        // FIREBASE CONFIG - FIRESTORE + AUTH
+        // FIREBASE CONFIG
         // ============================================================
         const firebaseConfig = {
             apiKey: "AIzaSyALnJyYqSpgZeapdNUkAKkwImgijuG935g",
@@ -644,8 +710,6 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
-
-        // Enable offline persistence
         db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
 
         // ========== DOM REFS ==========
@@ -660,8 +724,33 @@
         const loaderContainer = document.getElementById('loaderContainer');
         const userEmail = document.getElementById('userEmail');
         const logoutBtn = document.getElementById('logoutBtn');
+        const rememberMe = document.getElementById('rememberMe');
+        const togglePass = document.getElementById('togglePass');
+        const eyeIcon = document.getElementById('eyeIcon');
 
         let isAuthorized = false;
+
+        // ========== LOAD SAVED EMAIL ==========
+        const savedEmail = localStorage.getItem('savedEmail');
+        if (savedEmail) {
+            emailInput.value = savedEmail;
+            rememberMe.checked = true;
+        }
+
+        // ========== PASSWORD TOGGLE ==========
+        let passwordVisible = false;
+        togglePass.addEventListener('click', function() {
+            passwordVisible = !passwordVisible;
+            if (passwordVisible) {
+                passInput.type = 'text';
+                eyeIcon.className = 'fas fa-eye-slash';
+                eyeIcon.style.color = '#00ccff';
+            } else {
+                passInput.type = 'password';
+                eyeIcon.className = 'fas fa-eye';
+                eyeIcon.style.color = '#3a6a8a';
+            }
+        });
 
         // ========== CHECK AUTH STATE ==========
         auth.onAuthStateChanged((user) => {
@@ -699,12 +788,17 @@
 
             auth.signInWithEmailAndPassword(email, password)
                 .then(() => {
+                    // Save email if "Remember me" is checked
+                    if (rememberMe.checked) {
+                        localStorage.setItem('savedEmail', email);
+                    } else {
+                        localStorage.removeItem('savedEmail');
+                    }
+
                     loaderContainer.style.display = 'none';
                     loginBtn.disabled = false;
                     passSuccess.textContent = '✅ Login successful!';
                     passError.textContent = '';
-                    emailInput.value = '';
-                    passInput.value = '';
                     setTimeout(() => {
                         passSuccess.textContent = '';
                     }, 3000);
@@ -844,7 +938,8 @@
 
         console.log('🔥 ABID SIR - FIRESTORE + AUTH (REAL WORKING)');
         console.log('📧 Admin: Add users from Firebase Console → Authentication → Add User');
-        console.log('📁 Firestore collections: content, files, videos, counters');
+        console.log('💾 Email auto-saved in LocalStorage');
+        console.log('👁️ Password toggle button added');
     </script>
 </body>
 </html>
