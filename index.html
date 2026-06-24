@@ -596,6 +596,31 @@
             transform: scale(1.05);
         }
 
+        /* ===== WHATSAPP CONTACT BUTTON ===== */
+        .whatsapp-contact {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(37, 211, 102, 0.15);
+            border: 1px solid rgba(37, 211, 102, 0.3);
+            color: #25d366;
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+            font-family: 'Exo 2', sans-serif;
+        }
+        .whatsapp-contact:hover {
+            background: rgba(37, 211, 102, 0.25);
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(37, 211, 102, 0.15);
+        }
+        .whatsapp-contact i {
+            font-size: 1.1rem;
+        }
+
         /* ===== HERO BANNER ===== */
         .hero-banner {
             background: radial-gradient(circle at 20% 30%, rgba(11, 42, 63, 0.6), rgba(3, 8, 15, 0.8));
@@ -634,6 +659,12 @@
             margin-top: 0.3rem;
             font-weight: 300;
             letter-spacing: 1px;
+        }
+        .hero-actions {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            align-items: center;
         }
         .cta-whatsapp {
             background: rgba(29, 43, 58, 0.8);
@@ -1198,6 +1229,7 @@
             .premium-footer { flex-direction: column; text-align: center; }
             .premium-footer .version { text-align: center; }
             .activity-section { padding: 0.8rem; }
+            .hero-actions { width: 100%; justify-content: center; }
         }
         @media (max-width: 480px) {
             .file-grid { grid-template-columns: 1fr; }
@@ -1281,6 +1313,11 @@
                     </div>
                 </div>
 
+                <!-- WhatsApp Contact Button -->
+                <a href="https://wa.me/923449322566" target="_blank" class="whatsapp-contact">
+                    <i class="fab fa-whatsapp"></i> Contact
+                </a>
+
                 <div class="membership-badge"><i class="fas fa-star"></i> 2000 PKR / month</div>
                 <div class="user-badge"><i class="fas fa-user-circle"></i> <span id="userEmail">User</span></div>
                 <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -1293,7 +1330,11 @@
                 <h2>🔥 <span>Premium</span> Gaming Vault</h2>
                 <p>Exclusive files · daily updates · neon speed</p>
             </div>
-            <a href="#" class="cta-whatsapp"><i class="fab fa-whatsapp"></i> Contact</a>
+            <div class="hero-actions">
+                <a href="https://wa.me/923449322566" target="_blank" class="cta-whatsapp">
+                    <i class="fab fa-whatsapp"></i> Contact on WhatsApp
+                </a>
+            </div>
         </div>
 
         <!-- Stats -->
@@ -1354,7 +1395,7 @@
                 <a href="#"><i class="fab fa-discord"></i></a>
                 <a href="#"><i class="fab fa-twitter"></i></a>
                 <a href="#"><i class="fab fa-youtube"></i></a>
-                <a href="#"><i class="fab fa-github"></i></a>
+                <a href="https://wa.me/923449322566" target="_blank"><i class="fab fa-whatsapp" style="color:#25d366;"></i></a>
             </div>
             <div class="version">
                 <span class="live-dot"></span> v2.0 · Last updated: <span id="lastUpdated">Loading...</span>
@@ -1647,7 +1688,6 @@
             notifDropdown.classList.toggle('open');
             if (notifDropdown.classList.contains('open')) {
                 renderNotifications();
-                // Mark all as read when opened (optional)
             }
         });
 
@@ -1776,7 +1816,6 @@
                     if (ticker) {
                         ticker.innerHTML = `<span><strong>📢</strong> ${text}</span>`;
                     }
-                    // Add to activity
                     addActivity('announce', 'New Announcement', text.substring(0, 40) + '...');
                     addNotification('📢 Announcement', text.substring(0, 60) + '...', 'announce', 'Just now');
                 } else {
@@ -1847,7 +1886,6 @@
                         grid.appendChild(card);
                     });
 
-                    // Activity & Notification for new video
                     const latest = snapshot.docs[0];
                     if (latest) {
                         const data = latest.data();
@@ -1855,7 +1893,6 @@
                         addNotification('🎬 New Video', data.title || 'Untitled', 'video', 'Just now');
                     }
 
-                    // Watch buttons
                     document.querySelectorAll('.video-card .watch-btn').forEach(btn => {
                         btn.addEventListener('click', function(e) {
                             e.stopPropagation();
@@ -1930,7 +1967,6 @@
                     });
                     document.getElementById('fileCount').textContent = fileCount;
 
-                    // Activity & Notification for new file
                     const latest = snapshot.docs[0];
                     if (latest) {
                         const data = latest.data();
@@ -1984,6 +2020,7 @@
         console.log('✅ Notification Center added');
         console.log('✅ Recent Activity Feed added');
         console.log('✅ Premium Footer added');
+        console.log('✅ WhatsApp Number: 03449322566 added');
         console.log('✅ All existing features UNCHANGED');
     </script>
 </body>
