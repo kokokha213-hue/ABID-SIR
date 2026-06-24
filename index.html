@@ -16,7 +16,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <style>
         /* ============================================================
-           PREMIUM UI - VISUAL UPGRADE ONLY
+           PREMIUM GAMING BACKGROUND - HIGH END
            All functionality remains UNCHANGED
            ============================================================ */
         
@@ -27,7 +27,7 @@
         }
 
         body {
-            background: #080b14;
+            background: #05080f;
             color: #e3e9f0;
             min-height: 100vh;
             font-family: 'Exo 2', 'Segoe UI', sans-serif;
@@ -35,88 +35,228 @@
             position: relative;
         }
 
-        /* ===== ANIMATED BACKGROUND ===== */
-        #particles-canvas {
+        /* ============================================================
+           PREMIUM BACKGROUND LAYER
+           ============================================================ */
+        #bg-layer {
             position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        /* ===== DEEP SPACE GRADIENT ===== */
+        .bg-deep-space {
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse at 20% 30%, rgba(0, 50, 100, 0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 70%, rgba(50, 0, 100, 0.10) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(0, 100, 200, 0.05) 0%, transparent 70%),
+                linear-gradient(180deg, #05080f 0%, #080c1a 40%, #0a1025 70%, #060810 100%);
+            animation: deepPulse 8s ease-in-out infinite;
+        }
+        @keyframes deepPulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        /* ===== ANIMATED GRID LINES ===== */
+        .grid-lines {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(0, 200, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 200, 255, 0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridMove 30s linear infinite;
+            opacity: 0.5;
+        }
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(60px, 60px); }
+        }
+
+        /* ===== FLOATING ENERGY ORBS ===== */
+        .energy-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            animation: orbFloat 15s ease-in-out infinite;
+            opacity: 0.4;
+        }
+        .energy-orb.orb-1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(0, 150, 255, 0.12), rgba(0, 100, 200, 0.03));
+            top: -200px;
+            right: -100px;
+            animation-delay: 0s;
+        }
+        .energy-orb.orb-2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(100, 0, 255, 0.10), rgba(50, 0, 150, 0.03));
+            bottom: -150px;
+            left: -100px;
+            animation-delay: 5s;
+        }
+        .energy-orb.orb-3 {
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(0, 255, 200, 0.08), rgba(0, 150, 150, 0.02));
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: 10s;
+        }
+        .energy-orb.orb-4 {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(0, 200, 255, 0.15), rgba(0, 100, 200, 0.04));
+            top: 20%;
+            left: 10%;
+            animation-delay: 3s;
+            animation-duration: 20s;
+        }
+        .energy-orb.orb-5 {
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(150, 0, 255, 0.10), rgba(80, 0, 150, 0.03));
+            bottom: 30%;
+            right: 10%;
+            animation-delay: 7s;
+            animation-duration: 18s;
+        }
+
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            25% { transform: translate(60px, -40px) scale(1.1); opacity: 0.5; }
+            50% { transform: translate(-30px, 50px) scale(0.9); opacity: 0.4; }
+            75% { transform: translate(40px, 30px) scale(1.05); opacity: 0.5; }
+        }
+
+        /* ===== LIGHT STREAKS - ANIMATED ===== */
+        .light-streak-container {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+        .light-streak {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 200, 255, 0.15), rgba(0, 200, 255, 0.30), rgba(0, 200, 255, 0.15), transparent);
+            filter: blur(1px);
+            animation: streakMove 12s linear infinite;
+            width: 100%;
+        }
+        .light-streak:nth-child(1) { top: 15%; animation-delay: 0s; }
+        .light-streak:nth-child(2) { top: 30%; animation-delay: 3s; width: 80%; left: 10%; }
+        .light-streak:nth-child(3) { top: 45%; animation-delay: 6s; width: 90%; left: 5%; }
+        .light-streak:nth-child(4) { top: 60%; animation-delay: 9s; width: 70%; left: 15%; }
+        .light-streak:nth-child(5) { top: 75%; animation-delay: 2s; width: 85%; left: 8%; }
+        .light-streak:nth-child(6) { top: 90%; animation-delay: 5s; width: 75%; left: 12%; }
+
+        @keyframes streakMove {
+            0% { transform: translateX(-100%) scaleX(0.5); opacity: 0; }
+            10% { opacity: 0.3; }
+            50% { transform: translateX(0%) scaleX(1); opacity: 0.6; }
+            90% { opacity: 0.3; }
+            100% { transform: translateX(100%) scaleX(0.5); opacity: 0; }
+        }
+
+        /* ===== VERTICAL LIGHT BEAMS ===== */
+        .light-beam {
+            position: absolute;
+            width: 1px;
+            background: linear-gradient(180deg, transparent, rgba(0, 200, 255, 0.08), rgba(0, 200, 255, 0.15), rgba(0, 200, 255, 0.08), transparent);
+            animation: beamPulse 4s ease-in-out infinite;
+        }
+        .light-beam:nth-child(1) { left: 10%; height: 60%; top: 20%; animation-delay: 0s; }
+        .light-beam:nth-child(2) { left: 25%; height: 40%; top: 30%; animation-delay: 1s; }
+        .light-beam:nth-child(3) { left: 40%; height: 70%; top: 15%; animation-delay: 2s; }
+        .light-beam:nth-child(4) { left: 55%; height: 50%; top: 25%; animation-delay: 0.5s; }
+        .light-beam:nth-child(5) { left: 70%; height: 65%; top: 18%; animation-delay: 1.5s; }
+        .light-beam:nth-child(6) { left: 85%; height: 45%; top: 28%; animation-delay: 2.5s; }
+        .light-beam:nth-child(7) { left: 50%; height: 30%; top: 60%; animation-delay: 3s; }
+
+        @keyframes beamPulse {
+            0%, 100% { opacity: 0.2; transform: scaleY(0.8); }
+            50% { opacity: 0.6; transform: scaleY(1.2); }
+        }
+
+        /* ============================================================
+           PARTICLES - PREMIUM
+           ============================================================ */
+        #particles-canvas {
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 0;
+            z-index: 1;
             pointer-events: none;
         }
-
-        .bg-gradient {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            background: 
-                radial-gradient(ellipse at 20% 50%, rgba(0, 100, 200, 0.08) 0%, transparent 60%),
-                radial-gradient(ellipse at 80% 20%, rgba(100, 0, 200, 0.05) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 80%, rgba(0, 200, 255, 0.04) 0%, transparent 50%);
-            pointer-events: none;
-            animation: gradientShift 15s ease-in-out infinite;
-        }
-        @keyframes gradientShift {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
-        }
-
-        .neon-orb {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(100px);
-            pointer-events: none;
-            z-index: 0;
-            animation: floatOrb 12s ease-in-out infinite;
-        }
-        .neon-orb:nth-child(1) {
-            width: 400px;
-            height: 400px;
-            background: rgba(0, 200, 255, 0.06);
-            top: -150px;
-            right: -150px;
-            animation-delay: 0s;
-        }
-        .neon-orb:nth-child(2) {
-            width: 500px;
-            height: 500px;
-            background: rgba(120, 0, 255, 0.05);
-            bottom: -200px;
-            left: -200px;
-            animation-delay: 4s;
-        }
-        .neon-orb:nth-child(3) {
-            width: 300px;
-            height: 300px;
-            background: rgba(0, 255, 200, 0.04);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            animation-delay: 8s;
-        }
-
-        @keyframes floatOrb {
-            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
-            33% { transform: translate(40px, -30px) scale(1.1); opacity: 0.7; }
-            66% { transform: translate(-30px, 20px) scale(0.9); opacity: 0.5; }
-        }
-
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: #080b14; }
-        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #00ccff, #0066aa); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #00ccff; }
 
         /* ============================================================
-           LOGIN OVERLAY
+           GLASSMORPHISM ATMOSPHERE OVERLAY
+           ============================================================ */
+        .glass-atmosphere {
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse at 30% 40%, rgba(0, 150, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 60%, rgba(100, 0, 255, 0.02) 0%, transparent 40%);
+            backdrop-filter: blur(1px);
+            -webkit-backdrop-filter: blur(1px);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* ============================================================
+           VIGNETTE EFFECT
+           ============================================================ */
+        .vignette {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.4) 100%);
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        /* ============================================================
+           SCAN LINE EFFECT (SUBTLE)
+           ============================================================ */
+        .scan-lines {
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(0deg, 
+                transparent, 
+                transparent 2px, 
+                rgba(0, 200, 255, 0.01) 2px, 
+                rgba(0, 200, 255, 0.01) 4px
+            );
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.3;
+            animation: scanMove 20s linear infinite;
+        }
+        @keyframes scanMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 100px; }
+        }
+
+        /* ============================================================
+           LOGIN OVERLAY (UNCHANGED FUNCTIONALITY)
            ============================================================ */
         #passwordOverlay {
             position: fixed;
             inset: 0;
             z-index: 9999;
-            background: rgba(8, 11, 20, 0.92);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
+            background: rgba(5, 8, 15, 0.85);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -142,13 +282,13 @@
 
         /* ===== LOGIN ANNOUNCEMENT BAR ===== */
         .login-announcement {
-            background: rgba(13, 28, 43, 0.7);
+            background: rgba(13, 28, 43, 0.6);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             border-radius: 60px;
             padding: 0.7rem 1.5rem;
-            border: 1px solid rgba(0, 183, 255, 0.15);
-            box-shadow: 0 0 40px rgba(0, 56, 101, 0.1);
+            border: 1px solid rgba(0, 183, 255, 0.10);
+            box-shadow: 0 0 40px rgba(0, 56, 101, 0.05);
             display: flex;
             align-items: center;
             gap: 0.8rem;
@@ -163,8 +303,8 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 200, 255, 0.05), transparent);
-            animation: shimmer 3s ease-in-out infinite;
+            background: linear-gradient(90deg, transparent, rgba(0, 200, 255, 0.04), transparent);
+            animation: shimmer 4s ease-in-out infinite;
         }
         @keyframes shimmer {
             0% { left: -100%; }
@@ -186,8 +326,8 @@
             z-index: 1;
         }
         @keyframes pulseLive {
-            0%, 100% { opacity: 1; box-shadow: 0 0 20px rgba(255, 0, 64, 0.25); }
-            50% { opacity: 0.7; box-shadow: 0 0 40px rgba(255, 0, 64, 0.5); }
+            0%, 100% { opacity: 1; box-shadow: 0 0 20px rgba(255, 0, 64, 0.20); }
+            50% { opacity: 0.7; box-shadow: 0 0 40px rgba(255, 0, 64, 0.35); }
         }
 
         .login-announcement .announce-icon {
@@ -221,12 +361,12 @@
         }
 
         .feature-badge {
-            background: rgba(15, 26, 43, 0.6);
+            background: rgba(15, 26, 43, 0.5);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border-radius: 60px;
             padding: 0.5rem 0.4rem;
-            border: 1px solid rgba(0, 200, 255, 0.08);
+            border: 1px solid rgba(0, 200, 255, 0.06);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -239,8 +379,8 @@
             min-height: 38px;
         }
         .feature-badge:hover {
-            border-color: rgba(0, 200, 255, 0.3);
-            box-shadow: 0 0 30px rgba(0, 200, 255, 0.05);
+            border-color: rgba(0, 200, 255, 0.20);
+            box-shadow: 0 0 30px rgba(0, 200, 255, 0.04);
             transform: translateY(-2px);
         }
         .feature-badge i {
@@ -262,27 +402,27 @@
         }
 
         .feature-badge.glow-blue {
-            border-color: rgba(0, 200, 255, 0.15);
+            border-color: rgba(0, 200, 255, 0.10);
         }
         .feature-badge.glow-green {
-            border-color: rgba(74, 222, 128, 0.15);
+            border-color: rgba(74, 222, 128, 0.10);
         }
         .feature-badge.glow-gold {
-            border-color: rgba(251, 191, 36, 0.15);
+            border-color: rgba(251, 191, 36, 0.10);
         }
 
         /* ===== LOGIN CARD ===== */
         .login-box {
-            background: rgba(15, 26, 43, 0.55);
+            background: rgba(15, 26, 43, 0.50);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             padding: 2.8rem 2.8rem 2.2rem;
             border-radius: 2.5rem;
-            border: 1px solid rgba(0, 102, 170, 0.15);
+            border: 1px solid rgba(0, 102, 170, 0.10);
             box-shadow: 
                 0 30px 80px rgba(0, 0, 0, 0.5),
-                0 0 60px rgba(0, 50, 100, 0.08),
-                inset 0 1px 0 rgba(255, 255, 255, 0.03);
+                0 0 60px rgba(0, 50, 100, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.02);
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -295,8 +435,8 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: conic-gradient(from 0deg, transparent, rgba(0, 200, 255, 0.03), transparent, rgba(100, 0, 255, 0.03), transparent);
-            animation: rotateGlow 20s linear infinite;
+            background: conic-gradient(from 0deg, transparent, rgba(0, 200, 255, 0.02), transparent, rgba(100, 0, 255, 0.02), transparent);
+            animation: rotateGlow 25s linear infinite;
             pointer-events: none;
         }
         @keyframes rotateGlow {
@@ -305,18 +445,17 @@
 
         .login-box>* { position: relative; z-index: 1; }
 
-        /* ===== LOGO / BRANDING ===== */
         .login-box .brand-icon {
             font-size: 3.8rem;
             color: #00ccff;
             margin-bottom: 0.2rem;
-            filter: drop-shadow(0 0 40px rgba(0, 204, 255, 0.2));
+            filter: drop-shadow(0 0 40px rgba(0, 204, 255, 0.15));
             animation: brandPulse 3s ease-in-out infinite;
             display: inline-block;
         }
         @keyframes brandPulse {
-            0%, 100% { filter: drop-shadow(0 0 30px rgba(0, 204, 255, 0.2)); }
-            50% { filter: drop-shadow(0 0 60px rgba(0, 204, 255, 0.4)); }
+            0%, 100% { filter: drop-shadow(0 0 30px rgba(0, 204, 255, 0.15)); }
+            50% { filter: drop-shadow(0 0 60px rgba(0, 204, 255, 0.30)); }
         }
 
         .login-box h2 {
@@ -330,7 +469,7 @@
             background-clip: text;
             letter-spacing: 4px;
             animation: gradientShift 4s ease-in-out infinite;
-            text-shadow: 0 0 60px rgba(0, 180, 255, 0.15);
+            text-shadow: 0 0 60px rgba(0, 180, 255, 0.10);
         }
         @keyframes gradientShift {
             0%, 100% { background-position: 0% 50%; }
@@ -346,7 +485,6 @@
             font-weight: 300;
         }
 
-        /* ===== INPUT FIELDS ===== */
         .login-box .input-group {
             position: relative;
             margin-bottom: 1.2rem;
@@ -364,8 +502,8 @@
         .login-box .input-group input {
             width: 100%;
             padding: 0.85rem 1.2rem 0.85rem 3.2rem;
-            background: rgba(1, 10, 20, 0.6);
-            border: 1px solid rgba(31, 74, 107, 0.3);
+            background: rgba(1, 10, 20, 0.5);
+            border: 1px solid rgba(31, 74, 107, 0.20);
             border-radius: 60px;
             color: white;
             font-size: 0.95rem;
@@ -374,9 +512,9 @@
             font-family: 'Exo 2', sans-serif;
         }
         .login-box .input-group input:focus {
-            border-color: rgba(0, 166, 255, 0.5);
-            box-shadow: 0 0 40px rgba(0, 119, 255, 0.08);
-            background: rgba(1, 10, 20, 0.8);
+            border-color: rgba(0, 166, 255, 0.30);
+            box-shadow: 0 0 40px rgba(0, 119, 255, 0.05);
+            background: rgba(1, 10, 20, 0.7);
         }
         .login-box .input-group input:focus+i {
             color: #00ccff;
@@ -403,7 +541,6 @@
             color: #00ccff;
         }
 
-        /* ===== LOGIN BUTTON ===== */
         .login-box .btn {
             background: linear-gradient(145deg, #005f9e, #0077cc);
             border: none;
@@ -414,8 +551,8 @@
             cursor: pointer;
             font-size: 1.05rem;
             width: 100%;
-            border: 1px solid rgba(0, 136, 208, 0.3);
-            box-shadow: 0 0 40px rgba(0, 76, 128, 0.2);
+            border: 1px solid rgba(0, 136, 208, 0.20);
+            box-shadow: 0 0 40px rgba(0, 76, 128, 0.15);
             transition: all 0.4s;
             letter-spacing: 3px;
             font-family: 'Exo 2', sans-serif;
@@ -429,7 +566,7 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.04), transparent);
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.03), transparent);
             transform: rotate(45deg);
             transition: 0.6s;
         }
@@ -439,8 +576,8 @@
         .login-box .btn:hover {
             background: linear-gradient(145deg, #0077cc, #0099ee);
             transform: scale(1.02);
-            box-shadow: 0 0 60px rgba(0, 102, 204, 0.3);
-            border-color: rgba(0, 150, 255, 0.4);
+            box-shadow: 0 0 60px rgba(0, 102, 204, 0.20);
+            border-color: rgba(0, 150, 255, 0.30);
         }
         .login-box .btn:disabled {
             opacity: 0.5;
@@ -494,7 +631,7 @@
             content: '';
             flex: 1;
             height: 1px;
-            background: linear-gradient(to right, transparent, rgba(31, 74, 107, 0.3), transparent);
+            background: linear-gradient(to right, transparent, rgba(31, 74, 107, 0.20), transparent);
         }
 
         .login-footer-text {
@@ -522,7 +659,7 @@
             position: fixed;
             inset: 0;
             z-index: 10001;
-            background: rgba(8, 11, 18, 0.97);
+            background: rgba(5, 8, 15, 0.96);
             backdrop-filter: blur(30px);
             -webkit-backdrop-filter: blur(30px);
             display: none;
@@ -540,12 +677,12 @@
         }
 
         @keyframes welcomeFadeIn {
-            from { opacity: 0; transform: scale(1.1); }
+            from { opacity: 0; transform: scale(1.05); }
             to { opacity: 1; transform: scale(1); }
         }
         @keyframes welcomeFadeOut {
             from { opacity: 1; transform: scale(1); }
-            to { opacity: 0; transform: scale(1.1); }
+            to { opacity: 0; transform: scale(1.05); }
         }
 
         #welcomeOverlay .bg-glow {
@@ -558,14 +695,14 @@
         #welcomeOverlay .bg-glow:nth-child(1) {
             width: 600px;
             height: 600px;
-            background: rgba(0, 150, 255, 0.15);
+            background: rgba(0, 150, 255, 0.10);
             top: -200px;
             right: -200px;
         }
         #welcomeOverlay .bg-glow:nth-child(2) {
             width: 500px;
             height: 500px;
-            background: rgba(120, 0, 255, 0.1);
+            background: rgba(120, 0, 255, 0.08);
             bottom: -200px;
             left: -200px;
             animation-delay: 2s;
@@ -573,7 +710,7 @@
         #welcomeOverlay .bg-glow:nth-child(3) {
             width: 400px;
             height: 400px;
-            background: rgba(0, 255, 200, 0.08);
+            background: rgba(0, 255, 200, 0.06);
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -581,8 +718,8 @@
         }
 
         @keyframes welcomeGlowPulse {
-            0%, 100% { opacity: 0.5; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.1); }
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
         }
 
         #welcomeParticles {
@@ -601,31 +738,31 @@
             height: 200%;
             top: -50%;
             left: -50%;
-            background: radial-gradient(ellipse at center, rgba(0, 200, 255, 0.03) 0%, transparent 70%);
+            background: radial-gradient(ellipse at center, rgba(0, 200, 255, 0.02) 0%, transparent 70%);
             animation: energyWave 6s ease-in-out infinite;
             pointer-events: none;
             z-index: 1;
         }
         @keyframes energyWave {
-            0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.3; }
-            50% { transform: rotate(180deg) scale(1.2); opacity: 0.8; }
+            0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.2; }
+            50% { transform: rotate(180deg) scale(1.2); opacity: 0.6; }
         }
 
-        .light-streak {
+        .light-streak-welcome {
             position: absolute;
             width: 100%;
             height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(0, 200, 255, 0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(0, 200, 255, 0.15), transparent);
             pointer-events: none;
             z-index: 1;
-            animation: lightStreak 8s linear infinite;
+            animation: lightStreakWelcome 8s linear infinite;
         }
-        .light-streak:nth-child(1) { top: 20%; animation-delay: 0s; }
-        .light-streak:nth-child(2) { top: 40%; animation-delay: 2s; }
-        .light-streak:nth-child(3) { top: 60%; animation-delay: 4s; }
-        .light-streak:nth-child(4) { top: 80%; animation-delay: 6s; }
+        .light-streak-welcome:nth-child(1) { top: 20%; animation-delay: 0s; }
+        .light-streak-welcome:nth-child(2) { top: 40%; animation-delay: 2s; }
+        .light-streak-welcome:nth-child(3) { top: 60%; animation-delay: 4s; }
+        .light-streak-welcome:nth-child(4) { top: 80%; animation-delay: 6s; }
 
-        @keyframes lightStreak {
+        @keyframes lightStreakWelcome {
             0% { transform: translateX(-100%) scaleX(0.5); opacity: 0; }
             50% { opacity: 1; }
             100% { transform: translateX(100%) scaleX(0.5); opacity: 0; }
@@ -654,7 +791,7 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             animation: gradientShift 3s ease-in-out infinite;
-            text-shadow: 0 0 60px rgba(0, 200, 255, 0.3), 0 0 120px rgba(123, 47, 252, 0.2);
+            text-shadow: 0 0 60px rgba(0, 200, 255, 0.20), 0 0 120px rgba(123, 47, 252, 0.15);
             letter-spacing: 4px;
             line-height: 1.2;
         }
@@ -662,33 +799,33 @@
         .welcome-text .sub-title {
             font-family: 'Exo 2', sans-serif;
             font-size: clamp(0.8rem, 2vw, 1.2rem);
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.4);
             letter-spacing: 8px;
             text-transform: uppercase;
             margin-top: 0.5rem;
             animation: subTitlePulse 2s ease-in-out infinite;
         }
         @keyframes subTitlePulse {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.8; }
         }
 
         .welcome-text .glow-ring {
             display: inline-block;
             margin-top: 1rem;
             padding: 0.3rem 2rem;
-            border: 1px solid rgba(0, 200, 255, 0.2);
+            border: 1px solid rgba(0, 200, 255, 0.15);
             border-radius: 60px;
-            background: rgba(0, 200, 255, 0.05);
+            background: rgba(0, 200, 255, 0.03);
             font-size: clamp(0.6rem, 1.2vw, 0.8rem);
-            color: rgba(0, 200, 255, 0.6);
+            color: rgba(0, 200, 255, 0.5);
             letter-spacing: 4px;
             text-transform: uppercase;
             animation: ringPulse 2s ease-in-out infinite;
         }
         @keyframes ringPulse {
-            0%, 100% { border-color: rgba(0, 200, 255, 0.2); box-shadow: 0 0 20px rgba(0, 200, 255, 0.05); }
-            50% { border-color: rgba(0, 200, 255, 0.5); box-shadow: 0 0 40px rgba(0, 200, 255, 0.1); }
+            0%, 100% { border-color: rgba(0, 200, 255, 0.15); box-shadow: 0 0 20px rgba(0, 200, 255, 0.03); }
+            50% { border-color: rgba(0, 200, 255, 0.35); box-shadow: 0 0 40px rgba(0, 200, 255, 0.06); }
         }
 
         .progress-container {
@@ -700,7 +837,7 @@
         .progress-bar-bg {
             width: 100%;
             height: 4px;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.04);
             border-radius: 10px;
             overflow: hidden;
             position: relative;
@@ -721,7 +858,7 @@
         .progress-text {
             font-family: 'Orbitron', sans-serif;
             font-size: clamp(1rem, 2vw, 1.4rem);
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255, 255, 255, 0.5);
             text-align: center;
             margin-top: 0.8rem;
             letter-spacing: 2px;
@@ -733,19 +870,19 @@
         }
 
         /* ============================================================
-           MAIN APP
+           MAIN APP (UNCHANGED - ALL FEATURES WORKING)
            ============================================================ */
         .glass-container {
             max-width: 1400px;
             width: 100%;
             margin: 0 auto;
-            background: rgba(10, 14, 23, 0.6);
+            background: rgba(10, 14, 23, 0.55);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-radius: 2.5rem;
             padding: 1.8rem 2rem;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 180, 255, 0.05);
-            border: 1px solid rgba(0, 180, 255, 0.06);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 180, 255, 0.03);
+            border: 1px solid rgba(0, 180, 255, 0.04);
             position: relative;
             z-index: 1;
         }
@@ -757,7 +894,7 @@
             justify-content: space-between;
             padding-bottom: 1rem;
             margin-bottom: 1.5rem;
-            border-bottom: 1px solid rgba(0, 200, 255, 0.05);
+            border-bottom: 1px solid rgba(0, 200, 255, 0.04);
         }
 
         .logo h1 {
@@ -777,7 +914,7 @@
             font-size: 2rem;
             color: #00ccff;
             -webkit-text-fill-color: #00ccff;
-            filter: drop-shadow(0 0 20px rgba(0, 204, 255, 0.2));
+            filter: drop-shadow(0 0 20px rgba(0, 204, 255, 0.15));
         }
 
         .right-controls {
@@ -788,12 +925,12 @@
         }
 
         .membership-badge {
-            background: rgba(15, 26, 43, 0.7);
+            background: rgba(15, 26, 43, 0.6);
             padding: 0.4rem 1.2rem;
             border-radius: 40px;
             font-weight: 600;
             font-size: 0.75rem;
-            border: 1px solid rgba(0, 163, 255, 0.15);
+            border: 1px solid rgba(0, 163, 255, 0.10);
             color: #b3e4ff;
             display: flex;
             align-items: center;
@@ -802,11 +939,11 @@
         .membership-badge i { color: #ffd966; }
 
         .user-badge {
-            background: rgba(15, 26, 43, 0.7);
+            background: rgba(15, 26, 43, 0.6);
             padding: 0.4rem 1.2rem;
             border-radius: 40px;
             font-size: 0.75rem;
-            border: 1px solid rgba(74, 222, 128, 0.15);
+            border: 1px solid rgba(74, 222, 128, 0.10);
             color: #4ade80;
             display: flex;
             align-items: center;
@@ -815,8 +952,8 @@
         .user-badge i { color: #4ade80; }
 
         .logout-btn {
-            background: rgba(255, 107, 107, 0.08);
-            border: 1px solid rgba(255, 107, 107, 0.12);
+            background: rgba(255, 107, 107, 0.06);
+            border: 1px solid rgba(255, 107, 107, 0.08);
             color: #ff6b6b;
             padding: 0.4rem 1.2rem;
             border-radius: 40px;
@@ -826,9 +963,9 @@
             font-family: 'Exo 2', sans-serif;
         }
         .logout-btn:hover {
-            background: rgba(255, 107, 107, 0.15);
-            border-color: rgba(255, 107, 107, 0.25);
-            box-shadow: 0 0 30px rgba(255, 107, 107, 0.05);
+            background: rgba(255, 107, 107, 0.12);
+            border-color: rgba(255, 107, 107, 0.18);
+            box-shadow: 0 0 30px rgba(255, 107, 107, 0.03);
             transform: scale(1.02);
         }
 
@@ -836,8 +973,8 @@
             display: inline-flex;
             align-items: center;
             gap: 0.4rem;
-            background: rgba(37, 211, 102, 0.1);
-            border: 1px solid rgba(37, 211, 102, 0.15);
+            background: rgba(37, 211, 102, 0.08);
+            border: 1px solid rgba(37, 211, 102, 0.10);
             color: #25d366;
             padding: 0.4rem 1.2rem;
             border-radius: 40px;
@@ -848,17 +985,17 @@
             font-family: 'Exo 2', sans-serif;
         }
         .whatsapp-contact:hover {
-            background: rgba(37, 211, 102, 0.2);
+            background: rgba(37, 211, 102, 0.15);
             transform: scale(1.02);
-            box-shadow: 0 0 30px rgba(37, 211, 102, 0.05);
+            box-shadow: 0 0 30px rgba(37, 211, 102, 0.03);
         }
 
         .hero-banner {
-            background: radial-gradient(circle at 20% 30%, rgba(11, 42, 63, 0.4), rgba(3, 8, 15, 0.6));
+            background: radial-gradient(circle at 20% 30%, rgba(11, 42, 63, 0.3), rgba(3, 8, 15, 0.5));
             border-radius: 2rem;
             padding: 2rem 2.5rem;
             margin-bottom: 2rem;
-            border: 1px solid rgba(0, 95, 138, 0.15);
+            border: 1px solid rgba(0, 95, 138, 0.08);
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
@@ -869,7 +1006,7 @@
         .hero-banner::after {
             content: "⚡";
             font-size: 8rem;
-            opacity: 0.03;
+            opacity: 0.02;
             position: absolute;
             right: -1rem;
             bottom: -2rem;
@@ -883,7 +1020,7 @@
             font-weight: 700;
             color: #ddf0ff;
         }
-        .hero-text h2 span { color: #00dcff; text-shadow: 0 0 40px rgba(0, 220, 255, 0.15); }
+        .hero-text h2 span { color: #00dcff; text-shadow: 0 0 40px rgba(0, 220, 255, 0.10); }
         .hero-text p {
             color: #9fbad0;
             font-size: 0.95rem;
@@ -893,10 +1030,10 @@
         }
 
         .cta-whatsapp {
-            background: rgba(29, 43, 58, 0.6);
+            background: rgba(29, 43, 58, 0.5);
             padding: 0.6rem 1.8rem;
             border-radius: 60px;
-            border: 1px solid rgba(37, 211, 102, 0.15);
+            border: 1px solid rgba(37, 211, 102, 0.10);
             color: #25d366;
             font-weight: 600;
             display: inline-flex;
@@ -907,10 +1044,10 @@
             font-size: 0.95rem;
         }
         .cta-whatsapp:hover {
-            background: rgba(37, 211, 102, 0.15);
+            background: rgba(37, 211, 102, 0.12);
             transform: scale(1.02);
-            box-shadow: 0 0 40px rgba(37, 211, 102, 0.05);
-            border-color: rgba(37, 211, 102, 0.3);
+            box-shadow: 0 0 40px rgba(37, 211, 102, 0.03);
+            border-color: rgba(37, 211, 102, 0.20);
         }
 
         .stats-grid {
@@ -918,10 +1055,10 @@
             flex-wrap: wrap;
             gap: 0.8rem 2rem;
             margin-bottom: 1.8rem;
-            background: rgba(11, 17, 30, 0.4);
+            background: rgba(11, 17, 30, 0.3);
             padding: 0.6rem 2rem;
             border-radius: 60px;
-            border: 1px solid rgba(27, 51, 73, 0.15);
+            border: 1px solid rgba(27, 51, 73, 0.08);
             justify-content: center;
         }
         .stat-item {
@@ -935,7 +1072,7 @@
         .stat-number {
             font-weight: 700;
             color: #ddf4ff;
-            background: rgba(20, 36, 51, 0.5);
+            background: rgba(20, 36, 51, 0.4);
             padding: 0 0.6rem;
             border-radius: 30px;
             font-size: 1rem;
@@ -943,8 +1080,8 @@
         }
 
         .announcement-ticker {
-            background: rgba(13, 28, 43, 0.6);
-            border-left: 4px solid #00b7ff;
+            background: rgba(13, 28, 43, 0.5);
+            border-left: 4px solid rgba(0, 183, 255, 0.30);
             padding: 0.6rem 1.5rem;
             border-radius: 60px;
             margin-bottom: 1.8rem;
@@ -952,7 +1089,7 @@
             align-items: center;
             gap: 1rem;
             overflow: hidden;
-            box-shadow: 0 0 30px rgba(0, 56, 101, 0.05);
+            box-shadow: 0 0 30px rgba(0, 56, 101, 0.03);
         }
         .announcement-ticker .live-badge {
             background: #ff0040;
@@ -997,7 +1134,7 @@
             font-weight: 500;
             letter-spacing: 2px;
             color: #b0d5ff;
-            border-bottom: 2px solid rgba(0, 107, 158, 0.2);
+            border-bottom: 2px solid rgba(0, 107, 158, 0.15);
             padding-bottom: 0.2rem;
             font-size: 1rem;
         }
@@ -1011,19 +1148,19 @@
         }
 
         .video-card {
-            background: rgba(15, 26, 38, 0.6);
+            background: rgba(15, 26, 38, 0.5);
             backdrop-filter: blur(5px);
             border-radius: 1.5rem;
             padding: 1rem;
-            border: 1px solid rgba(28, 63, 89, 0.15);
+            border: 1px solid rgba(28, 63, 89, 0.10);
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
             position: relative;
         }
         .video-card:hover {
             transform: translateY(-6px);
-            border-color: rgba(0, 166, 255, 0.25);
-            box-shadow: 0 20px 50px rgba(0, 76, 122, 0.1), 0 0 30px rgba(0, 166, 255, 0.03);
+            border-color: rgba(0, 166, 255, 0.18);
+            box-shadow: 0 20px 50px rgba(0, 76, 122, 0.08), 0 0 30px rgba(0, 166, 255, 0.02);
         }
 
         .video-card .video-thumbnail {
@@ -1051,24 +1188,24 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.25);
             transition: all 0.4s;
             border-radius: 1rem;
         }
         .video-card .video-thumbnail .play-overlay i {
             font-size: 3rem;
-            color: rgba(255, 255, 255, 0.7);
-            filter: drop-shadow(0 0 30px rgba(0, 200, 255, 0.15));
+            color: rgba(255, 255, 255, 0.6);
+            filter: drop-shadow(0 0 30px rgba(0, 200, 255, 0.10));
             transition: all 0.4s;
         }
         .video-card:hover .video-thumbnail .play-overlay i {
             transform: scale(1.15);
             color: #00ccff;
-            filter: drop-shadow(0 0 50px rgba(0, 200, 255, 0.2));
+            filter: drop-shadow(0 0 50px rgba(0, 200, 255, 0.15));
         }
 
         .video-card .video-label {
-            background: rgba(0, 42, 68, 0.5);
+            background: rgba(0, 42, 68, 0.4);
             padding: 0.1rem 0.8rem;
             border-radius: 40px;
             display: inline-block;
@@ -1077,7 +1214,7 @@
             letter-spacing: 1.5px;
             text-transform: uppercase;
             color: #8bcbff;
-            border: 1px solid rgba(0, 119, 190, 0.15);
+            border: 1px solid rgba(0, 119, 190, 0.10);
             margin-bottom: 0.3rem;
         }
         .video-card h4 {
@@ -1108,8 +1245,8 @@
             margin-top: 0.5rem;
         }
         .video-card .video-actions .btn-sm {
-            background: rgba(0, 55, 89, 0.4);
-            border: 1px solid rgba(0, 128, 192, 0.15);
+            background: rgba(0, 55, 89, 0.35);
+            border: 1px solid rgba(0, 128, 192, 0.10);
             padding: 0.2rem 0.8rem;
             border-radius: 60px;
             font-size: 0.65rem;
@@ -1123,9 +1260,9 @@
             font-family: 'Exo 2', sans-serif;
         }
         .video-card .video-actions .btn-sm:hover {
-            background: rgba(0, 115, 176, 0.3);
+            background: rgba(0, 115, 176, 0.25);
             color: white;
-            box-shadow: 0 0 30px rgba(0, 115, 176, 0.05);
+            box-shadow: 0 0 30px rgba(0, 115, 176, 0.03);
             transform: scale(1.02);
         }
 
@@ -1137,21 +1274,21 @@
         }
 
         .file-card {
-            background: rgba(15, 26, 38, 0.6);
+            background: rgba(15, 26, 38, 0.5);
             backdrop-filter: blur(5px);
             border-radius: 1.5rem;
             padding: 1rem;
-            border: 1px solid rgba(28, 63, 89, 0.15);
+            border: 1px solid rgba(28, 63, 89, 0.10);
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
         .file-card:hover {
             transform: translateY(-6px);
-            border-color: rgba(0, 166, 255, 0.25);
-            box-shadow: 0 20px 50px rgba(0, 76, 122, 0.1), 0 0 30px rgba(0, 166, 255, 0.03);
+            border-color: rgba(0, 166, 255, 0.18);
+            box-shadow: 0 20px 50px rgba(0, 76, 122, 0.08), 0 0 30px rgba(0, 166, 255, 0.02);
         }
         .file-card .file-label {
-            background: rgba(0, 42, 68, 0.5);
+            background: rgba(0, 42, 68, 0.4);
             padding: 0.1rem 0.8rem;
             border-radius: 40px;
             display: inline-block;
@@ -1160,7 +1297,7 @@
             letter-spacing: 1.5px;
             text-transform: uppercase;
             color: #8bcbff;
-            border: 1px solid rgba(0, 119, 190, 0.15);
+            border: 1px solid rgba(0, 119, 190, 0.10);
             margin-bottom: 0.4rem;
         }
         .file-card h4 {
@@ -1177,8 +1314,8 @@
             margin: 0.2rem 0 0.5rem 0;
         }
         .file-download-btn {
-            background: rgba(0, 55, 89, 0.4);
-            border: 1px solid rgba(0, 128, 192, 0.15);
+            background: rgba(0, 55, 89, 0.35);
+            border: 1px solid rgba(0, 128, 192, 0.10);
             padding: 0.25rem 0.8rem;
             border-radius: 60px;
             font-size: 0.7rem;
@@ -1191,18 +1328,18 @@
             gap: 0.4rem;
         }
         .file-download-btn:hover {
-            background: rgba(0, 115, 176, 0.3);
+            background: rgba(0, 115, 176, 0.25);
             color: white;
-            box-shadow: 0 0 30px rgba(0, 115, 176, 0.05);
+            box-shadow: 0 0 30px rgba(0, 115, 176, 0.03);
             transform: scale(1.02);
         }
 
         .premium-footer {
             margin-top: 2.5rem;
             padding: 1.5rem 2rem;
-            background: rgba(15, 26, 43, 0.4);
+            background: rgba(15, 26, 43, 0.3);
             border-radius: 1.5rem;
-            border: 1px solid rgba(28, 63, 89, 0.1);
+            border: 1px solid rgba(28, 63, 89, 0.06);
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
@@ -1237,7 +1374,7 @@
             width: 34px;
             height: 34px;
             border-radius: 50%;
-            border: 1px solid rgba(31, 74, 107, 0.15);
+            border: 1px solid rgba(31, 74, 107, 0.10);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1249,7 +1386,7 @@
         .premium-footer .social a:hover {
             border-color: #00ccff;
             color: #00ccff;
-            box-shadow: 0 0 30px rgba(0, 204, 255, 0.05);
+            box-shadow: 0 0 30px rgba(0, 204, 255, 0.03);
             transform: translateY(-2px);
         }
         .premium-footer .version {
@@ -1275,7 +1412,7 @@
             position: fixed;
             inset: 0;
             z-index: 10000;
-            background: rgba(8, 11, 20, 0.95);
+            background: rgba(5, 8, 15, 0.95);
             backdrop-filter: blur(20px);
             display: flex;
             flex-direction: column;
@@ -1323,6 +1460,10 @@
             .login-announcement { padding: 0.6rem 1rem; flex-wrap: wrap; }
             .welcome-text .main-title { font-size: clamp(1.8rem, 10vw, 3rem); }
             .progress-container { width: 90%; }
+            .energy-orb { display: none; }
+            .light-streak { display: none; }
+            .light-beam { display: none; }
+            .grid-lines { background-size: 40px 40px; }
         }
         @media (max-width: 480px) {
             .file-grid { grid-template-columns: 1fr; }
@@ -1344,12 +1485,49 @@
 </head>
 <body>
 
-    <div class="bg-gradient"></div>
-    <div class="neon-orb"></div>
-    <div class="neon-orb"></div>
-    <div class="neon-orb"></div>
-
-    <canvas id="particles-canvas"></canvas>
+    <!-- ===== PREMIUM BACKGROUND LAYER ===== -->
+    <div id="bg-layer">
+        <div class="bg-deep-space"></div>
+        <div class="grid-lines"></div>
+        
+        <!-- Energy Orbs -->
+        <div class="energy-orb orb-1"></div>
+        <div class="energy-orb orb-2"></div>
+        <div class="energy-orb orb-3"></div>
+        <div class="energy-orb orb-4"></div>
+        <div class="energy-orb orb-5"></div>
+        
+        <!-- Light Streaks -->
+        <div class="light-streak-container">
+            <div class="light-streak"></div>
+            <div class="light-streak"></div>
+            <div class="light-streak"></div>
+            <div class="light-streak"></div>
+            <div class="light-streak"></div>
+            <div class="light-streak"></div>
+        </div>
+        
+        <!-- Light Beams -->
+        <div class="light-beam"></div>
+        <div class="light-beam"></div>
+        <div class="light-beam"></div>
+        <div class="light-beam"></div>
+        <div class="light-beam"></div>
+        <div class="light-beam"></div>
+        <div class="light-beam"></div>
+        
+        <!-- Particles -->
+        <canvas id="particles-canvas"></canvas>
+        
+        <!-- Glass Atmosphere -->
+        <div class="glass-atmosphere"></div>
+        
+        <!-- Scan Lines -->
+        <div class="scan-lines"></div>
+        
+        <!-- Vignette -->
+        <div class="vignette"></div>
+    </div>
 
     <div class="auth-loading" id="authLoading">
         <div class="loader-ring"></div>
@@ -1362,10 +1540,10 @@
         <div class="bg-glow"></div>
         <div class="bg-glow"></div>
         <div class="energy-wave"></div>
-        <div class="light-streak"></div>
-        <div class="light-streak"></div>
-        <div class="light-streak"></div>
-        <div class="light-streak"></div>
+        <div class="light-streak-welcome"></div>
+        <div class="light-streak-welcome"></div>
+        <div class="light-streak-welcome"></div>
+        <div class="light-streak-welcome"></div>
         <canvas id="welcomeParticles"></canvas>
         <div class="welcome-text">
             <div class="main-title">⚡ WELCOME TO ABID SIR WEB ⚡</div>
@@ -1515,7 +1693,7 @@
 
     <script>
         // ============================================================
-        // PARTICLES BACKGROUND
+        // PARTICLES BACKGROUND - PREMIUM
         // ============================================================
         (function initParticles() {
             const canvas = document.getElementById('particles-canvas');
@@ -1534,41 +1712,54 @@
                 constructor() {
                     this.x = Math.random() * w;
                     this.y = Math.random() * h;
-                    this.size = Math.random() * 1.8 + 0.3;
-                    this.speedX = (Math.random() - 0.5) * 0.4;
-                    this.speedY = (Math.random() - 0.5) * 0.4;
-                    this.opacity = Math.random() * 0.4 + 0.05;
+                    this.size = Math.random() * 2.5 + 0.5;
+                    this.speedX = (Math.random() - 0.5) * 0.3;
+                    this.speedY = (Math.random() - 0.5) * 0.3;
+                    this.opacity = Math.random() * 0.5 + 0.1;
+                    this.hue = 190 + Math.random() * 40;
                 }
                 update() {
                     this.x += this.speedX;
                     this.y += this.speedY;
                     if (this.x < 0 || this.x > w) this.speedX *= -1;
                     if (this.y < 0 || this.y > h) this.speedY *= -1;
+                    this.opacity += (Math.random() - 0.5) * 0.01;
+                    this.opacity = Math.max(0.05, Math.min(0.6, this.opacity));
                 }
                 draw() {
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(0, 200, 255, ${this.opacity})`;
+                    ctx.fillStyle = `hsla(${this.hue}, 80%, 60%, ${this.opacity * 0.6})`;
                     ctx.fill();
+                    
+                    // Glow effect
+                    if (this.size > 1.5) {
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.size * 3, 0, Math.PI * 2);
+                        ctx.fillStyle = `hsla(${this.hue}, 80%, 60%, ${this.opacity * 0.05})`;
+                        ctx.fill();
+                    }
                 }
             }
 
-            for (let i = 0; i < 60; i++) {
+            for (let i = 0; i < 80; i++) {
                 particles.push(new Particle());
             }
 
             function animate() {
                 ctx.clearRect(0, 0, w, h);
                 particles.forEach(p => { p.update(); p.draw(); });
+                
+                // Draw connections
                 for (let i = 0; i < particles.length; i++) {
                     for (let j = i + 1; j < particles.length; j++) {
                         const dx = particles[i].x - particles[j].x;
                         const dy = particles[i].y - particles[j].y;
                         const dist = Math.sqrt(dx * dx + dy * dy);
-                        if (dist < 100) {
+                        if (dist < 120) {
                             ctx.beginPath();
-                            ctx.strokeStyle = `rgba(0, 200, 255, ${0.03 * (1 - dist / 100)})`;
-                            ctx.lineWidth = 0.3;
+                            ctx.strokeStyle = `rgba(0, 200, 255, ${0.04 * (1 - dist / 120)})`;
+                            ctx.lineWidth = 0.5;
                             ctx.moveTo(particles[i].x, particles[i].y);
                             ctx.lineTo(particles[j].x, particles[j].y);
                             ctx.stroke();
@@ -2043,9 +2234,12 @@
             }, () => {});
         }
 
-        console.log('🔥 ABID SIR - PREMIUM UI WITH WELCOME ANIMATION');
-        console.log('✅ Welcome animation restored');
-        console.log('✅ Login button text: LOGIN');
+        console.log('🔥 ABID SIR - PREMIUM HIGH-END GAMING BACKGROUND');
+        console.log('✅ Floating particles with connections');
+        console.log('✅ Energy orbs with slow movement');
+        console.log('✅ Light streaks and beams');
+        console.log('✅ Glassmorphism atmosphere');
+        console.log('✅ Grid lines with parallax feel');
         console.log('✅ All functionality UNCHANGED');
     </script>
 </body>
