@@ -1027,7 +1027,7 @@
             font-family: 'Orbitron', sans-serif;
         }
 
-        /* ===== ANNOUNCEMENT TICKER - FIXED ===== */
+        /* ===== ANNOUNCEMENT TICKER ===== */
         .announcement-ticker {
             background: rgba(13, 28, 43, 0.5);
             border-left: 4px solid rgba(0, 183, 255, 0.30);
@@ -1088,6 +1088,20 @@
             font-size: 1rem;
         }
         .section-title h3 i { color: #00ccff; margin-right: 8px; }
+        .section-title .ff-badge {
+            display: inline-block;
+            background: #ff6b0022;
+            border: 1px solid #ff6b0044;
+            color: #ff8c00;
+            padding: 0.1rem 0.6rem;
+            border-radius: 40px;
+            font-size: 0.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .section-title .ff-badge.headshot { border-color: #ff2d0044; background: #ff2d0022; color: #ff4d2d; }
+        .section-title .ff-badge.location { border-color: #00ff8844; background: #00ff8822; color: #00ff88; }
 
         .video-grid {
             display: grid;
@@ -1230,6 +1244,7 @@
             border: 1px solid rgba(28, 63, 89, 0.10);
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            position: relative;
         }
         .file-card:hover {
             transform: translateY(-6px);
@@ -1283,84 +1298,79 @@
             transform: scale(1.02);
         }
 
-        /* ===== FF HEADSHOTS & FF LOCATION SECTIONS ===== */
-        .ff-section-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 1.8rem;
+        /* FF Card Special Styles */
+        .file-card.ff-headshot {
+            border-color: #ff4d2d44;
+        }
+        .file-card.ff-headshot .file-label {
+            background: #ff2d0022;
+            border-color: #ff4d2d;
+            color: #ff6b3d;
+        }
+        .file-card.ff-headshot .file-download-btn {
+            border-color: #ff4d2d;
+            background: #ff2d0022;
+            color: #ff6b3d;
+        }
+        .file-card.ff-headshot .file-download-btn:hover {
+            background: #ff4d2d44;
         }
 
-        .ff-card {
-            background: rgba(15, 26, 38, 0.5);
-            backdrop-filter: blur(5px);
+        .file-card.ff-location {
+            border-color: #00ff8844;
+        }
+        .file-card.ff-location .file-label {
+            background: #00ff8822;
+            border-color: #00ff88;
+            color: #00ff88;
+        }
+        .file-card.ff-location .file-download-btn {
+            border-color: #00ff88;
+            background: #00ff8822;
+            color: #00ff88;
+        }
+        .file-card.ff-location .file-download-btn:hover {
+            background: #00ff8844;
+        }
+
+        /* Coming Soon Card */
+        .coming-soon-card {
+            background: rgba(15, 26, 38, 0.3);
             border-radius: 1.5rem;
-            padding: 1.5rem;
-            border: 1px solid rgba(28, 63, 89, 0.10);
+            padding: 2rem 1.5rem;
+            border: 1px dashed rgba(28, 63, 89, 0.20);
             text-align: center;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            position: relative;
-            overflow: hidden;
+            grid-column: 1 / -1;
         }
-        .ff-card:hover {
-            transform: translateY(-6px);
-            border-color: rgba(0, 166, 255, 0.18);
-            box-shadow: 0 20px 50px rgba(0, 76, 122, 0.08), 0 0 30px rgba(0, 166, 255, 0.02);
-        }
-        .ff-card .ff-icon {
+        .coming-soon-card i {
             font-size: 2.5rem;
-            color: #00ccff;
-            margin-bottom: 0.5rem;
+            color: #3a6a8a;
             display: block;
+            margin-bottom: 0.5rem;
         }
-        .ff-card h4 {
-            font-size: 1rem;
-            color: #d8edff;
-            font-weight: 700;
-            margin-bottom: 0.3rem;
+        .coming-soon-card h4 {
+            color: #6a8fa8;
+            font-size: 0.9rem;
+            font-weight: 400;
         }
-        .ff-card .ff-status {
+        .coming-soon-card .status {
             display: inline-block;
-            background: rgba(255, 200, 0, 0.15);
-            border: 1px solid rgba(255, 200, 0, 0.20);
+            background: rgba(255, 200, 0, 0.10);
+            border: 1px solid rgba(255, 200, 0, 0.15);
             padding: 0.2rem 1.2rem;
             border-radius: 40px;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             font-weight: 700;
             color: #fbbf24;
             letter-spacing: 1px;
             text-transform: uppercase;
+            margin-top: 0.5rem;
             animation: pulseComing 2s ease-in-out infinite;
         }
         @keyframes pulseComing {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
-        .ff-card .ff-status i {
-            margin-right: 0.3rem;
-        }
-        .ff-card .ff-desc {
-            font-size: 0.75rem;
-            color: #7797b0;
-            margin-top: 0.5rem;
-        }
-        .ff-card .ff-glow {
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(0, 200, 255, 0.03), transparent 70%);
-            pointer-events: none;
-            animation: glowRotate 20s linear infinite;
-        }
-        @keyframes glowRotate {
-            to { transform: rotate(360deg); }
-        }
-        .ff-card>* { position: relative; z-index: 1; }
-
-        /* ============================================================ */
 
         .premium-footer {
             margin-top: 2.5rem;
@@ -1472,7 +1482,6 @@
             .login-box { padding: 1.8rem 1.4rem; }
             .file-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
             .video-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
-            .ff-section-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
             .hero-banner { padding: 1.2rem 1.5rem; flex-direction: column; gap: 0.8rem; text-align: center; }
             .announcement-ticker { padding: 0.5rem 1rem; flex-wrap: wrap; }
             .announcement-ticker .ticker-content span { font-size: 0.75rem; padding: 0 1rem; }
@@ -1493,13 +1502,10 @@
             .light-streak { display: none; }
             .light-beam { display: none; }
             .grid-lines { background-size: 40px 40px; }
-            .ff-card .ff-icon { font-size: 2rem; }
-            .ff-card h4 { font-size: 0.85rem; }
         }
         @media (max-width: 480px) {
             .file-grid { grid-template-columns: 1fr; }
             .video-grid { grid-template-columns: 1fr; }
-            .ff-section-grid { grid-template-columns: 1fr; }
             .hero-text h2 { font-size: 1.2rem; }
             .login-box { padding: 1.4rem 1rem; }
             .premium-features { grid-template-columns: 1fr 1fr; gap: 0.4rem; }
@@ -1684,35 +1690,19 @@
         </div>
         <div class="video-grid" id="videoGrid"></div>
 
-        <!-- ===== FF HEADSHOTS FILE SECTION ===== -->
+        <!-- ===== FF HEADSHOTS FILE SECTION - FROM FIRESTORE ===== -->
         <div class="section-title">
-            <h3><i class="fas fa-crosshairs"></i> FF Headshots File</h3>
-            <span class="view-all" style="color:#6a8fa8;font-size:0.65rem;letter-spacing:1px;">Free Fire</span>
+            <h3><i class="fas fa-crosshairs" style="color:#ff4d2d;"></i> FF Headshots File</h3>
+            <span class="ff-badge headshot"><i class="fas fa-bolt"></i> Free Fire</span>
         </div>
-        <div class="ff-section-grid">
-            <div class="ff-card">
-                <div class="ff-glow"></div>
-                <span class="ff-icon"><i class="fas fa-bullseye"></i></span>
-                <h4>FF Headshots File</h4>
-                <div class="ff-status"><i class="fas fa-clock"></i> Coming Soon</div>
-                <p class="ff-desc">Exclusive headshot configs for Free Fire — stay tuned for the release!</p>
-            </div>
-        </div>
+        <div class="file-grid" id="ffHeadshotsGrid"></div>
 
-        <!-- ===== FF LOCATION FILE SECTION ===== -->
+        <!-- ===== FF LOCATION FILE SECTION - FROM FIRESTORE ===== -->
         <div class="section-title">
-            <h3><i class="fas fa-map-marker-alt"></i> FF Location File</h3>
-            <span class="view-all" style="color:#6a8fa8;font-size:0.65rem;letter-spacing:1px;">Free Fire</span>
+            <h3><i class="fas fa-map-marker-alt" style="color:#00ff88;"></i> FF Location File</h3>
+            <span class="ff-badge location"><i class="fas fa-map-pin"></i> Free Fire</span>
         </div>
-        <div class="ff-section-grid">
-            <div class="ff-card">
-                <div class="ff-glow"></div>
-                <span class="ff-icon"><i class="fas fa-map-pin"></i></span>
-                <h4>FF Location File</h4>
-                <div class="ff-status"><i class="fas fa-clock"></i> Coming Soon</div>
-                <p class="ff-desc">Premium location files for Free Fire — coming soon with full support!</p>
-            </div>
-        </div>
+        <div class="file-grid" id="ffLocationGrid"></div>
 
         <div class="section-title"><h3><i class="fas fa-folder-open"></i> Game Files</h3></div>
         <div class="file-grid" id="fileGrid"></div>
@@ -1899,7 +1889,7 @@
         }
 
         // ============================================================
-        // FIREBASE CONFIG - UNCHANGED
+        // FIREBASE CONFIG
         // ============================================================
         const firebaseConfig = {
             apiKey: "AIzaSyALnJyYqSpgZeapdNUkAKkwImgijuG935g",
@@ -2085,7 +2075,7 @@
         });
 
         // ============================================================
-        // LOAD DATA - ANNOUNCEMENT AUTO-SYNC FIXED
+        // LOAD DATA - WITH FF SECTIONS FROM FIRESTORE
         // ============================================================
         function loadAllData() {
             lastUpdated.textContent = new Date().toLocaleDateString('en-US', {
@@ -2094,36 +2084,22 @@
                 day: 'numeric'
             });
 
-            // ===== ANNOUNCEMENT - AUTO-SYNC (FIXED) =====
+            // ===== ANNOUNCEMENT =====
             db.collection('content').doc('announcement').onSnapshot((doc) => {
                 let text = 'Welcome to ABID SIR!';
-                
                 if (doc.exists) {
                     const data = doc.data();
                     text = data.text || data.value || 'Welcome to ABID SIR!';
-                    console.log('✅ Announcement loaded:', text);
-                } else {
-                    console.log('ℹ️ No announcement found in Firestore');
                 }
-                
                 if (loginAnnounceText) {
                     loginAnnounceText.innerHTML = `<strong>📢</strong> ${text}`;
                 }
-                
                 if (announceTicker) {
                     announceTicker.innerHTML = `<span><strong>📢</strong> ${text}</span>`;
                 }
-            }, (error) => {
-                console.error('❌ Announcement listener error:', error);
-                if (loginAnnounceText) {
-                    loginAnnounceText.innerHTML = `<strong>📢</strong> Welcome to ABID SIR!`;
-                }
-                if (announceTicker) {
-                    announceTicker.innerHTML = `<span><strong>📢</strong> Welcome to ABID SIR!</span>`;
-                }
-            });
+            }, () => {});
 
-            // Videos
+            // ===== VIDEOS =====
             db.collection('videos').orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
                 const grid = document.getElementById('videoGrid');
                 grid.innerHTML = '';
@@ -2217,14 +2193,115 @@
                     });
 
                 } else {
-                    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:#3a6a8a;font-size:0.85rem;">
-                        <i class="fas fa-video" style="font-size:2rem;display:block;margin-bottom:0.5rem;color:#3a6a8a;"></i>
-                        No videos uploaded yet
+                    grid.innerHTML = `<div class="coming-soon-card">
+                        <i class="fas fa-video"></i>
+                        <h4>No videos uploaded yet</h4>
                     </div>`;
                 }
             }, () => {});
 
-            // Files
+            // ===== FF HEADSHOTS - FROM FIRESTORE =====
+            db.collection('ffHeadshots').orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
+                const grid = document.getElementById('ffHeadshotsGrid');
+                grid.innerHTML = '';
+
+                if (!snapshot.empty) {
+                    snapshot.forEach(doc => {
+                        const file = doc.data();
+                        const id = doc.id;
+                        const card = document.createElement('div');
+                        card.className = 'file-card ff-headshot';
+                        card.innerHTML = `
+                            <div class="file-label"><i class="fas fa-crosshairs"></i> HEADSHOT</div>
+                            <h4>${file.title || 'Untitled'}</h4>
+                            <div class="file-meta"><span>${file.version || 'v1'}</span> <span>${file.size || '—'}</span></div>
+                            <div class="file-download-btn" data-id="${id}" data-link="${file.fileLink || '#'}" data-collection="ffHeadshots">
+                                <i class="fas fa-download"></i> ${file.downloads || 0}
+                            </div>
+                            <div style="font-size:0.55rem; color:#3d6e8a; margin-top:0.2rem;">⬆️ ${file.updated || 'new'}</div>
+                        `;
+                        grid.appendChild(card);
+                    });
+
+                    // Add download listeners
+                    grid.querySelectorAll('.file-download-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            if (!isAuthorized) { alert('⛔ Access denied.'); return; }
+                            const link = this.dataset.link;
+                            const id = this.dataset.id;
+                            const collection = this.dataset.collection || 'files';
+                            if (id) {
+                                db.collection(collection).doc(id).update({
+                                    downloads: firebase.firestore.FieldValue.increment(1)
+                                }).catch(() => {});
+                            }
+                            db.collection('counters').doc('stats').update({
+                                downloads: firebase.firestore.FieldValue.increment(1)
+                            }).catch(() => {});
+                            if (link && link !== '#') window.open(link, '_blank');
+                            else alert('⬇️ Download started!');
+                        });
+                    });
+                } else {
+                    grid.innerHTML = `<div class="coming-soon-card">
+                        <i class="fas fa-crosshairs" style="color:#ff4d2d;"></i>
+                        <h4>FF Headshots Files</h4>
+                        <div class="status"><i class="fas fa-clock"></i> Coming Soon</div>
+                    </div>`;
+                }
+            }, () => {});
+
+            // ===== FF LOCATION - FROM FIRESTORE =====
+            db.collection('ffLocation').orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
+                const grid = document.getElementById('ffLocationGrid');
+                grid.innerHTML = '';
+
+                if (!snapshot.empty) {
+                    snapshot.forEach(doc => {
+                        const file = doc.data();
+                        const id = doc.id;
+                        const card = document.createElement('div');
+                        card.className = 'file-card ff-location';
+                        card.innerHTML = `
+                            <div class="file-label"><i class="fas fa-map-marker-alt"></i> LOCATION</div>
+                            <h4>${file.title || 'Untitled'}</h4>
+                            <div class="file-meta"><span>${file.version || 'v1'}</span> <span>${file.size || '—'}</span></div>
+                            <div class="file-download-btn" data-id="${id}" data-link="${file.fileLink || '#'}" data-collection="ffLocation">
+                                <i class="fas fa-download"></i> ${file.downloads || 0}
+                            </div>
+                            <div style="font-size:0.55rem; color:#3d6e8a; margin-top:0.2rem;">⬆️ ${file.updated || 'new'}</div>
+                        `;
+                        grid.appendChild(card);
+                    });
+
+                    grid.querySelectorAll('.file-download-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            if (!isAuthorized) { alert('⛔ Access denied.'); return; }
+                            const link = this.dataset.link;
+                            const id = this.dataset.id;
+                            const collection = this.dataset.collection || 'files';
+                            if (id) {
+                                db.collection(collection).doc(id).update({
+                                    downloads: firebase.firestore.FieldValue.increment(1)
+                                }).catch(() => {});
+                            }
+                            db.collection('counters').doc('stats').update({
+                                downloads: firebase.firestore.FieldValue.increment(1)
+                            }).catch(() => {});
+                            if (link && link !== '#') window.open(link, '_blank');
+                            else alert('⬇️ Download started!');
+                        });
+                    });
+                } else {
+                    grid.innerHTML = `<div class="coming-soon-card">
+                        <i class="fas fa-map-marker-alt" style="color:#00ff88;"></i>
+                        <h4>FF Location Files</h4>
+                        <div class="status"><i class="fas fa-clock"></i> Coming Soon</div>
+                    </div>`;
+                }
+            }, () => {});
+
+            // ===== GAME FILES =====
             db.collection('files').orderBy('timestamp', 'desc').limit(20).onSnapshot((snapshot) => {
                 const grid = document.getElementById('fileGrid');
                 grid.innerHTML = '';
@@ -2241,7 +2318,7 @@
                             <div class="file-label"><i class="fas fa-tag"></i> ${label}</div>
                             <h4>${file.title || 'Untitled'}</h4>
                             <div class="file-meta"><span>${file.version || 'v1'}</span> <span>${file.size || '—'}</span></div>
-                            <div class="file-download-btn" data-id="${doc.id}" data-link="${fileLink}">
+                            <div class="file-download-btn" data-id="${doc.id}" data-link="${fileLink}" data-collection="files">
                                 <i class="fas fa-download"></i> ${file.downloads || 0}
                             </div>
                             <div style="font-size:0.55rem; color:#3d6e8a; margin-top:0.2rem;">⬆️ ${file.updated || 'new'}</div>
@@ -2251,35 +2328,34 @@
                     });
                     document.getElementById('fileCount').textContent = fileCount;
 
-                    document.querySelectorAll('.file-download-btn').forEach(btn => {
+                    grid.querySelectorAll('.file-download-btn').forEach(btn => {
                         btn.addEventListener('click', function() {
                             if (!isAuthorized) { alert('⛔ Access denied.'); return; }
                             const link = this.dataset.link;
                             const id = this.dataset.id;
-
+                            const collection = this.dataset.collection || 'files';
                             if (id) {
-                                db.collection('files').doc(id).update({
+                                db.collection(collection).doc(id).update({
                                     downloads: firebase.firestore.FieldValue.increment(1)
                                 }).catch(() => {});
                             }
-
                             db.collection('counters').doc('stats').update({
                                 downloads: firebase.firestore.FieldValue.increment(1)
                             }).catch(() => {});
-
-                            if (link && link !== '#') {
-                                window.open(link, '_blank');
-                            } else {
-                                alert('⬇️ Download started!');
-                            }
+                            if (link && link !== '#') window.open(link, '_blank');
+                            else alert('⬇️ Download started!');
                         });
                     });
                 } else {
                     document.getElementById('fileCount').textContent = '0';
+                    grid.innerHTML = `<div class="coming-soon-card">
+                        <i class="fas fa-folder-open"></i>
+                        <h4>No game files available</h4>
+                    </div>`;
                 }
             }, () => {});
 
-            // Counters
+            // ===== COUNTERS =====
             db.collection('counters').doc('stats').update({
                 visitors: firebase.firestore.FieldValue.increment(1)
             }).catch(() => {});
@@ -2293,9 +2369,11 @@
             }, () => {});
         }
 
-        console.log('🔥 ABID SIR - ANNOUNCEMENT AUTO-SYNC FIXED');
-        console.log('✅ New sections added: FF Headshots File + FF Location File (Coming Soon)');
-        console.log('✅ All functionality UNCHANGED');
+        console.log('🔥 ABID SIR - USER WEBSITE WITH FF SECTIONS FIXED');
+        console.log('✅ FF Headshots: Reading from Firestore collection "ffHeadshots"');
+        console.log('✅ FF Location: Reading from Firestore collection "ffLocation"');
+        console.log('✅ Shows "Coming Soon" if no files exist');
+        console.log('✅ Admin se file add karo, user website pe automatic show ho gi');
     </script>
 </body>
 </html>
