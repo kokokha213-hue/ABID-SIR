@@ -7,6 +7,7 @@
     <meta name="description" content="ABID SIR – premium gaming hub. Exclusive files, monthly membership 2000 PKR, secure access, gaming updates.">
     <meta name="keywords" content="ABID SIR, gaming, premium, files, membership, PKR, updates">
     <link rel="canonical" href="https://abidsir.gaming">
+    <link rel="manifest" href="/manifest.json">
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -14,6 +15,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
     <style>
         /* ============================================================
            PREMIUM GAMING BACKGROUND - ENHANCED
@@ -26,6 +28,23 @@
 
         html {
             scroll-behavior: smooth;
+        }
+
+        /* ===== CUSTOM SCROLLBAR ===== */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(5, 8, 15, 0.8);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #00ccff, #7b2ffc);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #00ddff, #8b3ffc);
         }
 
         body {
@@ -245,7 +264,6 @@
             z-index: 1;
         }
 
-        /* ===== LOGIN ANNOUNCEMENT BAR ===== */
         .login-announcement {
             background: rgba(13, 28, 43, 0.7);
             backdrop-filter: blur(15px);
@@ -317,7 +335,6 @@
             color: #ffd966;
         }
 
-        /* ===== PREMIUM FEATURES BADGES ===== */
         .premium-features {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -352,22 +369,11 @@
         .feature-badge i {
             font-size: 0.75rem;
         }
-        .feature-badge .shield {
-            color: #4ade80;
-        }
-        .feature-badge .ban {
-            color: #f87171;
-        }
-        .feature-badge .update {
-            color: #60a5fa;
-        }
-        .feature-badge .price {
-            color: #fbbf24;
-            font-weight: 800;
-            font-size: 0.7rem;
-        }
+        .feature-badge .shield { color: #4ade80; }
+        .feature-badge .ban { color: #f87171; }
+        .feature-badge .update { color: #60a5fa; }
+        .feature-badge .price { color: #fbbf24; font-weight: 800; font-size: 0.7rem; }
 
-        /* ===== LOGIN CARD ===== */
         .login-box {
             background: rgba(15, 26, 43, 0.60);
             backdrop-filter: blur(30px);
@@ -375,10 +381,7 @@
             padding: 2.8rem 2.8rem 2.2rem;
             border-radius: 2.5rem;
             border: 1px solid rgba(0, 102, 170, 0.12);
-            box-shadow: 
-                0 30px 80px rgba(0, 0, 0, 0.6),
-                0 0 60px rgba(0, 50, 100, 0.08),
-                inset 0 1px 0 rgba(255, 255, 255, 0.03);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 60px rgba(0, 50, 100, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.03);
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -609,7 +612,7 @@
         }
 
         /* ============================================================
-           WELCOME ANIMATION OVERLAY - ENHANCED
+           WELCOME ANIMATION OVERLAY
            ============================================================ */
         #welcomeOverlay {
             position: fixed;
@@ -1015,6 +1018,7 @@
             border-color: rgba(37, 211, 102, 0.25);
         }
 
+        /* ===== STATS WITH LEADERBOARD ===== */
         .stats-grid {
             display: flex;
             flex-wrap: wrap;
@@ -1048,6 +1052,133 @@
             font-size: 1rem;
             font-family: 'Orbitron', sans-serif;
         }
+
+        /* ===== SEARCH BAR ===== */
+        .search-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            align-items: center;
+        }
+        .search-bar {
+            flex: 1;
+            min-width: 200px;
+            background: rgba(15, 26, 43, 0.6);
+            border: 1px solid rgba(0, 183, 255, 0.12);
+            border-radius: 60px;
+            padding: 0.6rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            transition: all 0.4s;
+        }
+        .search-bar:focus-within {
+            border-color: rgba(0, 183, 255, 0.35);
+            box-shadow: 0 0 40px rgba(0, 183, 255, 0.06);
+        }
+        .search-bar i {
+            color: #3a6a8a;
+            font-size: 0.9rem;
+        }
+        .search-bar input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: white;
+            font-size: 0.9rem;
+            width: 100%;
+            font-family: 'Exo 2', sans-serif;
+        }
+        .search-bar input::placeholder {
+            color: #3a5a7a;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            background: rgba(15, 26, 43, 0.5);
+            border: 1px solid rgba(0, 183, 255, 0.08);
+            color: #6a8fa8;
+            padding: 0.4rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-family: 'Exo 2', sans-serif;
+        }
+        .filter-btn:hover {
+            border-color: rgba(0, 183, 255, 0.25);
+            color: #b0e0ff;
+            transform: translateY(-2px);
+        }
+        .filter-btn.active {
+            background: rgba(0, 183, 255, 0.15);
+            border-color: rgba(0, 183, 255, 0.30);
+            color: #00ccff;
+        }
+
+        /* ===== NOTIFICATION POPUP ===== */
+        .notification-popup {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 99999;
+            background: rgba(15, 26, 43, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 1.5rem;
+            padding: 1.2rem 1.8rem;
+            border: 1px solid rgba(0, 183, 255, 0.15);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(0, 183, 255, 0.05);
+            max-width: 380px;
+            width: 100%;
+            transform: translateX(120%);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+        .notification-popup.show {
+            transform: translateX(0);
+        }
+        .notification-popup .notif-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+        .notification-popup .notif-content {
+            flex: 1;
+        }
+        .notification-popup .notif-content h4 {
+            font-size: 0.9rem;
+            color: #ddf0ff;
+            margin-bottom: 0.2rem;
+        }
+        .notification-popup .notif-content p {
+            font-size: 0.75rem;
+            color: #6a8fa8;
+        }
+        .notification-popup .notif-close {
+            background: rgba(255, 107, 107, 0.1);
+            border: none;
+            color: #ff6b6b;
+            cursor: pointer;
+            font-size: 0.8rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 50%;
+            transition: 0.3s;
+            flex-shrink: 0;
+        }
+        .notification-popup .notif-close:hover {
+            background: rgba(255, 107, 107, 0.2);
+        }
+
+        .notification-popup.file-notif .notif-icon { color: #4ade80; }
+        .notification-popup.video-notif .notif-icon { color: #60a5fa; }
+        .notification-popup.error-notif .notif-icon { color: #ff6b6b; }
 
         /* ===== ANNOUNCEMENT TICKER ===== */
         .announcement-ticker {
@@ -1125,6 +1256,22 @@
         .section-title .ff-badge.headshot { border-color: #ff2d0044; background: #ff2d0022; color: #ff4d2d; }
         .section-title .ff-badge.location { border-color: #00ff8844; background: #00ff8822; color: #00ff88; }
         .section-title .ff-badge.errorfix { border-color: #ff6b6b44; background: #ff6b6b22; color: #ff6b6b; }
+        .section-title .badge-new {
+            background: rgba(0, 200, 255, 0.1);
+            border: 1px solid rgba(0, 200, 255, 0.15);
+            color: #00ccff;
+            padding: 0.1rem 0.6rem;
+            border-radius: 40px;
+            font-size: 0.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            animation: pulseBadge 2s ease-in-out infinite;
+        }
+        @keyframes pulseBadge {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
 
         .video-grid {
             display: grid;
@@ -1148,7 +1295,21 @@
             border-color: rgba(0, 166, 255, 0.25);
             box-shadow: 0 30px 60px rgba(0, 76, 122, 0.12), 0 0 50px rgba(0, 166, 255, 0.04);
         }
-
+        .video-card .new-badge {
+            position: absolute;
+            top: -0.5rem;
+            right: -0.5rem;
+            background: #ff0040;
+            color: white;
+            padding: 0.1rem 0.8rem;
+            border-radius: 40px;
+            font-size: 0.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            animation: pulseLive 1.8s ease-in-out infinite;
+            z-index: 5;
+        }
         .video-card .video-thumbnail {
             position: relative;
             width: 100%;
@@ -1259,7 +1420,6 @@
             margin-bottom: 2rem;
         }
 
-        /* ERROR GRID */
         .error-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -1369,6 +1529,21 @@
             border-color: rgba(0, 166, 255, 0.25);
             box-shadow: 0 30px 60px rgba(0, 76, 122, 0.12), 0 0 50px rgba(0, 166, 255, 0.04);
         }
+        .file-card .new-badge {
+            position: absolute;
+            top: -0.5rem;
+            right: -0.5rem;
+            background: #00ccff;
+            color: white;
+            padding: 0.1rem 0.8rem;
+            border-radius: 40px;
+            font-size: 0.5rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            animation: pulseLive 1.8s ease-in-out infinite;
+            z-index: 5;
+        }
         .file-card .file-label {
             background: rgba(0, 42, 68, 0.5);
             padding: 0.1rem 1rem;
@@ -1416,7 +1591,6 @@
             transform: scale(1.05);
         }
 
-        /* FF Card Special Styles */
         .file-card.ff-headshot {
             border-color: #ff4d2d44;
         }
@@ -1451,7 +1625,6 @@
             background: #00ff8844;
         }
 
-        /* Coming Soon Card */
         .coming-soon-card {
             background: rgba(15, 26, 38, 0.4);
             border-radius: 1.8rem;
@@ -1628,6 +1801,9 @@
             .light-beam { display: none; }
             .grid-lines { background-size: 40px 40px; }
             .section-title { flex-wrap: wrap; gap: 0.5rem; }
+            .search-section { flex-direction: column; }
+            .filter-buttons { justify-content: center; }
+            .notification-popup { max-width: 300px; right: 10px; top: 10px; padding: 1rem; }
         }
         @media (max-width: 480px) {
             .file-grid { grid-template-columns: 1fr; }
@@ -1684,6 +1860,16 @@
         <div class="vignette"></div>
     </div>
 
+    <!-- ===== NOTIFICATION POPUP ===== -->
+    <div class="notification-popup" id="notificationPopup">
+        <div class="notif-icon" id="notifIcon"><i class="fas fa-bell"></i></div>
+        <div class="notif-content">
+            <h4 id="notifTitle">New Update!</h4>
+            <p id="notifMessage">Something new has been added.</p>
+        </div>
+        <button class="notif-close" id="notifClose"><i class="fas fa-times"></i></button>
+    </div>
+
     <div class="auth-loading" id="authLoading">
         <div class="loader-ring"></div>
         <p>🔐 LOADING SECURE VAULT...</p>
@@ -1717,7 +1903,6 @@
     <div id="passwordOverlay">
         <div class="login-container">
 
-            <!-- ===== LOGIN ANNOUNCEMENT - AUTO-SYNC ===== -->
             <div class="login-announcement">
                 <span class="live-badge">● LIVE</span>
                 <i class="fas fa-bullhorn announce-icon"></i>
@@ -1800,7 +1985,31 @@
             </a>
         </div>
 
-        <!-- ===== ANNOUNCEMENT TICKER - AUTO-SYNC ===== -->
+        <!-- ===== STATS WITH LEADERBOARD ===== -->
+        <div class="stats-grid">
+            <div class="stat-item"><i class="fas fa-users"></i> Visitors: <span class="stat-number" id="visitorCounter">0</span></div>
+            <div class="stat-item"><i class="fas fa-download"></i> Downloads: <span class="stat-number" id="downloadCounter">0</span></div>
+            <div class="stat-item"><i class="fas fa-file"></i> Files: <span class="stat-number" id="fileCount">0</span></div>
+            <div class="stat-item"><i class="fas fa-video"></i> Videos: <span class="stat-number" id="videoCount">0</span></div>
+        </div>
+
+        <!-- ===== SEARCH & FILTERS ===== -->
+        <div class="search-section">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search files, videos, fixes...">
+            </div>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="video">Videos</button>
+                <button class="filter-btn" data-filter="file">Files</button>
+                <button class="filter-btn" data-filter="error">Fixes</button>
+                <button class="filter-btn" data-filter="headshot">Headshots</button>
+                <button class="filter-btn" data-filter="location">Location</button>
+            </div>
+        </div>
+
+        <!-- ===== ANNOUNCEMENT TICKER ===== -->
         <div class="announcement-ticker">
             <span class="live-badge">● LIVE</span>
             <i class="fas fa-bullhorn ticker-icon"></i>
@@ -1813,25 +2022,22 @@
 
         <div class="section-title">
             <h3><i class="fas fa-video"></i> Gaming Videos</h3>
-            <span class="view-all" style="color:#6a8fa8;font-size:0.65rem;letter-spacing:1px;">Latest Uploads</span>
+            <span class="badge-new"><i class="fas fa-clock"></i> Live</span>
         </div>
         <div class="video-grid" id="videoGrid"></div>
 
-        <!-- ===== FF HEADSHOTS FILE SECTION - FROM FIRESTORE ===== -->
         <div class="section-title">
             <h3><i class="fas fa-crosshairs" style="color:#ff4d2d;"></i> FF Headshots File</h3>
             <span class="ff-badge headshot"><i class="fas fa-bolt"></i> Free Fire</span>
         </div>
         <div class="file-grid" id="ffHeadshotsGrid"></div>
 
-        <!-- ===== FF LOCATION FILE SECTION - FROM FIRESTORE ===== -->
         <div class="section-title">
             <h3><i class="fas fa-map-marker-alt" style="color:#00ff88;"></i> FF Location File</h3>
             <span class="ff-badge location"><i class="fas fa-map-pin"></i> Free Fire</span>
         </div>
         <div class="file-grid" id="ffLocationGrid"></div>
 
-        <!-- ===== ERROR FIR YA PROBLEM FIX SECTION - FROM FIRESTORE ===== -->
         <div class="section-title">
             <h3><i class="fas fa-exclamation-triangle" style="color:#ff6b6b;"></i> ERROR FIR YA PROBLEM FIX</h3>
             <span class="ff-badge errorfix"><i class="fas fa-tools"></i> Fix & Solutions</span>
@@ -1846,7 +2052,7 @@
                 <div class="logo-icon"><i class="fas fa-crown"></i></div>
                 <div class="info">
                     <h4>ABID SIR WEB</h4>
-                    <p>Premium Gaming Vault · <span>v2.0</span></p>
+                    <p>Premium Gaming Vault · <span>v3.0</span> · <span style="color:#00ccff;">🔔 Notifications Active</span></p>
                 </div>
             </div>
             <div class="social">
@@ -1856,7 +2062,7 @@
                 <a href="https://wa.me/923449322566" target="_blank"><i class="fab fa-whatsapp" style="color:#25d366;"></i></a>
             </div>
             <div class="version">
-                <span class="live-dot"></span> v2.0 · Last updated: <span id="lastUpdated">Loading...</span>
+                <span class="live-dot"></span> v3.0 · Last updated: <span id="lastUpdated">Loading...</span>
                 <br>
                 <span style="font-size:0.5rem;color:#2a4a6a;">© 2026 ABID SIR WEB</span>
             </div>
@@ -2039,7 +2245,205 @@
         const db = firebase.firestore();
         db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
 
-        // ========== DOM REFS ==========
+        // ============================================================
+        // FCM NOTIFICATIONS - NEW
+        // ============================================================
+        const VAPID_KEY = '7ScpsFenyW_t1UvhMJhM66xTONpfvi1_c8mqM2xBQZM';
+        let messaging = null;
+        let fcmToken = null;
+        let notificationPermission = false;
+
+        function initFCM() {
+            try {
+                messaging = firebase.messaging();
+                
+                // Request permission after login
+                if ('Notification' in window && Notification.permission === 'default') {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === 'granted') {
+                            notificationPermission = true;
+                            getFCMToken();
+                        }
+                    });
+                } else if ('Notification' in window && Notification.permission === 'granted') {
+                    notificationPermission = true;
+                    getFCMToken();
+                }
+
+                // Foreground notification listener
+                messaging.onMessage((payload) => {
+                    console.log('📨 Foreground notification received:', payload);
+                    const { title, body, icon, type } = payload.notification || {};
+                    const data = payload.data || {};
+                    
+                    showPopupNotification(
+                        title || 'New Update!',
+                        body || 'Something new has been added.',
+                        data.type || type || 'info'
+                    );
+                });
+
+            } catch (error) {
+                console.warn('⚠️ FCM not supported in this browser:', error);
+            }
+        }
+
+        function getFCMToken() {
+            if (!messaging) return;
+            
+            messaging.getToken({ vapidKey: VAPID_KEY })
+                .then((token) => {
+                    fcmToken = token;
+                    console.log('✅ FCM Token generated:', token);
+                    
+                    // Save token to Firestore
+                    const user = auth.currentUser;
+                    if (user && token) {
+                        db.collection('tokens').doc(user.uid).set({
+                            token: token,
+                            userId: user.uid,
+                            email: user.email,
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            device: navigator.userAgent || 'unknown',
+                            platform: 'web'
+                        }, { merge: true }).then(() => {
+                            console.log('✅ FCM Token saved to Firestore');
+                        }).catch((err) => {
+                            console.warn('⚠️ Failed to save token:', err);
+                        });
+                    }
+                })
+                .catch((err) => {
+                    console.warn('⚠️ Failed to get FCM token:', err);
+                });
+        }
+
+        // Refresh token when user logs in
+        auth.onAuthStateChanged((user) => {
+            if (user && messaging) {
+                setTimeout(getFCMToken, 3000);
+            }
+        });
+
+        // ============================================================
+        // NOTIFICATION POPUP
+        // ============================================================
+        const notificationPopup = document.getElementById('notificationPopup');
+        const notifIcon = document.getElementById('notifIcon');
+        const notifTitle = document.getElementById('notifTitle');
+        const notifMessage = document.getElementById('notifMessage');
+        const notifClose = document.getElementById('notifClose');
+        let notifTimeout = null;
+
+        function showPopupNotification(title, message, type = 'info') {
+            // Update content
+            notifTitle.textContent = title;
+            notifMessage.textContent = message;
+            
+            // Set icon based on type
+            notificationPopup.className = 'notification-popup';
+            if (type === 'file') {
+                notifIcon.innerHTML = '<i class="fas fa-file"></i>';
+                notificationPopup.classList.add('file-notif');
+            } else if (type === 'video') {
+                notifIcon.innerHTML = '<i class="fas fa-video"></i>';
+                notificationPopup.classList.add('video-notif');
+            } else if (type === 'error') {
+                notifIcon.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+                notificationPopup.classList.add('error-notif');
+            } else {
+                notifIcon.innerHTML = '<i class="fas fa-bell"></i>';
+            }
+            
+            // Show popup
+            notificationPopup.classList.add('show');
+            
+            // Clear any existing timeout
+            if (notifTimeout) {
+                clearTimeout(notifTimeout);
+            }
+            
+            // Auto-hide after 6 seconds
+            notifTimeout = setTimeout(() => {
+                notificationPopup.classList.remove('show');
+            }, 6000);
+        }
+
+        // Close button
+        notifClose.addEventListener('click', () => {
+            notificationPopup.classList.remove('show');
+            if (notifTimeout) {
+                clearTimeout(notifTimeout);
+            }
+        });
+
+        // Click outside to close
+        notificationPopup.addEventListener('click', (e) => {
+            if (e.target === notificationPopup) {
+                notificationPopup.classList.remove('show');
+                if (notifTimeout) {
+                    clearTimeout(notifTimeout);
+                }
+            }
+        });
+
+        // ============================================================
+        // SEARCH & FILTERS - NEW
+        // ============================================================
+        const searchInput = document.getElementById('searchInput');
+        let currentFilter = 'all';
+
+        // Filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentFilter = this.dataset.filter;
+                applySearchAndFilter();
+            });
+        });
+
+        function applySearchAndFilter() {
+            const query = searchInput.value.toLowerCase().trim();
+            
+            // Filter video cards
+            document.querySelectorAll('#videoGrid .video-card').forEach(card => {
+                const title = card.querySelector('h4')?.textContent?.toLowerCase() || '';
+                const desc = card.querySelector('.video-desc')?.textContent?.toLowerCase() || '';
+                const label = card.querySelector('.video-label')?.textContent?.toLowerCase() || '';
+                const matches = !query || title.includes(query) || desc.includes(query) || label.includes(query);
+                const filterMatch = currentFilter === 'all' || currentFilter === 'video';
+                card.style.display = (matches && filterMatch) ? '' : 'none';
+            });
+
+            // Filter file cards
+            document.querySelectorAll('#fileGrid .file-card, #ffHeadshotsGrid .file-card, #ffLocationGrid .file-card').forEach(card => {
+                const title = card.querySelector('h4')?.textContent?.toLowerCase() || '';
+                const label = card.querySelector('.file-label')?.textContent?.toLowerCase() || '';
+                const matches = !query || title.includes(query) || label.includes(query);
+                let filterMatch = currentFilter === 'all';
+                if (currentFilter === 'file') filterMatch = true;
+                if (currentFilter === 'headshot' && card.closest('#ffHeadshotsGrid')) filterMatch = true;
+                if (currentFilter === 'location' && card.closest('#ffLocationGrid')) filterMatch = true;
+                card.style.display = (matches && filterMatch) ? '' : 'none';
+            });
+
+            // Filter error cards
+            document.querySelectorAll('#errorGrid .error-card').forEach(card => {
+                const title = card.querySelector('h4')?.textContent?.toLowerCase() || '';
+                const desc = card.querySelector('.error-desc')?.textContent?.toLowerCase() || '';
+                const label = card.querySelector('.error-label')?.textContent?.toLowerCase() || '';
+                const matches = !query || title.includes(query) || desc.includes(query) || label.includes(query);
+                const filterMatch = currentFilter === 'all' || currentFilter === 'error' || currentFilter === 'fixes';
+                card.style.display = (matches && filterMatch) ? '' : 'none';
+            });
+        }
+
+        searchInput.addEventListener('input', applySearchAndFilter);
+
+        // ============================================================
+        // DOM REFS
+        // ============================================================
         const overlay = document.getElementById('passwordOverlay');
         const mainApp = document.getElementById('mainApp');
         const authLoading = document.getElementById('authLoading');
@@ -2126,6 +2530,8 @@
                 if (savedEmail) {
                     emailInput.value = savedEmail;
                 }
+                // Initialize FCM after login
+                initFCM();
             } else {
                 console.log('👤 User not logged in');
             }
@@ -2169,6 +2575,9 @@
                     emailInput.value = '';
                     passInput.value = '';
 
+                    // Initialize FCM after successful login
+                    initFCM();
+
                     setTimeout(() => {
                         passSuccess.textContent = '';
                     }, 3000);
@@ -2192,6 +2601,11 @@
 
         // ========== LOGOUT - UNCHANGED ==========
         logoutBtn.addEventListener('click', function() {
+            // Remove FCM token on logout
+            if (fcmToken && auth.currentUser) {
+                db.collection('tokens').doc(auth.currentUser.uid).delete().catch(() => {});
+            }
+            
             auth.signOut()
                 .then(() => {
                     console.log('✅ User signed out');
@@ -2202,6 +2616,7 @@
                     passSuccess.textContent = '';
                     passError.textContent = '';
                     userEmail.textContent = 'User';
+                    fcmToken = null;
                 })
                 .catch((error) => {
                     console.error('Logout error:', error);
@@ -2209,7 +2624,7 @@
         });
 
         // ============================================================
-        // LOAD DATA - COMPLETELY UNCHANGED
+        // LOAD DATA - WITH NOTIFICATION TRIGGERS
         // ============================================================
         function loadAllData() {
             lastUpdated.textContent = new Date().toLocaleDateString('en-US', {
@@ -2233,14 +2648,36 @@
                 }
             }, () => {});
 
-            // ===== VIDEOS =====
+            // ===== VIDEOS - WITH NEW VIDEO NOTIFICATION =====
+            let previousVideoCount = 0;
             db.collection('videos').orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
                 const grid = document.getElementById('videoGrid');
                 grid.innerHTML = '';
+                let count = 0;
 
                 if (!snapshot.empty) {
+                    // Check for new videos
+                    const currentIds = new Set();
+                    snapshot.forEach(doc => currentIds.add(doc.id));
+                    
+                    // If this is not the first load and count increased, show notification
+                    if (previousVideoCount > 0 && snapshot.size > previousVideoCount) {
+                        // Find the new video (first one)
+                        const newest = snapshot.docs[0];
+                        const data = newest.data();
+                        if (data.title) {
+                            showPopupNotification(
+                                '🎥 New Video Added!',
+                                `${data.title} - Check it out now!`,
+                                'video'
+                            );
+                        }
+                    }
+                    previousVideoCount = snapshot.size;
+
                     snapshot.forEach(doc => {
                         const vid = doc.data();
+                        count++;
                         let videoUrl = vid.videoLink || vid.link || vid.url || '';
                         const embedUrl = convertToEmbedUrl(videoUrl);
                         const isYouTube = embedUrl && embedUrl.includes('youtube.com/embed');
@@ -2290,6 +2727,8 @@
                         grid.appendChild(card);
                     });
 
+                    document.getElementById('videoCount').textContent = count;
+
                     document.querySelectorAll('.video-card .watch-btn').forEach(btn => {
                         btn.addEventListener('click', function(e) {
                             e.stopPropagation();
@@ -2327,6 +2766,7 @@
                     });
 
                 } else {
+                    document.getElementById('videoCount').textContent = '0';
                     grid.innerHTML = `<div class="coming-soon-card">
                         <i class="fas fa-video"></i>
                         <h4>No videos uploaded yet</h4>
@@ -2335,11 +2775,26 @@
             }, () => {});
 
             // ===== FF HEADSHOTS - FROM FIRESTORE =====
+            let previousHeadshotCount = 0;
             db.collection('ffHeadshots').orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
                 const grid = document.getElementById('ffHeadshotsGrid');
                 grid.innerHTML = '';
 
                 if (!snapshot.empty) {
+                    // Check for new files
+                    if (previousHeadshotCount > 0 && snapshot.size > previousHeadshotCount) {
+                        const newest = snapshot.docs[0];
+                        const data = newest.data();
+                        if (data.title) {
+                            showPopupNotification(
+                                '🔥 New Headshot File!',
+                                `${data.title} - Download now!`,
+                                'file'
+                            );
+                        }
+                    }
+                    previousHeadshotCount = snapshot.size;
+
                     snapshot.forEach(doc => {
                         const file = doc.data();
                         const id = doc.id;
@@ -2385,11 +2840,25 @@
             }, () => {});
 
             // ===== FF LOCATION - FROM FIRESTORE =====
+            let previousLocationCount = 0;
             db.collection('ffLocation').orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
                 const grid = document.getElementById('ffLocationGrid');
                 grid.innerHTML = '';
 
                 if (!snapshot.empty) {
+                    if (previousLocationCount > 0 && snapshot.size > previousLocationCount) {
+                        const newest = snapshot.docs[0];
+                        const data = newest.data();
+                        if (data.title) {
+                            showPopupNotification(
+                                '📍 New Location File!',
+                                `${data.title} - Download now!`,
+                                'file'
+                            );
+                        }
+                    }
+                    previousLocationCount = snapshot.size;
+
                     snapshot.forEach(doc => {
                         const file = doc.data();
                         const id = doc.id;
@@ -2435,11 +2904,25 @@
             }, () => {});
 
             // ===== ERROR FIR YA PROBLEM FIX - FROM FIRESTORE =====
+            let previousErrorCount = 0;
             db.collection('errorFixes').orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
                 const grid = document.getElementById('errorGrid');
                 grid.innerHTML = '';
 
                 if (!snapshot.empty) {
+                    if (previousErrorCount > 0 && snapshot.size > previousErrorCount) {
+                        const newest = snapshot.docs[0];
+                        const data = newest.data();
+                        if (data.title) {
+                            showPopupNotification(
+                                '🛠️ New Error Fix!',
+                                `${data.title} - Check the solution now!`,
+                                'error'
+                            );
+                        }
+                    }
+                    previousErrorCount = snapshot.size;
+
                     snapshot.forEach(doc => {
                         const data = doc.data();
                         const id = doc.id;
@@ -2480,7 +2963,6 @@
                         `;
                         grid.appendChild(card);
 
-                        // Click to play
                         card.querySelector('.error-thumbnail').addEventListener('click', function() {
                             if (isYouTube && embedUrl) {
                                 const iframe = this.querySelector('iframe');
@@ -2504,14 +2986,29 @@
             }, () => {});
 
             // ===== GAME FILES =====
+            let previousFileCount = 0;
             db.collection('files').orderBy('timestamp', 'desc').limit(20).onSnapshot((snapshot) => {
                 const grid = document.getElementById('fileGrid');
                 grid.innerHTML = '';
                 let fileCount = 0;
 
                 if (!snapshot.empty) {
+                    if (previousFileCount > 0 && snapshot.size > previousFileCount) {
+                        const newest = snapshot.docs[0];
+                        const data = newest.data();
+                        if (data.title) {
+                            showPopupNotification(
+                                '📁 New Game File!',
+                                `${data.title} - Download now!`,
+                                'file'
+                            );
+                        }
+                    }
+                    previousFileCount = snapshot.size;
+
                     snapshot.forEach(doc => {
                         const file = doc.data();
+                        fileCount++;
                         const card = document.createElement('div');
                         card.className = 'file-card';
                         const label = file.label || 'PREMIUM';
@@ -2526,7 +3023,6 @@
                             <div style="font-size:0.55rem; color:#3d6e8a; margin-top:0.2rem;">⬆️ ${file.updated || 'new'}</div>
                         `;
                         grid.appendChild(card);
-                        fileCount++;
                     });
                     document.getElementById('fileCount').textContent = fileCount;
 
@@ -2571,9 +3067,11 @@
             }, () => {});
         }
 
-        console.log('🔥 ABID SIR - PREMIUM GAMING PLATFORM');
+        console.log('🔥 ABID SIR - PREMIUM GAMING PLATFORM v3.0');
         console.log('✅ All Firebase functionality 100% intact');
-        console.log('✅ Design upgraded to premium gaming theme');
+        console.log('✅ FCM Push Notifications integrated');
+        console.log('✅ Search & Filters added');
+        console.log('✅ Real-time popup notifications active');
     </script>
 </body>
 </html>
