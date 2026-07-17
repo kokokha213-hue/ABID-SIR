@@ -1273,6 +1273,439 @@
         }
 
         /* ============================================================
+           PAID PANELS SECTION
+           ============================================================ */
+        .panel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.8rem;
+            margin-bottom: 2rem;
+        }
+
+        .panel-card {
+            background: rgba(15, 26, 38, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 1.8rem;
+            padding: 1.2rem;
+            border: 1px solid rgba(255, 59, 48, 0.06);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.20);
+            position: relative;
+        }
+        .panel-card:hover {
+            transform: translateY(-10px) scale(1.01);
+            border-color: rgba(255, 59, 48, 0.20);
+            box-shadow: 0 30px 60px rgba(255, 59, 48, 0.06);
+        }
+
+        .panel-card .panel-image {
+            width: 100%;
+            height: 180px;
+            border-radius: 1.2rem;
+            overflow: hidden;
+            margin-bottom: 0.8rem;
+            background: #0a1a2a;
+        }
+        .panel-card .panel-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .panel-card .panel-image .no-image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            color: #3a6a8a;
+            font-size: 3rem;
+            background: #0a1a2a;
+        }
+
+        .panel-card .panel-status {
+            display: inline-block;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+            font-size: 0.6rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 0.4rem;
+        }
+        .panel-card .panel-status.available {
+            background: rgba(74, 222, 128, 0.15);
+            color: #4ade80;
+            border: 1px solid rgba(74, 222, 128, 0.2);
+        }
+        .panel-card .panel-status.out-of-stock {
+            background: rgba(255, 59, 48, 0.15);
+            color: #ff3b30;
+            border: 1px solid rgba(255, 59, 48, 0.2);
+        }
+
+        .panel-card h4 {
+            font-size: 1.1rem;
+            color: #d8edff;
+            margin-bottom: 0.2rem;
+            font-weight: 600;
+        }
+        .panel-card .panel-desc {
+            font-size: 0.8rem;
+            color: #7797b0;
+            margin-bottom: 0.4rem;
+        }
+        .panel-card .panel-price {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            color: #ff3b30;
+            font-weight: 700;
+        }
+        .panel-card .panel-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.6rem;
+        }
+        .panel-card .panel-actions .btn-panel {
+            background: rgba(255, 59, 48, 0.08);
+            border: 1px solid rgba(255, 59, 48, 0.08);
+            padding: 0.4rem 1.2rem;
+            border-radius: 60px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #ff3b30;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-family: 'Exo 2', sans-serif;
+        }
+        .panel-card .panel-actions .btn-panel:hover {
+            background: rgba(255, 59, 48, 0.20);
+            color: #ffffff;
+            transform: scale(1.05);
+        }
+        .panel-card .panel-actions .btn-panel.out-of-stock {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ============================================================
+           MODAL STYLES
+           ============================================================ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(40px) scale(0.95); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+
+        .modal-content {
+            background: rgba(15, 26, 38, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 2rem;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2.5rem;
+            border: 1px solid rgba(255, 59, 48, 0.1);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+            animation: slideIn 0.3s ease;
+            position: relative;
+        }
+        .modal-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        .modal-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 10px;
+        }
+        .modal-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 59, 48, 0.3);
+            border-radius: 10px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            background: rgba(255, 59, 48, 0.1);
+            border: 1px solid rgba(255, 59, 48, 0.15);
+            color: #ff3b30;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-close:hover {
+            background: rgba(255, 59, 48, 0.2);
+            transform: rotate(90deg);
+        }
+
+        .modal-content .panel-image-full {
+            width: 100%;
+            height: 250px;
+            border-radius: 1.2rem;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            background: #0a1a2a;
+        }
+        .modal-content .panel-image-full img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .modal-content .panel-image-full .no-image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            color: #3a6a8a;
+            font-size: 4rem;
+            background: #0a1a2a;
+        }
+
+        .modal-content h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            color: #d8edff;
+            margin-bottom: 0.5rem;
+        }
+        .modal-content .modal-price {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: #ff3b30;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .modal-content .modal-desc {
+            color: #9fbad0;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-content .features-list {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 1.5rem;
+        }
+        .modal-content .features-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            color: #b8d0e5;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .modal-content .features-list li i {
+            color: #ff3b30;
+            width: 1.2rem;
+        }
+
+        .modal-content .video-proof-section {
+            margin: 1.5rem 0;
+            border-radius: 1.2rem;
+            overflow: hidden;
+            background: #0a1a2a;
+        }
+        .modal-content .video-proof-section iframe {
+            width: 100%;
+            height: 315px;
+            border: none;
+        }
+        .modal-content .video-proof-section .no-video {
+            padding: 2rem;
+            text-align: center;
+            color: #3a6a8a;
+        }
+
+        .modal-content .btn-buy {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(145deg, #ff3b30, #cc2f26);
+            border: none;
+            border-radius: 60px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            font-family: 'Exo 2', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .modal-content .btn-buy:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 40px rgba(255, 59, 48, 0.3);
+        }
+
+        /* ============================================================
+           PAYMENT MODAL
+           ============================================================ */
+        .payment-methods {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        .payment-method-btn {
+            padding: 1rem;
+            border-radius: 1.2rem;
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            background: rgba(20, 20, 30, 0.5);
+            color: #b8d0e5;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-family: 'Exo 2', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .payment-method-btn:hover {
+            border-color: rgba(255, 59, 48, 0.3);
+            background: rgba(255, 59, 48, 0.05);
+        }
+        .payment-method-btn.selected {
+            border-color: #ff3b30;
+            background: rgba(255, 59, 48, 0.1);
+            box-shadow: 0 0 30px rgba(255, 59, 48, 0.05);
+        }
+        .payment-method-btn .method-icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+        .payment-method-btn .method-name {
+            font-size: 0.8rem;
+        }
+
+        .payment-details {
+            background: rgba(20, 20, 30, 0.3);
+            border-radius: 1.2rem;
+            padding: 1.5rem;
+            margin: 1rem 0 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+        .payment-details .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            color: #b8d0e5;
+        }
+        .payment-details .detail-row .label {
+            color: #6a8fa8;
+        }
+        .payment-details .detail-row .value {
+            color: #ddf4ff;
+            font-weight: 600;
+        }
+
+        .order-form .form-group {
+            margin-bottom: 1.2rem;
+        }
+        .order-form .form-group label {
+            display: block;
+            color: #9fbad0;
+            font-size: 0.85rem;
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+        }
+        .order-form .form-group label .required {
+            color: #ff3b30;
+        }
+        .order-form .form-group input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(20, 20, 30, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            color: #ddf4ff;
+            font-size: 0.95rem;
+            font-family: 'Exo 2', sans-serif;
+            transition: all 0.3s;
+        }
+        .order-form .form-group input:focus {
+            outline: none;
+            border-color: rgba(255, 59, 48, 0.3);
+            background: rgba(20, 20, 30, 0.7);
+            box-shadow: 0 0 30px rgba(255, 59, 48, 0.02);
+        }
+        .order-form .form-group input::placeholder {
+            color: #3a6a8a;
+        }
+
+        .btn-submit-order {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(145deg, #4ade80, #22c55e);
+            border: none;
+            border-radius: 60px;
+            color: #090909;
+            font-size: 1.1rem;
+            font-weight: 700;
+            font-family: 'Exo 2', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .btn-submit-order:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 40px rgba(74, 222, 128, 0.3);
+        }
+        .btn-submit-order:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .order-success {
+            text-align: center;
+            padding: 2rem;
+        }
+        .order-success i {
+            font-size: 4rem;
+            color: #4ade80;
+            margin-bottom: 1rem;
+        }
+        .order-success h3 {
+            color: #ddf4ff;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .order-success p {
+            color: #9fbad0;
+        }
+
+        /* ============================================================
            RESPONSIVE
            ============================================================ */
         @media (max-width: 700px) {
@@ -1292,6 +1725,7 @@
             .file-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
             .video-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
             .error-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+            .panel-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
             .hero-banner { padding: 1.5rem 1.5rem; flex-direction: column; gap: 1rem; text-align: center; }
             .announcement-ticker { padding: 0.5rem 1rem; flex-wrap: wrap; }
             .announcement-ticker .ticker-content span { font-size: 0.75rem; padding: 0 1rem; }
@@ -1300,11 +1734,15 @@
             .premium-footer { flex-direction: column; text-align: center; }
             .premium-footer .version { text-align: center; }
             .section-title { flex-wrap: wrap; gap: 0.5rem; }
+            .modal-content { padding: 1.5rem; margin: 1rem; }
+            .payment-methods { grid-template-columns: 1fr; }
+            .modal-content .video-proof-section iframe { height: 200px; }
         }
         @media (max-width: 480px) {
             .file-grid { grid-template-columns: 1fr; }
             .video-grid { grid-template-columns: 1fr; }
             .error-grid { grid-template-columns: 1fr; }
+            .panel-grid { grid-template-columns: 1fr; }
             .hero-text h2 { font-size: 1.2rem; }
             .stats-grid { padding: 0.4rem 0.8rem; gap: 0.4rem; }
             .stat-item { font-size: 0.75rem; }
@@ -1313,12 +1751,14 @@
             .video-card { padding: 0.8rem; }
             .file-card { padding: 0.8rem; }
             .error-card { padding: 0.8rem; }
+            .panel-card { padding: 0.8rem; }
             .hero-banner { padding: 1rem 1rem; }
             .premium-footer { padding: 1.2rem 1rem; }
             .logo { font-size: 2rem; }
             .hero-title { font-size: 1.8rem; }
             .platform-card { padding: 1.8rem 1rem; }
             .bottom .social-links a { padding: 0.4rem 1rem; font-size: 0.65rem; }
+            .modal-content { padding: 1rem; }
         }
     </style>
 </head>
@@ -1438,8 +1878,6 @@
                 </a>
             </div>
 
-           
-
             <!-- ===== ANNOUNCEMENT ===== -->
             <div class="announcement-ticker">
                 <span class="live-badge">● LIVE</span>
@@ -1450,6 +1888,13 @@
                     </div>
                 </div>
             </div>
+
+            <!-- ===== PAID PANELS SECTION ===== -->
+            <div class="section-title">
+                <h3><i class="fas fa-crown" style="color:#ffd700;"></i> Paid Panels</h3>
+                <span style="color:#ffd700;font-size:0.65rem;letter-spacing:1px;"><i class="fas fa-star"></i> Premium</span>
+            </div>
+            <div class="panel-grid" id="panelGrid"></div>
 
             <!-- ===== VIDEOS ===== -->
             <div class="section-title">
@@ -1507,6 +1952,30 @@
         </div>
     </div>
 
+    <!-- ============================================================
+    PANEL DETAILS MODAL
+    ============================================================ -->
+    <div class="modal-overlay" id="panelDetailModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closePanelModal"><i class="fas fa-times"></i></button>
+            <div id="panelDetailContent">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+    PAYMENT / ORDER MODAL
+    ============================================================ -->
+    <div class="modal-overlay" id="paymentModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closePaymentModal"><i class="fas fa-times"></i></button>
+            <div id="paymentContent">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+    </div>
+
     <script>
         // ============================================================
         // LOADING
@@ -1531,7 +2000,6 @@
                 userWeb.style.display = 'block';
                 userWeb.classList.add('active');
                 transition.classList.remove('active');
-                // Load Firebase data after showing user web
                 loadAllData();
             }, 600);
         }
@@ -1621,6 +2089,8 @@
         // ============================================================
         // LOAD DATA FROM FIRESTORE
         // ============================================================
+        let currentPanelData = null;
+
         function loadAllData() {
             const lastUpdated = document.getElementById('lastUpdated');
             lastUpdated.textContent = new Date().toLocaleDateString('en-US', {
@@ -1639,6 +2109,64 @@
                 const ticker = document.getElementById('announceTicker');
                 if (ticker) {
                     ticker.innerHTML = `<span><strong>📢</strong> ${text}</span>`;
+                }
+            }, () => {});
+
+            // ===== PAID PANELS =====
+            db.collection('paidPanels').orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
+                const grid = document.getElementById('panelGrid');
+                grid.innerHTML = '';
+
+                if (!snapshot.empty) {
+                    snapshot.forEach(doc => {
+                        const panel = doc.data();
+                        const id = doc.id;
+                        const isAvailable = panel.status !== 'Out of Stock';
+
+                        const card = document.createElement('div');
+                        card.className = 'panel-card';
+
+                        let imageHtml = '';
+                        if (panel.imageUrl) {
+                            imageHtml = `<img src="${panel.imageUrl}" alt="${panel.name || 'Panel'}" loading="lazy">`;
+                        } else {
+                            imageHtml = `<div class="no-image"><i class="fas fa-crown"></i></div>`;
+                        }
+
+                        card.innerHTML = `
+                            <div class="panel-image">${imageHtml}</div>
+                            <span class="panel-status ${isAvailable ? 'available' : 'out-of-stock'}">
+                                ${isAvailable ? '✅ Available' : '❌ Out of Stock'}
+                            </span>
+                            <h4>${panel.name || 'Untitled Panel'}</h4>
+                            <div class="panel-desc">${panel.shortDescription || ''}</div>
+                            <div class="panel-price">${panel.price || '0'} PKR</div>
+                            <div class="panel-actions">
+                                <button class="btn-panel ${!isAvailable ? 'out-of-stock' : ''}" 
+                                        data-id="${id}" 
+                                        data-panel='${JSON.stringify(panel)}'
+                                        ${!isAvailable ? 'disabled' : ''}>
+                                    <i class="fas fa-eye"></i> Open
+                                </button>
+                            </div>
+                        `;
+                        grid.appendChild(card);
+                    });
+
+                    // Add click listeners for Open buttons
+                    grid.querySelectorAll('.btn-panel:not(.out-of-stock)').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const panelData = JSON.parse(this.dataset.panel);
+                            openPanelDetail(panelData, this.dataset.id);
+                        });
+                    });
+
+                } else {
+                    grid.innerHTML = `<div class="coming-soon-card">
+                        <i class="fas fa-crown" style="color:#ffd700;"></i>
+                        <h4>No panels available yet</h4>
+                        <div class="status"><i class="fas fa-clock"></i> Coming Soon</div>
+                    </div>`;
                 }
             }, () => {});
 
@@ -1979,10 +2507,270 @@
             }, () => {});
         }
 
+        // ============================================================
+        // PANEL DETAILS MODAL
+        // ============================================================
+        function openPanelDetail(panelData, panelId) {
+            const modal = document.getElementById('panelDetailModal');
+            const content = document.getElementById('panelDetailContent');
+            currentPanelData = { ...panelData, id: panelId };
+
+            let featuresHtml = '';
+            if (panelData.features && panelData.features.length) {
+                featuresHtml = `<ul class="features-list">`;
+                panelData.features.forEach(f => {
+                    featuresHtml += `<li><i class="fas fa-check-circle"></i> ${f}</li>`;
+                });
+                featuresHtml += `</ul>`;
+            }
+
+            let videoHtml = '';
+            if (panelData.videoProof) {
+                const embedUrl = convertToEmbedUrl(panelData.videoProof);
+                videoHtml = `
+                    <div class="video-proof-section">
+                        <iframe src="${embedUrl}" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                `;
+            } else {
+                videoHtml = `
+                    <div class="video-proof-section">
+                        <div class="no-video"><i class="fas fa-video" style="font-size:2rem;display:block;margin-bottom:0.5rem;"></i> No video proof available</div>
+                    </div>
+                `;
+            }
+
+            let imageHtml = '';
+            if (panelData.imageUrl) {
+                imageHtml = `<img src="${panelData.imageUrl}" alt="${panelData.name || 'Panel'}" loading="lazy">`;
+            } else {
+                imageHtml = `<div class="no-image"><i class="fas fa-crown" style="font-size:4rem;"></i></div>`;
+            }
+
+            content.innerHTML = `
+                <div class="panel-image-full">${imageHtml}</div>
+                <h2>${panelData.name || 'Untitled Panel'}</h2>
+                <div class="modal-price">${panelData.price || '0'} PKR</div>
+                <div class="modal-desc">${panelData.fullDescription || panelData.shortDescription || 'No description available.'}</div>
+                ${featuresHtml}
+                <h3 style="color:#b8d0e5;margin-bottom:0.5rem;font-size:1rem;"><i class="fas fa-video"></i> Video Proof</h3>
+                ${videoHtml}
+                <button class="btn-buy" id="buyNowBtn" data-panelid="${panelId}">
+                    <i class="fas fa-shopping-cart"></i> Buy Now — ${panelData.price || '0'} PKR
+                </button>
+            `;
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            document.getElementById('buyNowBtn').addEventListener('click', function() {
+                openPaymentModal(currentPanelData);
+            });
+        }
+
+        function closePanelModal() {
+            document.getElementById('panelDetailModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('closePanelModal').addEventListener('click', closePanelModal);
+        document.getElementById('panelDetailModal').addEventListener('click', function(e) {
+            if (e.target === this) closePanelModal();
+        });
+
+        // ============================================================
+        // PAYMENT / ORDER MODAL
+        // ============================================================
+        let selectedPaymentMethod = null;
+        let orderData = {};
+
+        function openPaymentModal(panelData) {
+            const modal = document.getElementById('paymentModal');
+            const content = document.getElementById('paymentContent');
+            selectedPaymentMethod = null;
+            orderData = { panel: panelData };
+
+            content.innerHTML = `
+                <h2 style="font-family:'Orbitron',sans-serif;font-size:1.5rem;color:#d8edff;margin-bottom:0.5rem;">
+                    <i class="fas fa-credit-card"></i> Payment
+                </h2>
+                <div style="color:#9fbad0;margin-bottom:1rem;font-size:0.95rem;">
+                    <strong>${panelData.name}</strong> — ${panelData.price} PKR
+                </div>
+
+                <h3 style="color:#b8d0e5;font-size:0.9rem;margin-bottom:0.8rem;">Select Payment Method</h3>
+                <div class="payment-methods">
+                    <button class="payment-method-btn" data-method="EasyPaisa">
+                        <span class="method-icon"><i class="fas fa-mobile-alt"></i></span>
+                        <span class="method-name">EasyPaisa</span>
+                    </button>
+                    <button class="payment-method-btn" data-method="JazzCash">
+                        <span class="method-icon"><i class="fas fa-mobile-alt"></i></span>
+                        <span class="method-name">JazzCash</span>
+                    </button>
+                </div>
+
+                <div id="paymentDetailsContainer"></div>
+
+                <div class="order-form" id="orderForm" style="display:none;">
+                    <div class="form-group">
+                        <label>Your Email <span class="required">*</span></label>
+                        <input type="email" id="userEmail" placeholder="your@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Transaction ID <span class="required">*</span></label>
+                        <input type="text" id="transactionId" placeholder="Enter transaction ID" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Sender Mobile Number <span class="required">*</span></label>
+                        <input type="tel" id="senderNumber" placeholder="03XX-XXXXXXX" required>
+                    </div>
+                    <button class="btn-submit-order" id="submitOrderBtn">
+                        <i class="fas fa-check-circle"></i> Submit Order
+                    </button>
+                </div>
+
+                <div id="orderSuccessMessage" style="display:none;"></div>
+            `;
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            // Payment method selection
+            content.querySelectorAll('.payment-method-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    content.querySelectorAll('.payment-method-btn').forEach(b => b.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedPaymentMethod = this.dataset.method;
+                    showPaymentDetails(panelData, selectedPaymentMethod);
+                });
+            });
+
+            // Submit order
+            document.getElementById('submitOrderBtn').addEventListener('click', function() {
+                submitOrder(panelData);
+            });
+        }
+
+        function showPaymentDetails(panelData, method) {
+            const container = document.getElementById('paymentDetailsContainer');
+            const orderForm = document.getElementById('orderForm');
+
+            // Payment details
+            const paymentNumber = method === 'EasyPaisa' ? '0300-1234567' : '0311-7654321';
+            const accountName = method === 'EasyPaisa' ? 'ABID SIR' : 'ABID SIR';
+
+            container.innerHTML = `
+                <div class="payment-details">
+                    <div class="detail-row">
+                        <span class="label">Payment Method</span>
+                        <span class="value">${method}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Account Number</span>
+                        <span class="value" style="color:#ff3b30;font-size:1.1rem;">${paymentNumber}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Account Name</span>
+                        <span class="value">${accountName}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Amount</span>
+                        <span class="value" style="color:#ffd700;">${panelData.price} PKR</span>
+                    </div>
+                </div>
+                <div style="background:rgba(255,184,0,0.05);border:1px solid rgba(255,184,0,0.1);border-radius:1rem;padding:0.8rem 1.2rem;margin-bottom:1rem;">
+                    <p style="color:#fbbf24;font-size:0.8rem;">
+                        <i class="fas fa-info-circle"></i> Send exactly <strong>${panelData.price} PKR</strong> to the account above, then fill in the form below.
+                    </p>
+                </div>
+            `;
+
+            orderForm.style.display = 'block';
+        }
+
+        function submitOrder(panelData) {
+            const email = document.getElementById('userEmail').value.trim();
+            const transactionId = document.getElementById('transactionId').value.trim();
+            const senderNumber = document.getElementById('senderNumber').value.trim();
+
+            // Validation
+            if (!email) {
+                alert('Please enter your email address.');
+                return;
+            }
+            if (!transactionId) {
+                alert('Please enter the transaction ID.');
+                return;
+            }
+            if (!senderNumber) {
+                alert('Please enter your mobile number.');
+                return;
+            }
+            if (!selectedPaymentMethod) {
+                alert('Please select a payment method.');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitOrderBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+
+            const order = {
+                panelName: panelData.name || 'Untitled Panel',
+                panelPrice: panelData.price || '0',
+                panelId: panelData.id || 'unknown',
+                paymentMethod: selectedPaymentMethod,
+                userEmail: email,
+                transactionId: transactionId,
+                senderNumber: senderNumber,
+                orderStatus: 'Pending',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                createdAt: new Date().toISOString()
+            };
+
+            db.collection('orders').add(order)
+                .then(() => {
+                    const successDiv = document.getElementById('orderSuccessMessage');
+                    successDiv.style.display = 'block';
+                    successDiv.innerHTML = `
+                        <div class="order-success">
+                            <i class="fas fa-check-circle"></i>
+                            <h3>Order Submitted! ✅</h3>
+                            <p>Your order is pending confirmation. We'll contact you shortly.</p>
+                            <p style="font-size:0.8rem;color:#6a8fa8;margin-top:0.5rem;">Order ID: ${transactionId}</p>
+                            <button class="btn-panel" style="margin-top:1rem;padding:0.6rem 2rem;" onclick="document.getElementById('paymentModal').classList.remove('active');document.body.style.overflow='';">Close</button>
+                        </div>
+                    `;
+                    document.getElementById('orderForm').style.display = 'none';
+                    document.getElementById('paymentDetailsContainer').innerHTML = '';
+                    document.querySelector('.payment-methods').style.display = 'none';
+                })
+                .catch((error) => {
+                    alert('❌ Error submitting order: ' + error.message);
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Submit Order';
+                });
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('closePaymentModal').addEventListener('click', closePaymentModal);
+        document.getElementById('paymentModal').addEventListener('click', function(e) {
+            if (e.target === this) closePaymentModal();
+        });
+
         console.log('🔥 ABID SIR · Premium Gaming Platform');
         console.log('✅ Landing page + User Web combined');
         console.log('✅ Android click → shows user web with Firebase data');
         console.log('✅ Back button → returns to landing page');
+        console.log('✅ Paid Panels section added');
+        console.log('✅ Panel details modal with features and video proof');
+        console.log('✅ Payment system with EasyPaisa & JazzCash');
+        console.log('✅ Order system with Firebase storage');
     </script>
 </body>
 </html>
