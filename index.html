@@ -16,7 +16,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <style>
         /* ============================================================
-           LANDING PAGE STYLES
+           LANDING PAGE STYLES (SAME AS BEFORE - KEEP EXISTING)
            ============================================================ */
         * {
             margin: 0;
@@ -1203,7 +1203,7 @@
         .notif-item .notif-type.admin { background: rgba(168, 85, 247, 0.15); color: #a78bfa; }
 
         /* ============================================================
-           VIDEO & FILE GRIDS (existing)
+           VIDEO & FILE GRIDS
            ============================================================ */
         .video-grid {
             display: grid;
@@ -2370,8 +2370,15 @@
                 userWeb.style.display = 'block';
                 userWeb.classList.add('active');
                 transition.classList.remove('active');
-                loadAllData();
-                setupNavigation();
+                
+                // Initialize auth FIRST
+                initAuth();
+                
+                // Then load data
+                setTimeout(() => {
+                    loadAllData();
+                    setupNavigation();
+                }, 500);
             }, 600);
         }
 
@@ -2389,6 +2396,7 @@
         // ============================================================
         let currentUser = null;
         let currentUserId = null;
+        let authInitialized = false;
 
         function setupNavigation() {
             const navBtns = document.querySelectorAll('.user-nav .nav-btn');
@@ -2428,34 +2436,72 @@
         db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
 
         // ============================================================
-        // ANONYMOUS AUTH + USER TRACKING
+        // ANONYMOUS AUTH + USER TRACKING (FIXED)
         // ============================================================
         function initAuth() {
+            // Agar already authenticated hai toh
+            if (auth.currentUser) {
+                currentUser = auth.currentUser;
+                currentUserId = currentUser.uid;
+                authInitialized = true;
+                updateUserUI();
+                loadUserData();
+                console.log('✅ Already authenticated: ' + currentUserId);
+                return;
+            }
+
+            // Nahi toh sign in karein
             auth.signInAnonymously()
                 .then((userCredential) => {
                     currentUser = userCredential.user;
                     currentUserId = currentUser.uid;
-                    document.getElementById('userNameDisplay').textContent = 'User';
+                    authInitialized = true;
+                    updateUserUI();
+                    loadUserData();
                     console.log('✅ Authenticated: ' + currentUserId);
-                    
-                    // Update user display
-                    const badge = document.querySelector('.user-badge');
-                    if (badge) {
-                        badge.innerHTML = `<i class="fas fa-user-circle"></i> <span>User #${currentUserId.slice(0,6)}</span>`;
-                    }
-                    
-                    // Load user-specific data
-                    if (document.getElementById('userWebContainer').classList.contains('active')) {
-                        loadMyPanels();
-                        loadMyOrders();
-                        loadNotifications();
-                    }
                 })
                 .catch((error) => {
-                    console.warn('⚠️ Auth error:', error);
-                    // Still try to load data with guest access
+                    console.warn('⚠️ Auth error:', error.code, error.message);
+                    authInitialized = false;
+                    
+                    // Agar admin-restricted-error aaye toh user ko batayein
+                    if (error.code === 'auth/admin-restricted-operation') {
+                        alert('⚠️ Firebase Authentication setup incomplete!\n\nPlease enable Anonymous Authentication in Firebase Console:\n1. Go to Firebase Console\n2. Authentication → Sign-in methods\n3. Enable "Anonymous"\n\nThen refresh the page.');
+                    }
+                    
+                    // Retry after 3 seconds
+                    setTimeout(initAuth, 3000);
                 });
         }
+
+        function updateUserUI() {
+            if (currentUserId) {
+                const userNameDisplay = document.getElementById('userNameDisplay');
+                if (userNameDisplay) {
+                    userNameDisplay.textContent = 'User #' + currentUserId.slice(0,6);
+                }
+                
+                const badge = document.querySelector('.user-badge');
+                if (badge) {
+                    badge.innerHTML = `<i class="fas fa-user-circle"></i> <span>User #${currentUserId.slice(0,6)}</span>`;
+                }
+            }
+        }
+
+        function loadUserData() {
+            if (document.getElementById('userWebContainer').classList.contains('active')) {
+                loadMyPanels();
+                loadMyOrders();
+                loadNotifications();
+            }
+        }
+
+        // Check auth status periodically
+        setInterval(() => {
+            if (!auth.currentUser && !authInitialized) {
+                initAuth();
+            }
+        }, 5000);
 
         // ============================================================
         // CONVERT TO EMBED URL
@@ -2485,14 +2531,13 @@
 
         function loadAllData() {
             const lastUpdated = document.getElementById('lastUpdated');
-            lastUpdated.textContent = new Date().toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            });
-
-            // Initialize auth
-            initAuth();
+            if (lastUpdated) {
+                lastUpdated.textContent = new Date().toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            }
 
             // ===== ANNOUNCEMENT =====
             db.collection('content').doc('announcement').onSnapshot((doc) => {
@@ -2510,6 +2555,7 @@
             // ===== PAID PANELS =====
             db.collection('paidPanels').orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
                 const grid = document.getElementById('panelGrid');
+                if (!grid) return;
                 grid.innerHTML = '';
 
                 if (!snapshot.empty) {
@@ -2550,8 +2596,12 @@
 
                     grid.querySelectorAll('.btn-panel:not(.out-of-stock)').forEach(btn => {
                         btn.addEventListener('click', function() {
-                            const panelData = JSON.parse(this.dataset.panel);
-                            openPanelDetail(panelData, this.dataset.id);
+                            try {
+                                const panelData = JSON.parse(this.dataset.panel);
+                                openPanelDetail(panelData, this.dataset.id);
+                            } catch(e) {
+                                console.warn('Panel data parse error:', e);
+                            }
                         });
                     });
 
@@ -2567,6 +2617,7 @@
             // ===== VIDEOS =====
             db.collection('videos').orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
                 const grid = document.getElementById('videoGrid');
+                if (!grid) return;
                 grid.innerHTML = '';
 
                 if (!snapshot.empty) {
@@ -2670,6 +2721,7 @@
             // ===== FF HEADSHOTS =====
             db.collection('ffHeadshots').orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
                 const grid = document.getElementById('ffHeadshotsGrid');
+                if (!grid) return;
                 grid.innerHTML = '';
 
                 if (!snapshot.empty) {
@@ -2719,6 +2771,7 @@
             // ===== FF LOCATION =====
             db.collection('ffLocation').orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
                 const grid = document.getElementById('ffLocationGrid');
+                if (!grid) return;
                 grid.innerHTML = '';
 
                 if (!snapshot.empty) {
@@ -2768,12 +2821,12 @@
             // ===== ERROR FIX =====
             db.collection('errorFixes').orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
                 const grid = document.getElementById('errorGrid');
+                if (!grid) return;
                 grid.innerHTML = '';
 
                 if (!snapshot.empty) {
                     snapshot.forEach(doc => {
                         const data = doc.data();
-                        const id = doc.id;
                         const videoUrl = data.videoLink || '';
                         const isYouTube = videoUrl && (videoUrl.includes('youtube.com/embed') || videoUrl.includes('youtu.be') || videoUrl.includes('watch?v='));
                         let embedUrl = '';
@@ -2837,8 +2890,8 @@
             // ===== GAME FILES =====
             db.collection('files').orderBy('timestamp', 'desc').limit(20).onSnapshot((snapshot) => {
                 const grid = document.getElementById('fileGrid');
+                if (!grid) return;
                 grid.innerHTML = '';
-                let fileCount = 0;
 
                 if (!snapshot.empty) {
                     snapshot.forEach(doc => {
@@ -2857,9 +2910,7 @@
                             <div style="font-size:0.55rem; color:#3d6e8a; margin-top:0.2rem;">⬆️ ${file.updated || 'new'}</div>
                         `;
                         grid.appendChild(card);
-                        fileCount++;
                     });
-                    document.getElementById('fileCount').textContent = fileCount;
 
                     grid.querySelectorAll('.file-download-btn').forEach(btn => {
                         btn.addEventListener('click', function() {
@@ -2879,7 +2930,6 @@
                         });
                     });
                 } else {
-                    document.getElementById('fileCount').textContent = '0';
                     grid.innerHTML = `<div class="coming-soon-card">
                         <i class="fas fa-folder-open"></i>
                         <h4>No game files available</h4>
@@ -2895,23 +2945,38 @@
             db.collection('counters').doc('stats').onSnapshot((doc) => {
                 if (doc.exists) {
                     const data = doc.data();
-                    if (data.visitors) document.getElementById('visitorCounter').textContent = data.visitors.toLocaleString();
-                    if (data.downloads) document.getElementById('downloadCounter').textContent = data.downloads.toLocaleString();
+                    if (data.visitors) {
+                        const visitorEl = document.getElementById('visitorCounter');
+                        if (visitorEl) visitorEl.textContent = data.visitors.toLocaleString();
+                    }
+                    if (data.downloads) {
+                        const downloadEl = document.getElementById('downloadCounter');
+                        if (downloadEl) downloadEl.textContent = data.downloads.toLocaleString();
+                    }
                 }
             }, () => {});
         }
 
         // ============================================================
-        // LOAD MY PANELS (Accepted only)
+        // LOAD MY PANELS (Accepted only) - FIXED with error handling
         // ============================================================
         function loadMyPanels() {
+            const grid = document.getElementById('myPanelsGrid');
+            if (!grid) return;
+
+            // Agar auth nahi hai toh wait karein
             if (!currentUserId) {
-                setTimeout(loadMyPanels, 1000);
+                grid.innerHTML = `<div class="coming-soon-card">
+                    <i class="fas fa-spinner fa-spin" style="color:#4ade80;"></i>
+                    <h4>Authenticating...</h4>
+                </div>`;
                 return;
             }
 
-            const grid = document.getElementById('myPanelsGrid');
-            grid.innerHTML = '<div class="coming-soon-card"><i class="fas fa-spinner fa-spin" style="color:#4ade80;"></i><h4>Loading your panels...</h4></div>';
+            grid.innerHTML = `<div class="coming-soon-card">
+                <i class="fas fa-spinner fa-spin" style="color:#4ade80;"></i>
+                <h4>Loading your panels...</h4>
+            </div>`;
 
             db.collection('orders')
                 .where('userId', '==', currentUserId)
@@ -2963,10 +3028,12 @@
                             <div class="status"><i class="fas fa-info-circle"></i> Purchase a panel to see it here</div>
                         </div>`;
                     }
-                }, () => {
+                }, (error) => {
+                    console.warn('My Panels load error:', error);
                     grid.innerHTML = `<div class="coming-soon-card">
                         <i class="fas fa-exclamation-triangle" style="color:#ff6b6b;"></i>
                         <h4>Error loading panels</h4>
+                        <div class="status">Please refresh and try again</div>
                     </div>`;
                 });
         }
@@ -2985,17 +3052,11 @@
                     if (doc.exists) {
                         const order = doc.data();
                         if (order.orderStatus === 'Accepted' && order.userId === currentUserId) {
-                            // Access granted - open panel
-                            // Find panel data from paidPanels collection
+                            // Access granted
                             db.collection('paidPanels').doc(panelId).get()
                                 .then((panelDoc) => {
                                     if (panelDoc.exists) {
                                         const panelData = panelDoc.data();
-                                        // Show panel content (you can open a modal or redirect)
-                                        alert('✅ Access Granted! Opening panel: ' + panelData.name);
-                                        // Here you can open the panel content, link, or additional data
-                                        // Since we don't expose panel links publicly, we show a success message
-                                        // In a real scenario, you'd show the panel's content/URL here
                                         showPanelContent(panelData);
                                     } else {
                                         showAccessDenied();
@@ -3018,8 +3079,6 @@
         }
 
         function showPanelContent(panelData) {
-            // This is where the panel content would be shown
-            // Since we don't expose links publicly, we show a success modal
             const modal = document.getElementById('panelDetailModal');
             const content = document.getElementById('panelDetailContent');
             
@@ -3043,16 +3102,24 @@
         });
 
         // ============================================================
-        // LOAD MY ORDERS
+        // LOAD MY ORDERS - FIXED
         // ============================================================
         function loadMyOrders() {
+            const container = document.getElementById('ordersContainer');
+            if (!container) return;
+
             if (!currentUserId) {
-                setTimeout(loadMyOrders, 1000);
+                container.innerHTML = `<div class="coming-soon-card">
+                    <i class="fas fa-spinner fa-spin" style="color:#6a8fa8;"></i>
+                    <h4>Authenticating...</h4>
+                </div>`;
                 return;
             }
 
-            const container = document.getElementById('ordersContainer');
-            container.innerHTML = '<div class="coming-soon-card"><i class="fas fa-spinner fa-spin" style="color:#6a8fa8;"></i><h4>Loading your orders...</h4></div>';
+            container.innerHTML = `<div class="coming-soon-card">
+                <i class="fas fa-spinner fa-spin" style="color:#6a8fa8;"></i>
+                <h4>Loading your orders...</h4>
+            </div>`;
 
             db.collection('orders')
                 .where('userId', '==', currentUserId)
@@ -3109,25 +3176,35 @@
                             <div class="status"><i class="fas fa-info-circle"></i> Your orders will appear here</div>
                         </div>`;
                     }
-                }, () => {
+                }, (error) => {
+                    console.warn('Orders load error:', error);
                     container.innerHTML = `<div class="coming-soon-card">
                         <i class="fas fa-exclamation-triangle" style="color:#ff6b6b;"></i>
                         <h4>Error loading orders</h4>
+                        <div class="status">Please refresh and try again</div>
                     </div>`;
                 });
         }
 
         // ============================================================
-        // LOAD NOTIFICATIONS (User-specific)
+        // LOAD NOTIFICATIONS (User-specific) - FIXED
         // ============================================================
         function loadNotifications() {
+            const list = document.getElementById('notifList');
+            if (!list) return;
+
             if (!currentUserId) {
-                setTimeout(loadNotifications, 1000);
+                list.innerHTML = `<div class="coming-soon-card">
+                    <i class="fas fa-spinner fa-spin" style="color:#6a8fa8;"></i>
+                    <h4>Authenticating...</h4>
+                </div>`;
                 return;
             }
 
-            const list = document.getElementById('notifList');
-            list.innerHTML = '<div class="coming-soon-card"><i class="fas fa-spinner fa-spin" style="color:#6a8fa8;"></i><h4>Loading notifications...</h4></div>';
+            list.innerHTML = `<div class="coming-soon-card">
+                <i class="fas fa-spinner fa-spin" style="color:#6a8fa8;"></i>
+                <h4>Loading notifications...</h4>
+            </div>`;
 
             db.collection('notifications')
                 .where('userId', '==', currentUserId)
@@ -3165,20 +3242,24 @@
                         });
 
                         // Update badge
-                        document.getElementById('notifBadge').textContent = notifCount;
+                        const badge = document.getElementById('notifBadge');
+                        if (badge) badge.textContent = notifCount;
 
                     } else {
-                        document.getElementById('notifBadge').textContent = '0';
+                        const badge = document.getElementById('notifBadge');
+                        if (badge) badge.textContent = '0';
                         list.innerHTML = `<div class="coming-soon-card">
                             <i class="fas fa-bell" style="color:#6a8fa8;"></i>
                             <h4>No notifications yet</h4>
                             <div class="status"><i class="fas fa-info-circle"></i> You'll see updates here</div>
                         </div>`;
                     }
-                }, () => {
+                }, (error) => {
+                    console.warn('Notifications load error:', error);
                     list.innerHTML = `<div class="coming-soon-card">
                         <i class="fas fa-exclamation-triangle" style="color:#ff6b6b;"></i>
                         <h4>Error loading notifications</h4>
+                        <div class="status">Please refresh and try again</div>
                     </div>`;
                 });
         }
@@ -3189,6 +3270,8 @@
         function openPanelDetail(panelData, panelId) {
             const modal = document.getElementById('panelDetailModal');
             const content = document.getElementById('panelDetailContent');
+            if (!modal || !content) return;
+            
             currentPanelData = { ...panelData, id: panelId };
 
             let featuresHtml = '';
@@ -3239,9 +3322,12 @@
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
 
-            document.getElementById('buyNowBtn').addEventListener('click', function() {
-                openPaymentModal(currentPanelData);
-            });
+            const buyBtn = document.getElementById('buyNowBtn');
+            if (buyBtn) {
+                buyBtn.addEventListener('click', function() {
+                    openPaymentModal(currentPanelData);
+                });
+            }
         }
 
         function closePanelModal() {
@@ -3263,6 +3349,8 @@
         function openPaymentModal(panelData) {
             const modal = document.getElementById('paymentModal');
             const content = document.getElementById('paymentContent');
+            if (!modal || !content) return;
+            
             selectedPaymentMethod = null;
             orderData = { panel: panelData };
 
@@ -3323,14 +3411,18 @@
             });
 
             // Submit order
-            document.getElementById('submitOrderBtn').addEventListener('click', function() {
-                submitOrder(panelData);
-            });
+            const submitBtn = document.getElementById('submitOrderBtn');
+            if (submitBtn) {
+                submitBtn.addEventListener('click', function() {
+                    submitOrder(panelData);
+                });
+            }
         }
 
         function showPaymentDetails(panelData, method) {
             const container = document.getElementById('paymentDetailsContainer');
             const orderForm = document.getElementById('orderForm');
+            if (!container || !orderForm) return;
 
             const paymentNumber = method === 'EasyPaisa' ? '0300-1234567' : '0311-7654321';
             const accountName = method === 'EasyPaisa' ? 'ABID SIR' : 'ABID SIR';
@@ -3365,19 +3457,28 @@
         }
 
         function submitOrder(panelData) {
-            const email = document.getElementById('userEmail').value.trim();
-            const transactionId = document.getElementById('transactionId').value.trim();
-            const senderNumber = document.getElementById('senderNumber').value.trim();
+            const email = document.getElementById('userEmail');
+            const transactionId = document.getElementById('transactionId');
+            const senderNumber = document.getElementById('senderNumber');
+            
+            if (!email || !transactionId || !senderNumber) {
+                alert('Please fill in all fields.');
+                return;
+            }
 
-            if (!email) {
+            const emailVal = email.value.trim();
+            const transactionVal = transactionId.value.trim();
+            const senderVal = senderNumber.value.trim();
+
+            if (!emailVal) {
                 alert('Please enter your email address.');
                 return;
             }
-            if (!transactionId) {
+            if (!transactionVal) {
                 alert('Please enter the transaction ID.');
                 return;
             }
-            if (!senderNumber) {
+            if (!senderVal) {
                 alert('Please enter your mobile number.');
                 return;
             }
@@ -3391,6 +3492,8 @@
             }
 
             const submitBtn = document.getElementById('submitOrderBtn');
+            if (!submitBtn) return;
+            
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
 
@@ -3401,9 +3504,9 @@
                 panelImage: panelData.imageUrl || '',
                 panelDescription: panelData.fullDescription || panelData.shortDescription || '',
                 paymentMethod: selectedPaymentMethod,
-                userEmail: email,
-                transactionId: transactionId,
-                senderNumber: senderNumber,
+                userEmail: emailVal,
+                transactionId: transactionVal,
+                senderNumber: senderVal,
                 userId: currentUserId,
                 orderStatus: 'Pending',
                 timestamp: firebase.firestore.FieldValue.serverTimestamp(),
@@ -3425,20 +3528,28 @@
 
                     // Show success
                     const successDiv = document.getElementById('orderSuccessMessage');
-                    successDiv.style.display = 'block';
-                    successDiv.innerHTML = `
-                        <div class="order-success">
-                            <i class="fas fa-check-circle"></i>
-                            <h3>Order Submitted! ✅</h3>
-                            <p><strong>Order Status: Pending</strong></p>
-                            <p>Your payment is under verification. We'll notify you once confirmed.</p>
-                            <p style="font-size:0.8rem;color:#6a8fa8;margin-top:0.5rem;">Transaction ID: ${transactionId}</p>
-                            <button class="btn-panel" style="margin-top:1rem;padding:0.6rem 2rem;" onclick="document.getElementById('paymentModal').classList.remove('active');document.body.style.overflow='';">Close</button>
-                        </div>
-                    `;
-                    document.getElementById('orderForm').style.display = 'none';
-                    document.getElementById('paymentDetailsContainer').innerHTML = '';
-                    document.querySelector('.payment-methods').style.display = 'none';
+                    if (successDiv) {
+                        successDiv.style.display = 'block';
+                        successDiv.innerHTML = `
+                            <div class="order-success">
+                                <i class="fas fa-check-circle"></i>
+                                <h3>Order Submitted! ✅</h3>
+                                <p><strong>Order Status: Pending</strong></p>
+                                <p>Your payment is under verification. We'll notify you once confirmed.</p>
+                                <p style="font-size:0.8rem;color:#6a8fa8;margin-top:0.5rem;">Transaction ID: ${transactionVal}</p>
+                                <button class="btn-panel" style="margin-top:1rem;padding:0.6rem 2rem;" onclick="document.getElementById('paymentModal').classList.remove('active');document.body.style.overflow='';">Close</button>
+                            </div>
+                        `;
+                    }
+                    
+                    const orderForm = document.getElementById('orderForm');
+                    if (orderForm) orderForm.style.display = 'none';
+                    
+                    const detailsContainer = document.getElementById('paymentDetailsContainer');
+                    if (detailsContainer) detailsContainer.innerHTML = '';
+                    
+                    const methods = document.querySelector('.payment-methods');
+                    if (methods) methods.style.display = 'none';
                 })
                 .catch((error) => {
                     alert('❌ Error submitting order: ' + error.message);
@@ -3461,24 +3572,29 @@
         // ANDROID CARD CLICK → SHOW USER WEB
         // ============================================================
         const androidCard = document.getElementById('androidCard');
-        androidCard.addEventListener('click', (e) => {
-            e.preventDefault();
-            showUserWeb();
-        });
-
-        androidCard.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
+        if (androidCard) {
+            androidCard.addEventListener('click', (e) => {
                 e.preventDefault();
                 showUserWeb();
-            }
-        });
+            });
+
+            androidCard.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    showUserWeb();
+                }
+            });
+        }
 
         // ============================================================
         // BACK TO LANDING
         // ============================================================
-        document.getElementById('backToLanding').addEventListener('click', () => {
-            showLanding();
-        });
+        const backBtn = document.getElementById('backToLanding');
+        if (backBtn) {
+            backBtn.addEventListener('click', () => {
+                showLanding();
+            });
+        }
 
         // ============================================================
         // PARALLAX ORB
@@ -3493,18 +3609,12 @@
             });
         });
 
-        console.log('🔥 ABID SIR · Premium Gaming Platform');
-        console.log('✅ All 7 features implemented:');
-        console.log('   1️⃣ Paid Panels Section');
-        console.log('   2️⃣ Buy System');
-        console.log('   3️⃣ Order Status');
-        console.log('   4️⃣ Notifications System');
-        console.log('   5️⃣ My Panels (Accepted only)');
-        console.log('   6️⃣ Open Panel Security');
-        console.log('   7️⃣ My Orders');
-        console.log('✅ User-specific data with Firebase');
-        console.log('✅ Real-time updates');
-        console.log('✅ Access control & security');
+        console.log('🔥 ABID SIR · Premium Gaming Platform (FIXED)');
+        console.log('✅ All 7 features implemented with error handling');
+        console.log('✅ Fixed: Auth error handling');
+        console.log('✅ Fixed: Null element errors');
+        console.log('✅ Fixed: Data loading issues');
+        console.log('✅ Fixed: Panel display issues');
     </script>
 </body>
 </html>
