@@ -516,7 +516,7 @@
     <div class="orb orb-2"></div>
 
     <!-- ============================================================
-    LANDING PAGE (HIDDEN - SHOWN BEFORE LOGIN)
+    LANDING PAGE
     ============================================================ -->
     <main class="container" id="landingPage">
         <section class="hero glass">
@@ -574,7 +574,7 @@
     </main>
 
     <!-- ============================================================
-    USER WEB (HIDDEN UNTIL LOGIN)
+    USER WEB
     ============================================================ -->
     <div id="userWebContainer" style="display:none;">
         <div class="glass-container">
@@ -882,7 +882,8 @@
                     document.querySelectorAll('.page-container').forEach(p => p.classList.remove('active'));
                     const target = document.getElementById('page-' + page);
                     if (target) target.classList.add('active');
-                    if (page === 'my-panels') { loadMyPanels(); loadDownloadHistory(); }
+                    if (page === 'my-panels') { loadMyPanels();
+                        loadDownloadHistory(); }
                     if (page === 'my-orders') loadMyOrders();
                     if (page === 'notifications') loadNotifications();
                     if (page === 'profile') loadProfile();
@@ -931,7 +932,7 @@
             });
 
         // ============================================================
-        // AUTH STATE - ✅ FIX #7: Login Required
+        // AUTH STATE
         // ============================================================
         function checkAuthState() {
             auth.onAuthStateChanged((user) => {
@@ -939,7 +940,8 @@
                     currentUser = user;
                     currentUserId = user.uid;
                     isAuthenticated = true;
-                    document.getElementById('userNameDisplay').textContent = user.displayName || 'User#' + user.uid.slice(0, 6);
+                    document.getElementById('userNameDisplay').textContent = user.displayName || 'User#' + user.uid
+                        .slice(0, 6);
                     showUserWeb();
                     loadAllData();
                     loadUserData();
@@ -1002,7 +1004,7 @@
         }
 
         // ============================================================
-        // PAYMENT SETTINGS - ✅ FIX #5: Load from Firebase
+        // PAYMENT SETTINGS - ✅ FIXED: Auto-create if missing
         // ============================================================
         let paymentSettings = {};
 
@@ -1010,19 +1012,27 @@
             try {
                 const docRef = db.collection('settings').doc('payment');
                 const doc = await docRef.get();
+
                 if (doc.exists) {
                     paymentSettings = doc.data();
+                    console.log('✅ Payment settings loaded from Firebase');
                 } else {
-                    // Default values
-                    paymentSettings = {
+                    // ✅ FIX: Document doesn't exist, create it with default values
+                    console.log('⚠️ Payment settings document not found, creating...');
+                    const defaultSettings = {
                         easyPaisaNumber: '0300-1234567',
                         jazzCashNumber: '0311-7654321',
-                        accountName: 'ABID SIR'
+                        accountName: 'ABID SIR',
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     };
+
+                    await db.collection('settings').doc('payment').set(defaultSettings);
+                    paymentSettings = defaultSettings;
+                    console.log('✅ Payment settings created with defaults');
                 }
-                console.log('✅ Payment settings loaded from Firebase');
             } catch (error) {
-                console.warn('⚠️ Error loading payment settings:', error);
+                console.warn('⚠️ Error loading payment settings:', error.message);
+                // ✅ FIX: Fallback to defaults if any error
                 paymentSettings = {
                     easyPaisaNumber: '0300-1234567',
                     jazzCashNumber: '0311-7654321',
@@ -1053,7 +1063,9 @@
             const lastUpdated = document.getElementById('lastUpdated');
             if (lastUpdated) {
                 lastUpdated.textContent = new Date().toLocaleDateString('en-US', {
-                    year: 'numeric', month: 'short', day: 'numeric'
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
                 });
             }
 
@@ -1089,7 +1101,8 @@
 
                         let imageHtml = '';
                         if (panel.imageUrl) {
-                            imageHtml = `<img src="${panel.imageUrl}" alt="${panel.name || 'Panel'}" loading="lazy">`;
+                            imageHtml =
+                                `<img src="${panel.imageUrl}" alt="${panel.name || 'Panel'}" loading="lazy">`;
                         } else {
                             imageHtml = `<div class="no-image"><i class="fas fa-crown"></i></div>`;
                         }
@@ -1183,7 +1196,8 @@
                             const url = this.dataset.url;
                             const embed = this.dataset.embed === 'true';
                             if (url && embed) {
-                                const wrapper = this.closest('.video-card').querySelector('.video-thumbnail');
+                                const wrapper = this.closest('.video-card').querySelector(
+                                '.video-thumbnail');
                                 const iframe = wrapper.querySelector('iframe');
                                 if (iframe) { iframe.src = url;
                                     wrapper.querySelector('.play-overlay').style.display = 'none';
@@ -1193,7 +1207,8 @@
                         });
                     });
                 } else {
-                    grid.innerHTML = `<div class="coming-soon-card"><i class="fas fa-video"></i><h4>No videos uploaded yet</h4></div>`;
+                    grid.innerHTML =
+                        `<div class="coming-soon-card"><i class="fas fa-video"></i><h4>No videos uploaded yet</h4></div>`;
                 }
             }, () => {});
 
@@ -1222,16 +1237,19 @@
                             const link = this.dataset.link;
                             const id = this.dataset.id;
                             const collection = this.dataset.collection || 'files';
-                            if (id) { db.collection(collection).doc(id).update({ downloads: firebase.firestore.FieldValue
+                            if (id) { db.collection(collection).doc(id).update({ downloads: firebase
+                                    .firestore.FieldValue
                                     .increment(1) }).catch(() => {}); }
-                            db.collection('counters').doc('stats').update({ downloads: firebase.firestore.FieldValue
+                            db.collection('counters').doc('stats').update({ downloads: firebase
+                                    .firestore.FieldValue
                                     .increment(1) }).catch(() => {});
                             if (link && link !== '#') window.open(link, '_blank');
                             else alert('⬇️ Download started!');
                         });
                     });
                 } else {
-                    grid.innerHTML = `<div class="coming-soon-card"><i class="fas fa-crosshairs" style="color:#ff4d2d;"></i><h4>FF Headshots Files</h4><div class="status"><i class="fas fa-clock"></i> Coming Soon</div></div>`;
+                    grid.innerHTML =
+                        `<div class="coming-soon-card"><i class="fas fa-crosshairs" style="color:#ff4d2d;"></i><h4>FF Headshots Files</h4><div class="status"><i class="fas fa-clock"></i> Coming Soon</div></div>`;
                 }
             }, () => {});
 
@@ -1260,16 +1278,19 @@
                             const link = this.dataset.link;
                             const id = this.dataset.id;
                             const collection = this.dataset.collection || 'files';
-                            if (id) { db.collection(collection).doc(id).update({ downloads: firebase.firestore.FieldValue
+                            if (id) { db.collection(collection).doc(id).update({ downloads: firebase
+                                    .firestore.FieldValue
                                     .increment(1) }).catch(() => {}); }
-                            db.collection('counters').doc('stats').update({ downloads: firebase.firestore.FieldValue
+                            db.collection('counters').doc('stats').update({ downloads: firebase
+                                    .firestore.FieldValue
                                     .increment(1) }).catch(() => {});
                             if (link && link !== '#') window.open(link, '_blank');
                             else alert('⬇️ Download started!');
                         });
                     });
                 } else {
-                    grid.innerHTML = `<div class="coming-soon-card"><i class="fas fa-map-marker-alt" style="color:#00ff88;"></i><h4>FF Location Files</h4><div class="status"><i class="fas fa-clock"></i> Coming Soon</div></div>`;
+                    grid.innerHTML =
+                        `<div class="coming-soon-card"><i class="fas fa-map-marker-alt" style="color:#00ff88;"></i><h4>FF Location Files</h4><div class="status"><i class="fas fa-clock"></i> Coming Soon</div></div>`;
                 }
             }, () => {});
 
@@ -1282,17 +1303,19 @@
                     snapshot.forEach(doc => {
                         const data = doc.data();
                         const videoUrl = data.videoLink || '';
-                        const isYouTube = videoUrl && (videoUrl.includes('youtube.com/embed') || videoUrl.includes(
-                            'youtu.be') || videoUrl.includes('watch?v='));
+                        const isYouTube = videoUrl && (videoUrl.includes('youtube.com/embed') || videoUrl
+                            .includes('youtu.be') || videoUrl.includes('watch?v='));
                         let embedUrl = '';
                         let thumbUrl = '';
                         if (isYouTube) {
                             embedUrl = convertToEmbedUrl(videoUrl);
                             let videoId = '';
-                            if (videoUrl.includes('youtube.com/embed')) { videoId = videoUrl.split('/embed/')[1]?.split(
-                                    '?')[0] || ''; } else if (videoUrl.includes('youtu.be')) { videoId = videoUrl.split(
-                                    'youtu.be/')[1]?.split('?')[0] || ''; } else if (videoUrl.includes('watch?v=')) {
-                                videoId = videoUrl.split('v=')[1]?.split('&')[0] || ''; }
+                            if (videoUrl.includes('youtube.com/embed')) { videoId = videoUrl.split(
+                                    '/embed/')[1]?.split(
+                                    '?')[0] || ''; } else if (videoUrl.includes('youtu.be')) { videoId =
+                                    videoUrl.split('youtu.be/')[1]?.split('?')[0] || ''; } else if (videoUrl
+                                .includes('watch?v=')) { videoId = videoUrl.split('v=')[1]?.split('&')[0] ||
+                                    ''; }
                             if (videoId) thumbUrl = `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`;
                         }
                         const card = document.createElement('div');
@@ -1321,7 +1344,8 @@
                         });
                     });
                 } else {
-                    grid.innerHTML = `<div class="coming-soon-card"><i class="fas fa-exclamation-triangle" style="color:#ff6b6b;"></i><h4>No error fix videos available</h4><div class="status"><i class="fas fa-clock"></i> Coming Soon</div></div>`;
+                    grid.innerHTML =
+                        `<div class="coming-soon-card"><i class="fas fa-exclamation-triangle" style="color:#ff6b6b;"></i><h4>No error fix videos available</h4><div class="status"><i class="fas fa-clock"></i> Coming Soon</div></div>`;
                 }
             }, () => {});
 
@@ -1351,16 +1375,19 @@
                             const link = this.dataset.link;
                             const id = this.dataset.id;
                             const collection = this.dataset.collection || 'files';
-                            if (id) { db.collection(collection).doc(id).update({ downloads: firebase.firestore.FieldValue
+                            if (id) { db.collection(collection).doc(id).update({ downloads: firebase
+                                    .firestore.FieldValue
                                     .increment(1) }).catch(() => {}); }
-                            db.collection('counters').doc('stats').update({ downloads: firebase.firestore.FieldValue
+                            db.collection('counters').doc('stats').update({ downloads: firebase
+                                    .firestore.FieldValue
                                     .increment(1) }).catch(() => {});
                             if (link && link !== '#') window.open(link, '_blank');
                             else alert('⬇️ Download started!');
                         });
                     });
                 } else {
-                    grid.innerHTML = `<div class="coming-soon-card"><i class="fas fa-folder-open"></i><h4>No game files available</h4></div>`;
+                    grid.innerHTML =
+                        `<div class="coming-soon-card"><i class="fas fa-folder-open"></i><h4>No game files available</h4></div>`;
                 }
             }, () => {});
         }
@@ -1379,21 +1406,25 @@
             let featuresHtml = '';
             if (panelData.features && panelData.features.length) {
                 featuresHtml = `<ul class="features-list">`;
-                panelData.features.forEach(f => { featuresHtml += `<li><i class="fas fa-check-circle"></i> ${f}</li>`; });
+                panelData.features.forEach(f => { featuresHtml +=
+                    `<li><i class="fas fa-check-circle"></i> ${f}</li>`; });
                 featuresHtml += `</ul>`;
             }
 
             let videoHtml = '';
             if (panelData.videoProof) {
                 const embedUrl = convertToEmbedUrl(panelData.videoProof);
-                videoHtml = `<div class="video-proof-section"><iframe src="${embedUrl}" allowfullscreen loading="lazy"></iframe></div>`;
+                videoHtml =
+                    `<div class="video-proof-section"><iframe src="${embedUrl}" allowfullscreen loading="lazy"></iframe></div>`;
             } else {
-                videoHtml = `<div class="video-proof-section"><div class="no-video"><i class="fas fa-video" style="font-size:2rem;display:block;margin-bottom:0.5rem;"></i> No video proof available</div></div>`;
+                videoHtml =
+                    `<div class="video-proof-section"><div class="no-video"><i class="fas fa-video" style="font-size:2rem;display:block;margin-bottom:0.5rem;"></i> No video proof available</div></div>`;
             }
 
             let imageHtml = '';
             if (panelData.imageUrl) {
-                imageHtml = `<img src="${panelData.imageUrl}" alt="${panelData.name || 'Panel'}" loading="lazy">`;
+                imageHtml =
+                `<img src="${panelData.imageUrl}" alt="${panelData.name || 'Panel'}" loading="lazy">`;
             } else {
                 imageHtml = `<div class="no-image"><i class="fas fa-crown" style="font-size:4rem;"></i></div>`;
             }
@@ -1445,7 +1476,7 @@
         });
 
         // ============================================================
-        // PAYMENT SYSTEM - ✅ FIX #3 & #6: Save userUid + No screenshot
+        // PAYMENT SYSTEM
         // ============================================================
         let selectedPaymentMethod = null;
         let isSubmitting = false;
@@ -1501,7 +1532,8 @@
 
             content.querySelectorAll('.payment-method-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    content.querySelectorAll('.payment-method-btn').forEach(b => b.classList.remove('selected'));
+                    content.querySelectorAll('.payment-method-btn').forEach(b => b.classList.remove(
+                    'selected'));
                     this.classList.add('selected');
                     selectedPaymentMethod = this.dataset.method;
                     showPaymentDetails(panelData, selectedPaymentMethod);
@@ -1563,7 +1595,6 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
 
-            // ✅ FIX #3: Check for duplicate orders
             db.collection('orders')
                 .where('userUid', '==', currentUserId)
                 .where('panelId', '==', panelData.id)
@@ -1577,14 +1608,14 @@
                     return Promise.resolve();
                 })
                 .then(() => {
-                    // ✅ FIX #3: Save order with userUid
                     const order = {
                         userUid: currentUserId,
                         userEmail: currentUser.email || 'user@anonymous',
                         panelId: panelData.id || 'unknown',
                         panelName: panelData.name || 'Untitled Panel',
                         panelImage: panelData.imageUrl || '',
-                        panelDescription: panelData.fullDescription || panelData.shortDescription || '',
+                        panelDescription: panelData.fullDescription || panelData.shortDescription ||
+                        '',
                         price: panelData.price || '0',
                         paymentMethod: selectedPaymentMethod,
                         transactionId: transactionVal,
@@ -1598,7 +1629,6 @@
                     return db.collection('orders').add(order);
                 })
                 .then((docRef) => {
-                    // ✅ FIX #4: Create notification
                     db.collection('notifications').add({
                         userUid: currentUserId,
                         type: 'Order Submitted',
@@ -1650,7 +1680,7 @@
         });
 
         // ============================================================
-        // MY PANELS - ✅ FIX #1: Use proper indexes
+        // MY PANELS
         // ============================================================
         let myPanelsUnsubscribe = null;
 
@@ -1672,7 +1702,6 @@
             grid.innerHTML =
                 `<div class="coming-soon-card"><i class="fas fa-spinner fa-spin" style="color:#4ade80;"></i><h4>Loading your panels...</h4></div>`;
 
-            // ✅ FIX #1: Use userUid field
             myPanelsUnsubscribe = db.collection('orders')
                 .where('userUid', '==', currentUserId)
                 .where('status', '==', 'accepted')
@@ -1914,7 +1943,7 @@
         });
 
         // ============================================================
-        // MY ORDERS - ✅ FIX #4: Use userUid + proper query
+        // MY ORDERS
         // ============================================================
         let ordersUnsubscribe = null;
 
@@ -1936,7 +1965,6 @@
             container.innerHTML =
                 `<div class="coming-soon-card"><i class="fas fa-spinner fa-spin" style="color:#6a8fa8;"></i><h4>Loading your orders...</h4></div>`;
 
-            // ✅ FIX #4: Use userUid and proper field names
             ordersUnsubscribe = db.collection('orders')
                 .where('userUid', '==', currentUserId)
                 .orderBy('createdAt', 'desc')
@@ -2000,7 +2028,7 @@
         }
 
         // ============================================================
-        // NOTIFICATIONS - ✅ FIX #2: No auto-delete, proper rendering
+        // NOTIFICATIONS
         // ============================================================
         let notifUnsubscribe = null;
 
@@ -2022,13 +2050,11 @@
             list.innerHTML =
                 `<div class="coming-soon-card"><i class="fas fa-spinner fa-spin" style="color:#6a8fa8;"></i><h4>Loading notifications...</h4></div>`;
 
-            // ✅ FIX #2: Use userUid and proper query
             notifUnsubscribe = db.collection('notifications')
                 .where('userUid', '==', currentUserId)
                 .orderBy('timestamp', 'desc')
                 .limit(50)
                 .onSnapshot((snapshot) => {
-                    // ✅ FIX #2: Don't clear innerHTML before building, build it properly
                     list.innerHTML = '';
                     let unreadCount = 0;
 
@@ -2064,7 +2090,6 @@
                             list.appendChild(item);
                         });
 
-                        // Mark as read functionality
                         list.querySelectorAll('.notif-mark-read').forEach(btn => {
                             btn.addEventListener('click', function(e) {
                                 e.stopPropagation();
@@ -2075,7 +2100,6 @@
                             });
                         });
 
-                        // Click to mark as read
                         list.querySelectorAll('.notif-item.unread').forEach(item => {
                             item.addEventListener('click', function() {
                                 const id = this.dataset.id;
@@ -2321,7 +2345,7 @@
         console.log('✅ 2. Notifications - No auto-delete');
         console.log('✅ 3. Orders - userUid saved');
         console.log('✅ 4. My Orders - Proper query');
-        console.log('✅ 5. Payment Settings - Firebase sync');
+        console.log('✅ 5. Payment Settings - Auto-create if missing');
         console.log('✅ 6. Screenshot Upload - Removed');
         console.log('✅ 7. Login Required - Auth check added');
         console.log('✅ 8. Performance - Optimized listeners');
